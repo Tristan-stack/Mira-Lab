@@ -1,6 +1,8 @@
 import React from 'react';
 
 // Fonction pour générer un gradient aléatoire
+//ca ne peut pas etre la meme couleur deux fois
+
 const getRandomGradient = () => {
     const colors = [
         '#FF5733', // Rouge
@@ -12,7 +14,10 @@ const getRandomGradient = () => {
         '#8A33FF', // Violet
     ];
     const color1 = colors[Math.floor(Math.random() * colors.length)];
-    const color2 = colors[Math.floor(Math.random() * colors.length)];
+    let color2 = colors[Math.floor(Math.random() * colors.length)];
+    while (color1 === color2) {
+        color2 = colors[Math.floor(Math.random() * colors.length)];
+    }
     return `linear-gradient(135deg, ${color1}, ${color2})`;
 };
 

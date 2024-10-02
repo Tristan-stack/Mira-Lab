@@ -57,6 +57,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
     Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+
+    // Routes profil
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 });
 
 require __DIR__.'/auth.php';
