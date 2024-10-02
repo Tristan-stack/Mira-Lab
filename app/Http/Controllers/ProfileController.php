@@ -56,18 +56,30 @@ class ProfileController extends Controller
     }
 
     // Méthode existante pour mettre à jour le profil (inchangée)
-    public function update(ProfileUpdateRequest $request)
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        /** @var User $user */
+        $user = Auth::user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if (!$user) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
         }
 
-        $request->user()->save();
+        // Valider les données du formulaire
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
 
-        return Redirect::route('profile.edit');
+        // Mettre à jour les informations de l'utilisateur
+        $user->fill($validatedData);
+        $user->save();
+
+        // Retourner une réponse JSON
+        return response()->json(['message' => 'Profil mis à jour avec succès.']);
     }
+
+
 
     // Méthode existante pour supprimer le compte utilisateur (inchangée)
     public function destroy(Request $request)

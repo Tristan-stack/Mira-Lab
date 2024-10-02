@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: 'Raleway', sans-serif;
+}
+
 .gradient-title {
     background: linear-gradient(135deg, #FF0080, #8400ff);
     -webkit-background-clip: text;
@@ -6,3 +12,22 @@
     /* Ajustez la taille selon vos besoins */
     font-weight: bolder;
 }
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.gradient-background {
+    background-size: 400% 400%;
+    animation: gradient-animation 15s ease infinite;
+}
+

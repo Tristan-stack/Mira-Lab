@@ -13,7 +13,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Raleway', 'sans-serif'],
             },
             boxShadow: {
                 'shadow-custom': '0px 0px 27px 19px rgba(0,0,0,0.1)'
