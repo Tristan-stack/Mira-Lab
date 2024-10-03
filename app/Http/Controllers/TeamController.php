@@ -85,8 +85,11 @@ class TeamController extends Controller
     public function show($id)
     {
         $team = Team::with('users')->findOrFail($id);
-        return inertia('Teams/Show', compact('team'));
+        $removeUserUrl = route('teams.removeUser', ['id' => $id]); // Génère l'URL de suppression de l'utilisateur
+
+        return inertia('Teams/Show', compact('team', 'removeUserUrl'));
     }
+
 
     /**
      * Update the specified team in storage.
@@ -120,6 +123,19 @@ class TeamController extends Controller
 
         return redirect()->route('teams.show', $team->id)->with('success', 'Membres de l\'équipe mis à jour avec succès.');
     }
+    public function removeUser($teamId, Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $team = Team::findOrFail($teamId);
+        $team->users()->detach($validated['user_id']);
+
+        return response()->json(['message' => 'Utilisateur dissocié avec succès']);
+    }
+
+
 
     /**
      * Remove the specified team from storage.

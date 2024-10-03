@@ -6,6 +6,8 @@ import Navbar from '../Components/Navbar';
 import './custom-style/styles.css';
 
 
+
+
 export default function TeamCreate() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
@@ -67,9 +69,11 @@ export default function TeamCreate() {
     );
 
     return (
+        
         <div>
             <Navbar username={username} /> {/* Passez le nom d'utilisateur ici */}
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-50 bg-opacity-10">
+            
+            <div className="flex items-center justify-center bg-gray-50 bg-opacity-10">
                 <div className="bg-white rounded-lg max-w-md w-full p-8" style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }} >
                     <h1 className="gradient-title text-center mb-6">Créer ta team</h1>
                     <form onSubmit={(e) => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut } from 'react-icons/fi';
+import axios from 'axios'; // Assurez-vous que vous avez axios installé
 
 // Fonction pour générer un gradient aléatoire
 const getRandomGradient = () => {
@@ -40,6 +41,15 @@ export default function Sidebar({ user }) {
         });
     }, []); // Le tableau vide signifie que cela s'exécute uniquement lors du premier rendu
 
+    const handleLogout = async () => {
+        try {
+            await axios.post('/logout'); // Remplacez par l'URL correcte de votre API de déconnexion
+            window.location.href = '/'; // Redirigez vers la page de connexion après la déconnexion
+        } catch (error) {
+            console.error('Logout failed:', error); // Gérer l'erreur si la déconnexion échoue
+        }
+    };
+
     return (
         <div className="bg-white h-screen p-4 shadow-md">
             <div className="text-2xl font-bold text-purple-600 mb-8">Mira Labs</div>
@@ -77,7 +87,10 @@ export default function Sidebar({ user }) {
                             <p className="text-sm text-gray-500">{user.email}</p> {/* Affiche l'email de l'utilisateur */}
                         </div>
                     </div>
-                    <button className="w-full duration-300 flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-md cursor-pointer">
+                    <button
+                        onClick={handleLogout} // Ajoutez l'événement onClick
+                        className="w-full duration-300 flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
+                    >
                         <FiLogOut className="mr-3" />
                         Log out
                     </button>

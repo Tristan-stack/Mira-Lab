@@ -12,22 +12,6 @@ body {
     /* Ajustez la taille selon vos besoins */
     font-weight: bolder;
 }
-@keyframes gradient-animation {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
+.hover\:logo-purple:hover .logo {
+    color: #6b46c1; /* Couleur violette */
 }
-
-.gradient-background {
-    background-size: 400% 400%;
-    animation: gradient-animation 15s ease infinite;
-}
-

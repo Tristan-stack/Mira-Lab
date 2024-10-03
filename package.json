@@ -21,6 +21,18 @@
     },
     "dependencies": {
         "@inertiajs/inertia-react": "^0.8.1",
-        "react-beautiful-dnd": "^13.1.1"
+        "@radix-ui/react-label": "^2.1.0",
+        "@radix-ui/react-slot": "^1.1.0",
+        "@radix-ui/react-tabs": "^1.1.1",
+        "animejs": "^3.2.2",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.1",
+        "framer-motion": "^11.11.0",
+        "lucide-react": "^0.447.0",
+        "react-beautiful-dnd": "^13.1.1",
+        "react-icons": "^5.3.0",
+        "simplex-noise": "^4.0.3",
+        "tailwind-merge": "^2.5.3",
+        "tailwindcss-animate": "^1.0.7"
     }
 }
