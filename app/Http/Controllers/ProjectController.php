@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -27,16 +28,38 @@ class ProjectController extends Controller
             'team_id' => 'required|exists:teams,id',
         ]);
 
+        // Créer le projet une seule fois
         $project = Project::create($validated);
+
+        // Ajouter l'utilisateur connecté à la table project_user avec le rôle "Board Leader"
+        $userId = Auth::id(); // Récupère l'ID de l'utilisateur connecté
+        $project->users()->attach($userId, ['role' => 'Board Leader']); // Ajoute l'utilisateur avec le rôle "Board Leader"
+
+        // Ajouter les utilisateurs de l'équipe associée sans créer de doublons
+        $teamUsers = $project->team->users; // Récupérer les utilisateurs de l'équipe
+        $userIds = $teamUsers->pluck('id')->toArray(); // Récupérer les IDs des utilisateurs de l'équipe
+
+        // Préparer les données pour l'attachement
+        $projectUsers = array_map(function ($id) {
+            return ['user_id' => $id, 'role' => 'Contributor']; // Attribuer le rôle "Contributor" aux autres utilisateurs
+        }, $userIds);
+
+        // Éviter d'attacher plusieurs fois les mêmes utilisateurs
+        // On supprime l'utilisateur qui a créé le projet de la liste pour ne pas le ré-attacher
+        $project->users()->syncWithoutDetaching($projectUsers);
 
         return response()->json(['message' => 'Projet créé avec succès', 'project' => $project], 201);
     }
 
+
+    // Afficher un projet spécifique
     // Afficher un projet spécifique
     public function show($id)
     {
-        $project = Project::with('tasks')->findOrFail($id);
-        return response()->json($project);
+        $project = Project::with('tasks', 'users')->findOrFail($id);
+        $currentUser = Auth::user(); // Récupérer l'utilisateur connecté
+
+        return inertia('Project/Show', compact('project', 'currentUser')); // Renvoie la vue avec le projet et l'utilisateur actuel
     }
 
     // Mettre à jour un projet
@@ -63,8 +86,10 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         $project->delete();
 
-        return response()->json(['message' => 'Projet supprimé avec succès']);
+        // Redirige vers la page de profil avec un message flash
+        return redirect()->route('profile')->with('message', 'Projet supprimé avec succès');
     }
+
 
     // Attacher une tâche à un projet
     public function attachTask(Request $request, $projectId)

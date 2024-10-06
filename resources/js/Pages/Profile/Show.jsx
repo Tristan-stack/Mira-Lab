@@ -1,199 +1,226 @@
-import React, { useState, useEffect } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { IoIosAdd } from 'react-icons/io';
+import { FaRegEye, FaTrash } from 'react-icons/fa';
 import Layout from '../../Layouts/Base';
+import CreateProjectForm from '../../Pages/ProjectCreate'; 
+import TeamCreate from '../../Pages/TeamCreate';
+import { Head } from '@inertiajs/react'; 
 import axios from 'axios';
-import '../custom-style/styles.css';
-import { FaRegEye, FaTrash } from "react-icons/fa6";
-import { IoIosAdd } from "react-icons/io";
 
-const getRandomGradient = () => {
-    const colors = [
-        '#FF5733', // Rouge
-        '#33FF57', // Vert
-        '#3357FF', // Bleu
-        '#FF33A6', // Rose
-        '#FFEB33', // Jaune
-        '#33FFF6', // Cyan
-        '#8A33FF', // Violet
-    ];
-    const color1 = colors[Math.floor(Math.random() * colors.length)];
-    let color2 = colors[Math.floor(Math.random() * colors.length)];
-    while (color1 === color2) {
-        color2 = colors[Math.floor(Math.random() * colors.length)];
-    }
-    return `linear-gradient(135deg, ${color1}, ${color2})`;
-};
 
-export default function Profile({ user, teams, projects }) {
+export default function Show({ user, teams, projects }) {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: user.name,
         email: user.email,
     });
 
-    const [gradient, setGradient] = useState('');
-
-    const { csrf_token } = usePage().props;
-
-    useEffect(() => {
-        setGradient(getRandomGradient());
-    }, []);
+    const [isCreatingProject, setIsCreatingProject] = useState(false); // État pour le formulaire de projet
+    const [isCreatingTeam, setIsCreatingTeam] = useState(false); // État pour le formulaire d'équipe
 
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
     const handleSaveClick = () => {
-        axios
-            .put('/profile', formData)
-            .then(response => {
-                console.log('Data updated successfully:', response.data);
-                setIsEditing(false);
-            })
-            .catch(error => {
-                console.error('There was an error updating the data:', error);
-            });
+        // Logique pour sauvegarder les informations
+        setIsEditing(false);
     };
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleRemoveUser = (teamId) => {
-        axios
-            .delete(`/teams/${teamId}/remove-user`, {
-                data: { user_id: user.id }
-            })
-            .then(response => {
-                console.log('Utilisateur dissocié avec succès');
-                // Mettre à jour l'état si nécessaire
-            })
-            .then(() => {
-                // Recharger la page pour afficher les changements
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Erreur lors de la dissociation de l\'utilisateur:', error);
-            });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleViewTeam = (teamId) => {
-        // Implémentez la logique pour voir l'équipe en fonction de son ID
-        console.log(`Voir les détails de l'équipe ${teamId}`);
+        window.location.href = `/teams/${teamId}`;
     };
+
+    const handleViewProject = (projectId) => {
+        window.location.href = `/projects/${projectId}`; // Redirige vers la page du projet
+    };
+
+    const handleEditTeam = (teamId) => {
+        // Implémentez la logique pour modifier l'équipe en fonction de son ID
+        console.log(`Modifier l'équipe ${teamId}`);
+    };
+
+    const handleRemoveTeam = async (teamId) => {
+        // Logique pour supprimer l'équipe
+        try {
+            await axios.delete(`/teams/${teamId}`); // Suppression de l'équipe via l'API
+            // Rafraîchissez l'état ou redirigez l'utilisateur
+        } catch (error) {
+            console.error('Erreur lors de la suppression de l\'équipe:', error.response.data.message);
+            // Affichez une notification d'erreur
+        }
+    };
+
+    const handleWithdraw = async (teamId) => {
+        try {
+            const response = await axios.post(`/teams/${teamId}/withdraw`, {
+                user_id: currentUser.id // Assurez-vous que `currentUser` est bien défini
+            });
+            console.log(response.data.message);
+            // Mettez à jour l'état des équipes ici si nécessaire
+
+        } catch (error) {
+            const errorMessage = error.response ? error.response.data.message : 'Une erreur est survenue.';
+            console.error('Erreur lors du retrait de l\'équipe:', errorMessage);
+            setErrorMessage(errorMessage); // Mettez à jour l'état d'erreur ici
+        }
+    };
+
+
+
+
 
     return (
         <Layout user={user}>
             <Head title="Mon Profil" />
-            <div className="flex justify-center items-center mx-auto p-6 space-x-10">
-                <div className="p-6 bg-white shadow rounded-lg mb-6">
-                    <div className='w-80 h-60 bg-gray-300 rounded-lg mb-4'>
-                        {/* profil bg */}
-                    </div>
-                    <div className="w-full space-y-2 mb-4">
-                        <h3 className='font-black text-2xl'>Mon profil</h3>
-                        <p className='text-gray-400 font-light text-xs text-right'>Membre depuis : {new Date(user.created_at).toLocaleDateString()}</p>
-                        <p className='text-gray-400 font-light text-xs text-right'>Dernière modification : {new Date(user.updated_at).toLocaleDateString()}</p>
-                    </div>
-                    <div className='space-y-3'>
-                        <div className='w-full flex justify-between'>
+            <div className="flex flex-col justify-center items-center mx-auto p-6 space-x-10">
+                <div className='w-full flex justify-around'>
+
+                    <div className="p-6 bg-white shadow rounded-lg mb-6 relative">
+                        <div className='w-80 h-60 bg-gray-300 rounded-lg mb-4'></div>
+                        <div className="w-full space-y-2 mb-4">
+                            <h3 className='font-black text-2xl'>Mon profil</h3>
+                            <p className='text-gray-400 font-light text-xs text-right'>Membre depuis : {new Date(user.created_at).toLocaleDateString()}</p>
+                            <p className='text-gray-400 font-light text-xs text-right'>Dernière modification : {new Date(user.updated_at).toLocaleDateString()}</p>
+                        </div>
+                        <div className='space-y-3'>
+                            <div className='w-full flex justify-between'>
+                                {isEditing ? (
+                                    <div className="relative w-full">
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="text-purple-600 w-1/2 p-2 border-white rounded-none focus:outline-none"
+                                        />
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-400">{formData.name}</p>
+                                )}
+                                <p className='text-gray-400 font-normal whitespace-nowrap'>
+                                    Compte n°<span className='text-purple-800 font-bold'>{user.id}</span>
+                                </p>
+                            </div>
                             {isEditing ? (
-                                <div className="relative w-full">
+                                <div className="relative w-full ">
                                     <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
                                         onChange={handleChange}
-                                        className="text-purple-600 w-1/2 p-2 border-white rounded-none focus:outline-none"
+                                        className="text-purple-600 border-white p-2 rounded-none w-full focus:outline-none"
                                     />
-                                    <div className="absolute bottom-1 w-2/3 left-0 h-0.5 bg-purple-500 transition-all duration-300"></div>
                                 </div>
                             ) : (
-                                <p className="text-gray-400">{formData.name}</p>
+                                <p className="text-gray-400">{formData.email}</p>
                             )}
-                            <p className='text-gray-400 font-normal whitespace-nowrap'>
-                                Compte n°<span className='text-purple-800 font-bold'>{user.id}</span>
-                            </p>
                         </div>
-                        {isEditing ? (
-                            <div className="relative w-full ">
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="text-purple-600 border-white p-2 rounded-none w-full focus:outline-none"
-                                />
-                                <div className="absolute bottom-0 left-0 h-0.5 w-full bg-purple-500 transition-all duration-300"></div>
+                        <div className='w-full flex justify-center mt-4'>
+                            {isEditing ? (
+                                <button onClick={handleSaveClick} className='py-1 px-4 text-white rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition duration-300'>Enregistrer</button>
+                            ) : (
+                                <button onClick={handleEditClick} className='py-1 px-4 text-white rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition duration-300'>Modifier</button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className='flex flex-col'>
+                        <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
+                            <div className='flex justify-between items-center'>
+                                <h2 className="text-2xl font-semibold">Équipes</h2>
+                                <button
+                                    className='bg-green-400 px-2 py-2 rounded-2xl hover:bg-white duration-300'
+                                    onClick={() => setIsCreatingTeam(!isCreatingTeam)} // Toggle du formulaire d'équipe
+                                >
+                                    <IoIosAdd className='font-extrabold text-white hover:text-green-400 duration-300' />
+                                </button>
                             </div>
-                        ) : (
-                            <p className="text-gray-400">{formData.email}</p>
-                        )}
-                    </div>
-                    <div className='w-full flex justify-center mt-4'>
-                        {isEditing ? (
-                            <button onClick={handleSaveClick} className='py-1 px-4 text-white rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition duration-300'>Enregistrer</button>
-                        ) : (
-                            <button onClick={handleEditClick} className='py-1 px-4 text-white rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition duration-300'>Modifier</button>
-                        )}
-                    </div>
-                </div>
+                            <hr className='mb-4 mt-3' />
+                            <ul className='space-y-4'>
+                                {teams.map((team) => (
+                                    <li key={team.id} className="flex justify-between items-center mb-2">
+                                        <div className='mr-32'>
+                                            <p className="text-base font-semibold uppercase">{team.name}</p>
+                                            <p className='text-gray-500 font-light text-sm'>Rôle : {team.pivot.role}</p>
+                                        </div>
+                                        <div className="flex space-x-2">
+                                            <button
+                                                className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-blue-500 hover:bg-blue-600 transition duration-300"
+                                                onClick={() => handleViewTeam(team.id)}
+                                            >
+                                                <FaRegEye />
+                                            </button>
 
-                <div>
-                    <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
-                        <div className='flex justify-between items-center'>
-                            <h2 className="text-2xl font-semibold">Équipes</h2>
-                            {/* lien dajout dune team */}
-                            <button className='bg-green-400 px-2 py-2 rounded-2xl'><IoIosAdd className='text-lg' /></button>
-
-                            
-                            
+                                            {/* Vérifiez si l'utilisateur est un admin */}
+                                            {team.pivot.role === 'admin' ? (
+                                                <button
+                                                    className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
+                                                    onClick={() => handleRemoveTeam(team.id)} // Fonction pour supprimer l'équipe
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
+                                                    onClick={() => handleWithdraw(team.id)} // Fonction pour se retirer de l'équipe
+                                                >
+                                                    Se retirer
+                                                </button>
+                                            )}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                        <hr className='mb-4 mt-3' />
-                        <ul className='space-y-4'>
-                            {teams.map((team) => (
-                                <li key={team.id} className="flex justify-between items-center mb-2">
-                                    <div className='mr-32'>
-                                        <p className="text-base font-semibold uppercase">{team.name}</p>
-                                        <p className="text-gray-500 font-light text-sm">Rôle : {team.pivot.role}</p>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <button
-                                            className="ml-4 text-sm px-2 py-2 text-white rounded-2xl bg-purple-600 hover:bg-white hover:text-purple-600  transition duration-300"
-                                            onClick={() => handleViewTeam(team.id)}
-                                        >
-                                            <FaRegEye />
-                                        </button>
 
-                                        <button
-                                            className="ml-2 text-sm px-2 py-2 rounded-2xl text-white bg-red-600 hover:text-red-600 hover:bg-white transition duration-300"
-                                            onClick={() => handleRemoveUser(team.id)}
-                                        >
-                                            <FaTrash />
-                                        </button>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                        {teams.length === 0 && <p>Aucune équipe pour le moment.</p>}
+                        <div>
+                            <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
+                                <div className='flex justify-between items-center'>
+                                    <h2 className="text-2xl font-semibold">Projets</h2>
+                                    <button
+                                        className='bg-green-400 px-2 py-2 rounded-2xl hover:bg-white duration-300'
+                                        onClick={() => setIsCreatingProject(!isCreatingProject)} // Toggle du formulaire de projet
+                                    >
+                                        <IoIosAdd className='font-extrabold text-white hover:text-green-400 duration-300' />
+                                    </button>
+                                </div>
+                                <hr className='mb-4 mt-3' />
+                                <ul className='space-y-4'>
+                                    {projects.map((project) => (
+                                        <li key={project.id} className="flex justify-between items-center mb-2">
+                                            <div className='mr-32'>
+                                                <p className="text-base font-semibold">{project.name}</p>
+                                            </div>
+                                            <button
+                                                className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-blue-500 hover:bg-blue-600 transition duration-300"
+                                                onClick={() => handleViewProject(project.id)} // Voir le projet
+                                            >
+                                                <FaRegEye />
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="p-6 bg-white shadow rounded-lg mb-6">
-                        <h2 className="text-2xl font-semibold mb-4">Projets</h2>
-                        <ul>
-                            {projects.map((project) => (
-                                <li key={project.id} className="mb-2">
-                                    <p className="text-lg font-bold">{project.name}</p>
-                                    <p className="text-gray-500">Rôle : {project.pivot.role}</p>
-                                </li>
-                            ))}
-                        </ul>
-                        {projects.length === 0 && <p>Aucun projet pour le moment.</p>}
-                    </div>
                 </div>
+
+                {/* Affichez le formulaire de création de projet */}
+                {isCreatingProject && (
+                    <CreateProjectForm teams={teams} />
+                )}
+
+                {/* Affichez le formulaire de création d'équipe */}
+                {isCreatingTeam && (
+                    <TeamCreate />
+                )}
             </div>
         </Layout>
     );

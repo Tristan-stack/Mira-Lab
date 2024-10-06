@@ -32,21 +32,33 @@ Route::middleware('auth')->group(function () {
     // Routes des équipes
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
     Route::delete('/teams/{team_id}/remove-user/{user_id}', [TeamController::class, 'removeUser'])->name('teams.removeUser');
+    Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
+    Route::post('/teams/{teamId}/withdraw', [TeamController::class, 'withdraw'])->name('teams.withdraw');
+
+
 
     Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
     Route::post('/teams-with-users', [TeamController::class, 'storeWithUsers'])->name('teams.storeWithUsers');
-    Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
     Route::put('/teams/{id}', [TeamController::class, 'update'])->name('teams.update');
     Route::put('/teams/{id}/users', [TeamController::class, 'updateUsers'])->name('teams.updateUsers');
     Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('teams.destroy');
     Route::delete('/teams/{id}/remove-user', [TeamController::class, 'removeUser'])->name('teams.removeUser');
+
+
+    Route::get('/project/{id}', [ProjectController::class, 'show']);
+    Route::delete('/project/{id}', [ProjectController::class, 'destroy']);
+
+
+
+
+
 
     // Routes des projets
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
-    Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    // Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
     // Gestion des tâches liées aux projets
     Route::post('/projects/{id}/tasks', [ProjectController::class, 'attachTask'])->name('projects.attachTask');
