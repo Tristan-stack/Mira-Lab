@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoIosAdd } from 'react-icons/io';
 import { FaRegEye, FaTrash } from 'react-icons/fa';
 import Layout from '../../Layouts/Base';
-import CreateProjectForm from '../../Pages/ProjectCreate'; 
+import CreateProjectForm from '../../Pages/ProjectCreate';
 import TeamCreate from '../../Pages/TeamCreate';
-import { Head } from '@inertiajs/react'; 
+import { ToastContainer, toast } from 'react-toastify'; // Importer ToastContainer et toast
+import 'react-toastify/dist/ReactToastify.css';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
-
 
 export default function Show({ user, teams, projects }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -17,6 +18,17 @@ export default function Show({ user, teams, projects }) {
 
     const [isCreatingProject, setIsCreatingProject] = useState(false); // État pour le formulaire de projet
     const [isCreatingTeam, setIsCreatingTeam] = useState(false); // État pour le formulaire d'équipe
+    const [errorMessage, setErrorMessage] = useState('');
+    const [teamsState, setTeamsState] = useState(teams);
+
+    // useEffect(() => {
+    //     // Vérifiez si le toast doit être affiché après le rechargement
+    //     const successMessage = localStorage.getItem('teamCreated');
+    //     if (successMessage) {
+    //         toast.success('Équipe créée avec succès.');
+    //         localStorage.removeItem('teamCreated'); // Supprimez l'état du stockage local
+    //     }
+    // }, []);
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -30,6 +42,11 @@ export default function Show({ user, teams, projects }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+    };
+
+    const handleAddTeam = (newTeam) => {
+        setTeamsState((prevTeams) => [...prevTeams, newTeam]);
+        // localStorage.setItem('teamCreated', 'true');
     };
 
     const handleViewTeam = (teamId) => {
@@ -46,39 +63,47 @@ export default function Show({ user, teams, projects }) {
     };
 
     const handleRemoveTeam = async (teamId) => {
-        // Logique pour supprimer l'équipe
         try {
-            await axios.delete(`/teams/${teamId}`); // Suppression de l'équipe via l'API
-            // Rafraîchissez l'état ou redirigez l'utilisateur
+            await axios.delete(`/teams/${teamId}`);
+            setTeamsState((prevTeams) => prevTeams.filter((team) => team.id !== teamId));
+            console.log('Équipe supprimée avec succès.');
+
+            // Afficher le toast pour la suppression d'équipe par un admin
+            toast.success('Équipe supprimée avec succès.');
         } catch (error) {
-            console.error('Erreur lors de la suppression de l\'équipe:', error.response.data.message);
-            // Affichez une notification d'erreur
+            console.error('Erreur lors de la suppression de l\'équipe:', error.response?.data?.message || error.message);
+            setErrorMessage('Une erreur est survenue lors de la suppression de l\'équipe.'); // Gestion d'erreur
         }
     };
+
 
     const handleWithdraw = async (teamId) => {
         try {
             const response = await axios.post(`/teams/${teamId}/withdraw`, {
-                user_id: currentUser.id // Assurez-vous que `currentUser` est bien défini
+                user_id: user.id,
             });
-            console.log(response.data.message);
-            // Mettez à jour l'état des équipes ici si nécessaire
+            if (response.status === 200) {
+                console.log('Vous vous êtes retiré de l\'équipe avec succès.');
+                setTeamsState((prevTeams) => prevTeams.filter((team) => team.id !== teamId));
 
+                // Afficher le toast pour le retrait d'équipe par un membre
+                toast.info('Vous vous êtes retiré de l\'équipe.');
+            }
         } catch (error) {
-            const errorMessage = error.response ? error.response.data.message : 'Une erreur est survenue.';
-            console.error('Erreur lors du retrait de l\'équipe:', errorMessage);
-            setErrorMessage(errorMessage); // Mettez à jour l'état d'erreur ici
+            setErrorMessage('Une erreur est survenue lors du retrait de l\'équipe.');
         }
     };
-
-
-
-
 
     return (
         <Layout user={user}>
             <Head title="Mon Profil" />
+            <ToastContainer />
             <div className="flex flex-col justify-center items-center mx-auto p-6 space-x-10">
+                {errorMessage && (
+                    <div className="w-full text-red-500 bg-red-100 p-4 rounded-lg mb-4">
+                        {errorMessage}
+                    </div>
+                )}
                 <div className='w-full flex justify-around'>
 
                     <div className="p-6 bg-white shadow rounded-lg mb-6 relative">
@@ -143,7 +168,7 @@ export default function Show({ user, teams, projects }) {
                             </div>
                             <hr className='mb-4 mt-3' />
                             <ul className='space-y-4'>
-                                {teams.map((team) => (
+                                {teamsState.map((team) => (
                                     <li key={team.id} className="flex justify-between items-center mb-2">
                                         <div className='mr-32'>
                                             <p className="text-base font-semibold uppercase">{team.name}</p>
@@ -157,18 +182,17 @@ export default function Show({ user, teams, projects }) {
                                                 <FaRegEye />
                                             </button>
 
-                                            {/* Vérifiez si l'utilisateur est un admin */}
                                             {team.pivot.role === 'admin' ? (
                                                 <button
                                                     className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
-                                                    onClick={() => handleRemoveTeam(team.id)} // Fonction pour supprimer l'équipe
+                                                    onClick={() => handleRemoveTeam(team.id)}
                                                 >
                                                     <FaTrash />
                                                 </button>
                                             ) : (
                                                 <button
                                                     className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
-                                                    onClick={() => handleWithdraw(team.id)} // Fonction pour se retirer de l'équipe
+                                                    onClick={() => handleWithdraw(team.id)}
                                                 >
                                                     Se retirer
                                                 </button>
@@ -177,6 +201,7 @@ export default function Show({ user, teams, projects }) {
                                     </li>
                                 ))}
                             </ul>
+
                         </div>
 
                         <div>
@@ -195,31 +220,43 @@ export default function Show({ user, teams, projects }) {
                                     {projects.map((project) => (
                                         <li key={project.id} className="flex justify-between items-center mb-2">
                                             <div className='mr-32'>
-                                                <p className="text-base font-semibold">{project.name}</p>
+                                                <p className="text-base font-semibold uppercase">{project.name}</p>
+                                                <p className='text-gray-500 font-light text-sm'>Description : {project.description}</p>
                                             </div>
-                                            <button
-                                                className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-blue-500 hover:bg-blue-600 transition duration-300"
-                                                onClick={() => handleViewProject(project.id)} // Voir le projet
-                                            >
-                                                <FaRegEye />
-                                            </button>
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-blue-500 hover:bg-blue-600 transition duration-300"
+                                                    onClick={() => handleViewProject(project.id)}
+                                                >
+                                                    <FaRegEye />
+                                                </button>
+
+                                                {project.pivot.role === 'admin' && (
+                                                    <button
+                                                        className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-                {/* Affichez le formulaire de création de projet */}
                 {isCreatingProject && (
-                    <CreateProjectForm teams={teams} />
+                    <div className='w-full'>
+                        <CreateProjectForm />
+                    </div>
                 )}
 
-                {/* Affichez le formulaire de création d'équipe */}
                 {isCreatingTeam && (
-                    <TeamCreate />
+                    <div className='w-full'>
+                        <TeamCreate onAddTeam={handleAddTeam} />
+                    </div>
                 )}
             </div>
         </Layout>

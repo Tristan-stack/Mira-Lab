@@ -4,6 +4,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import { motion } from 'framer-motion'; // Assurez-vous d'importer motion
 import './custom-style/styles.css';
+import { toast } from 'react-toastify'; // Assurez-vous d'importer toast pour les notifications
 
 export default function TeamCreate() {
     const { data, setData, post, processing, errors } = useForm({
@@ -14,17 +15,18 @@ export default function TeamCreate() {
     const [users, setUsers] = useState([]);
     const [teamMembers, setTeamMembers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [username, setUsername] = useState('');
 
     useEffect(() => {
+        // Récupération de l'utilisateur connecté
         axios.get('/user')
             .then(response => {
-                setUsername(response.data.name);
+                // Vous pouvez gérer le nom de l'utilisateur si nécessaire ici
             })
             .catch(error => {
                 console.error('Il y a eu un problème avec l\'appel à l\'API :', error);
             });
 
+        // Récupération de tous les utilisateurs
         axios.get('/users')
             .then(response => {
                 setUsers(response.data);
@@ -35,6 +37,7 @@ export default function TeamCreate() {
     }, []);
 
     useEffect(() => {
+        // Met à jour les données du formulaire avec les membres de l'équipe sélectionnés
         setData('users', teamMembers.map(member => member.id));
     }, [teamMembers]);
 
@@ -59,7 +62,7 @@ export default function TeamCreate() {
         setUsers(prev => [...prev, member]);
     };
 
-    const handleDoubleClickUser = (user) => {
+    const handleDoubleClickAddUser = (user) => {
         setTeamMembers(prev => [...prev, user]);
         setUsers(prev => prev.filter(u => u.id !== user.id));
     };
@@ -68,20 +71,26 @@ export default function TeamCreate() {
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post('/teams-with-users', {
+            ...data,
+            onSuccess: () => {
+                toast.success('Équipe créée avec succès !'); // Notification de succès
+                setData({ name: '', users: [] }); // Réinitialisation des données du formulaire
+                setTeamMembers([]); // Réinitialisation des membres de l'équipe
+            },
+            onError: () => {
+                toast.error('Erreur lors de la création de l\'équipe.'); // Notification d'erreur
+            },
+        });
+    };
+
     return (
-        <motion.div
-            initial={{ opacity: 0 }} // Opacité initiale
-            animate={{ opacity: 1 }} // Opacité finale
-            exit={{ opacity: 0 }} // Opacité lors de la sortie
-            transition={{ duration: 0.5 }} // Durée de la transition
-            className="mx-auto bg-white rounded-lg max-w-md w-full p-8"
-            style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}
-        >
+        <div className="mx-auto bg-white rounded-lg max-w-md w-full p-8"
+            style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}>
             <h1 className="gradient-title text-center mb-6">Créer ta team</h1>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                post('/teams-with-users', data);
-            }}>
+            <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                         Nom de l'équipe
@@ -118,7 +127,6 @@ export default function TeamCreate() {
                                     className="flex-1 border rounded-md p-2 mr-2 max-w-md"
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    style={{ overflow: 'visible' }}
                                 >
                                     <h2 className="font-semibold">Utilisateurs disponibles</h2>
                                     <div className="overflow-y-auto max-h-40 min-h-20">
@@ -126,16 +134,11 @@ export default function TeamCreate() {
                                             <Draggable key={user.id} draggableId={user.id.toString()} index={index}>
                                                 {(provided, snapshot) => (
                                                     <div
-                                                        className={`p-2 border-b cursor-pointer ${snapshot.isDragging ? 'dragging' : ''
-                                                            }`}
+                                                        className={`p-2 border-b cursor-pointer ${snapshot.isDragging ? 'dragging' : ''}`}
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        onDoubleClick={() => handleDoubleClickUser(user)}
-                                                        style={{
-                                                            ...provided.draggableProps.style,
-                                                            position: snapshot.isDragging ? 'absolute' : 'relative',
-                                                        }}
+                                                        onDoubleClick={() => handleDoubleClickAddUser(user)}
                                                     >
                                                         {user.name}
                                                     </div>
@@ -154,22 +157,16 @@ export default function TeamCreate() {
                                     className="flex-1 border rounded-md p-2 h-40 overflow-y-auto"
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    style={{ overflow: 'visible' }}
                                 >
                                     <h2 className="font-semibold">Membres de l'équipe</h2>
                                     {teamMembers.map((member, index) => (
                                         <Draggable key={member.id} draggableId={member.id.toString()} index={index}>
                                             {(provided, snapshot) => (
                                                 <div
-                                                    className={`p-2 border-b flex items-center justify-between ${snapshot.isDragging ? 'dragging' : ''
-                                                        }`}
+                                                    className={`p-2 border-b flex items-center justify-between ${snapshot.isDragging ? 'dragging' : ''}`}
                                                     ref={provided.innerRef}
                                                     {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
-                                                    style={{
-                                                        ...provided.draggableProps.style,
-                                                        position: snapshot.isDragging ? 'absolute' : 'relative',
-                                                    }}
                                                 >
                                                     {member.name}
                                                     <button
@@ -199,6 +196,6 @@ export default function TeamCreate() {
                     </button>
                 </div>
             </form>
-        </motion.div>
+        </div>
     );
 }

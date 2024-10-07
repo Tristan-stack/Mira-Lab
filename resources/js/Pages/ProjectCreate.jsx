@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion } from 'framer-motion'; // Assurez-vous d'importer motion
-import './custom-style/styles.css'; // Votre fichier CSS personnalisé
+import { motion } from 'framer-motion';
+import './custom-style/styles.css';
 
-const CreateProjectForm = ({ teams = [], onCreate }) => {
+const CreateProjectForm = ({ onCreate }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -12,6 +12,21 @@ const CreateProjectForm = ({ teams = [], onCreate }) => {
         status: '',
         team_id: '',
     });
+
+    const [teams, setTeams] = useState([]);
+
+    useEffect(() => {
+        const fetchTeams = async () => {
+            try {
+                const response = await axios.get('/user/teams'); // Remplacez par l'URL correcte de votre API
+                setTeams(response.data);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des équipes:', error.response ? error.response.data : error.message);
+            }
+        };
+
+        fetchTeams();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -22,18 +37,16 @@ const CreateProjectForm = ({ teams = [], onCreate }) => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Empêche le rechargement de la page
+        e.preventDefault();
 
         try {
             const response = await axios.post('/projects', formData);
             console.log('Projet créé avec succès:', response.data);
 
-            // Appeler la fonction onCreate pour ajouter le projet à la liste
             if (onCreate) {
                 onCreate(response.data);
             }
 
-            // Réinitialiser le formulaire après la création réussie
             setFormData({
                 name: '',
                 description: '',
@@ -49,10 +62,10 @@ const CreateProjectForm = ({ teams = [], onCreate }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0 }} // Opacité initiale
-            animate={{ opacity: 1 }} // Opacité finale
-            exit={{ opacity: 0 }} // Opacité lors de la sortie
-            transition={{ duration: 0.5 }} // Durée de la transition
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
             className="mx-auto bg-white rounded-lg max-w-md w-full p-8"
             style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}
         >

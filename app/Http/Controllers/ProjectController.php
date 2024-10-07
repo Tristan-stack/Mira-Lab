@@ -31,6 +31,8 @@ class ProjectController extends Controller
         // Créer le projet une seule fois
         $project = Project::create($validated);
 
+        $teamsDisponibles = Auth::user()->teams->pluck('id')->toArray(); // Récupérer les IDs des équipes de l'utilisateur connecté
+
         // Ajouter l'utilisateur connecté à la table project_user avec le rôle "Board Leader"
         $userId = Auth::id(); // Récupère l'ID de l'utilisateur connecté
         $project->users()->attach($userId, ['role' => 'Board Leader']); // Ajoute l'utilisateur avec le rôle "Board Leader"

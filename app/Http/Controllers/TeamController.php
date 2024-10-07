@@ -147,11 +147,6 @@ class TeamController extends Controller
         ]);
     }
 
-
-
-
-
-
     /**
      * Update the users of the specified team.
      */
@@ -203,12 +198,6 @@ class TeamController extends Controller
         return response()->json(['message' => 'L\'utilisateur ne fait pas partie de cette équipe.'], 400);
     }
 
-
-
-
-
-
-
     /**
      * Remove the specified team from storage.
      */
@@ -219,7 +208,8 @@ class TeamController extends Controller
         $team->users()->detach(); // Détache tous les utilisateurs de l'équipe
         $team->delete(); // Supprime l'équipe
 
-        return redirect('/profile')->with('success', 'Équipe supprimée avec succès.');
+        return response()->json(['message' => 'Équipe supprimée avec succès.'], 200); // Retourne une réponse JSON
     }
+
 
 }

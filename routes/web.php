@@ -34,14 +34,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/teams/{team_id}/remove-user/{user_id}', [TeamController::class, 'removeUser'])->name('teams.removeUser');
     Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
     Route::post('/teams/{teamId}/withdraw', [TeamController::class, 'withdraw'])->name('teams.withdraw');
-
+    Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('teams.destroy');
 
 
     Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
     Route::post('/teams-with-users', [TeamController::class, 'storeWithUsers'])->name('teams.storeWithUsers');
     Route::put('/teams/{id}', [TeamController::class, 'update'])->name('teams.update');
     Route::put('/teams/{id}/users', [TeamController::class, 'updateUsers'])->name('teams.updateUsers');
-    Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('teams.destroy');
+    
     Route::delete('/teams/{id}/remove-user', [TeamController::class, 'removeUser'])->name('teams.removeUser');
 
 
