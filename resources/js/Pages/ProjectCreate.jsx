@@ -127,14 +127,18 @@ const CreateProjectForm = ({ onCreate }) => {
                     <label htmlFor="status" className="block text-sm font-medium text-gray-700">
                         Statut
                     </label>
-                    <input
-                        type="text"
+                    <select
                         id="status"
                         name="status"
                         value={formData.status}
                         onChange={handleChange}
+                        required
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
+                    >
+                        <option value="">Sélectionner un statut</option>
+                        <option value="Public">Public</option>
+                        <option value="Privé">Privé</option>
+                    </select>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="team_id" className="block text-sm font-medium text-gray-700">

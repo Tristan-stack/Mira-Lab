@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
     
     Route::delete('/teams/{id}/remove-user', [TeamController::class, 'removeUser'])->name('teams.removeUser');
 
+    Route::get('/user/teams', [ProjectController::class, 'getUserTeams']);
+    Route::get('/teams/{id}/projects', [TeamController::class, 'getTeamProjects']);
 
     Route::get('/project/{id}', [ProjectController::class, 'show']);
     Route::delete('/project/{id}', [ProjectController::class, 'destroy']);

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Project;
 
 
 class TeamController extends Controller
@@ -172,7 +173,18 @@ class TeamController extends Controller
         ]);
 
         $team = Team::findOrFail($teamId);
-        $team->users()->detach($validated['user_id']);
+        $userId = $validated['user_id'];
+
+        // Retirer l'utilisateur de l'équipe
+        $team->users()->detach($userId);
+
+        // Récupérer les projets associés à l'équipe
+        $projects = Project::where('team_id', $team->id)->get();
+
+        // Retirer l'utilisateur des projets associés
+        foreach ($projects as $project) {
+            $project->users()->detach($userId);
+        }
 
         // Retourne une redirection Inertia vers la vue de l'équipe
         return Inertia::location(route('teams.show', $teamId));
@@ -192,11 +204,35 @@ class TeamController extends Controller
         if ($team->users()->where('user_id', $userId)->exists()) {
             // Retirer l'utilisateur de l'équipe
             $team->users()->detach($userId);
-            return response()->json(['message' => 'Vous vous êtes retiré de l\'équipe avec succès.']);
+
+            // Récupérer les projets associés à l'équipe
+            $projects = Project::where('team_id', $team->id)->get();
+
+            // Retirer l'utilisateur des projets privés
+            $privateProjects = $projects->where('status', 'Privé');
+            foreach ($privateProjects as $project) {
+                $project->users()->detach($userId);
+            }
+
+            return response()->json(['message' => 'Vous vous êtes retiré de l\'équipe et des projets privés associés.']);
         }
 
         return response()->json(['message' => 'L\'utilisateur ne fait pas partie de cette équipe.'], 400);
     }
+
+
+
+    public function getTeamProjects($id)
+    {
+        // Récupérer l'équipe par son ID
+        $team = Team::findOrFail($id);
+
+        // Récupérer les projets associés à l'équipe
+        $projects = Project::where('team_id', $team->id)->with('users')->get();
+
+        return response()->json($projects);
+    }
+
 
     /**
      * Remove the specified team from storage.

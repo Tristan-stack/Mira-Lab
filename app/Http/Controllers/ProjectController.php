@@ -16,6 +16,13 @@ class ProjectController extends Controller
         return response()->json($projects);
     }
 
+    public function getUserTeams()
+    {
+        $user = Auth::user();
+        $teams = $user->teams; // Assurez-vous que la relation 'teams' est bien définie dans le modèle User
+        return response()->json($teams);
+    }
+
     // Créer un nouveau projet
     public function store(Request $request)
     {
@@ -28,33 +35,30 @@ class ProjectController extends Controller
             'team_id' => 'required|exists:teams,id',
         ]);
 
-        // Créer le projet une seule fois
+        // Créer le projet
         $project = Project::create($validated);
 
-        $teamsDisponibles = Auth::user()->teams->pluck('id')->toArray(); // Récupérer les IDs des équipes de l'utilisateur connecté
-
         // Ajouter l'utilisateur connecté à la table project_user avec le rôle "Board Leader"
-        $userId = Auth::id(); // Récupère l'ID de l'utilisateur connecté
-        $project->users()->attach($userId, ['role' => 'Board Leader']); // Ajoute l'utilisateur avec le rôle "Board Leader"
+        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
+        $project->users()->attach($userId, ['role' => 'Board Leader']); // Ajouter l'utilisateur avec le rôle "Board Leader"
 
-        // Ajouter les utilisateurs de l'équipe associée sans créer de doublons
+        // Ajouter les utilisateurs de l'équipe associée sans inclure l'utilisateur créateur du projet
         $teamUsers = $project->team->users; // Récupérer les utilisateurs de l'équipe
         $userIds = $teamUsers->pluck('id')->toArray(); // Récupérer les IDs des utilisateurs de l'équipe
 
-        // Préparer les données pour l'attachement
-        $projectUsers = array_map(function ($id) {
-            return ['user_id' => $id, 'role' => 'Contributor']; // Attribuer le rôle "Contributor" aux autres utilisateurs
-        }, $userIds);
+        // Filtrer les IDs pour exclure l'utilisateur créateur du projet
+        $filteredUserIds = array_diff($userIds, [$userId]);
 
-        // Éviter d'attacher plusieurs fois les mêmes utilisateurs
-        // On supprime l'utilisateur qui a créé le projet de la liste pour ne pas le ré-attacher
-        $project->users()->syncWithoutDetaching($projectUsers);
+        // Ajouter chaque utilisateur avec le rôle "Contributor"
+        foreach ($filteredUserIds as $teamUserId) {
+            $project->users()->attach($teamUserId, ['role' => 'Contributor']);
+        }
 
         return response()->json(['message' => 'Projet créé avec succès', 'project' => $project], 201);
     }
 
 
-    // Afficher un projet spécifique
+
     // Afficher un projet spécifique
     public function show($id)
     {
