@@ -20,6 +20,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@heroicons/react": "^2.1.5",
         "@inertiajs/inertia-react": "^0.8.1",
         "@radix-ui/react-alert-dialog": "^1.1.2",
         "@radix-ui/react-label": "^2.1.0",

@@ -65,7 +65,13 @@ class ProjectController extends Controller
         $project = Project::with('tasks', 'users')->findOrFail($id);
         $currentUser = Auth::user(); // Récupérer l'utilisateur connecté
 
-        return inertia('Project/Show', compact('project', 'currentUser')); // Renvoie la vue avec le projet et l'utilisateur actuel
+        // Récupérer l'équipe associée au projet
+        $team = $project->team; // Assurez-vous que la relation 'team' est définie dans le modèle Project
+
+        // Récupérer les utilisateurs de l'équipe
+        $teamUsers = $team->users; // Assurez-vous que la relation 'users' est définie dans le modèle Team
+
+        return inertia('Project/Show', compact('project', 'currentUser', 'team', 'teamUsers')); // Renvoie la vue avec le projet, l'utilisateur actuel, l'équipe et les utilisateurs de l'équipe
     }
 
     // Mettre à jour un projet

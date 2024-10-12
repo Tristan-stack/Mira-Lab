@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut } from 'react-icons/fi';
-import axios from 'axios'; // Assurez-vous que vous avez axios installé
+import React, { useState, useEffect } from 'react';
+import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import axios from 'axios';
 
 // Fonction pour générer un gradient aléatoire
 const getRandomGradient = () => {
     const colors = [
-        '#FF5733', // Rouge
-        '#33FF57', // Vert
-        '#3357FF', // Bleu
-        '#FF33A6', // Rose
-        '#FFEB33', // Jaune
-        '#33FFF6', // Cyan
-        '#8A33FF', // Violet
+        '#FF5733', '#33FF57', '#3357FF', '#FF33A6', '#FFEB33', '#33FFF6', '#8A33FF',
     ];
     const color1 = colors[Math.floor(Math.random() * colors.length)];
     let color2 = colors[Math.floor(Math.random() * colors.length)];
@@ -21,11 +16,11 @@ const getRandomGradient = () => {
     return `linear-gradient(135deg, ${color1}, ${color2})`;
 };
 
-export default function Sidebar({ user }) {
+export default function SidebarProject({ user, onOpenModal }) {
     const [gradientStyle, setGradientStyle] = useState({});
+    const [isTeamsOpen, setIsTeamsOpen] = useState(false);
 
     useEffect(() => {
-        // Générez le gradient une seule fois lors du montage du composant
         setGradientStyle({
             background: getRandomGradient(),
             width: '40px',
@@ -37,68 +32,99 @@ export default function Sidebar({ user }) {
             color: '#fff',
             fontWeight: 'bold',
             fontSize: '1rem',
-            marginRight: '1rem', // Espace entre le cercle et le texte
+            marginRight: '1rem',
         });
-    }, []); // Le tableau vide signifie que cela s'exécute uniquement lors du premier rendu
+    }, []);
 
     const handleLogout = async () => {
         try {
-            await axios.post('/logout'); // Remplacez par l'URL correcte de votre API de déconnexion
-            window.location.href = '/'; // Redirigez vers la page de connexion après la déconnexion
+            await axios.post('/logout');
+            window.location.href = '/';
         } catch (error) {
-            console.error('Logout failed:', error); // Gérer l'erreur si la déconnexion échoue
+            console.error('Logout failed:', error);
         }
     };
 
     const handleUserClick = () => {
-        window.location.href = '/profile'; // Redirigez vers la page de profil
+        window.location.href = '/profile';
+    };
+
+    const toggleTeamsMenu = () => {
+        setIsTeamsOpen(!isTeamsOpen);
     };
 
     return (
-        <div className="bg-white h-screen p-4 shadow-md">
+        <div className="bg-white h-screen p-4 shadow-md w-64 flex flex-col">
             <div className="text-2xl font-bold text-purple-600 mb-8">Board View</div>
-            <div className="w-full flex flex-col items-center justify-between mr-6">
-                <nav className="space-y-4 w-full">
-                    <div className="w-full flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-                        <FiGrid className="mr-3 text-gray-600" />
-                        <span>Tableau</span>
-                    </div>
-                    <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+            <nav className="space-y-4 w-full flex-grow overflow-y-auto">
+                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                    <FiGrid className="mr-3 text-gray-600" />
+                    <span>Tableau</span>
+                </div>
+                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                    <FiCalendar className="mr-3 text-gray-600" />
+                    <span>Calendrier</span>
+                </div>
+                <div>
+                    <div
+                        className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+                        onClick={toggleTeamsMenu}
+                    >
                         <FiUsers className="mr-3 text-gray-600" />
                         <span>Teams</span>
+                        {isTeamsOpen ? <FiChevronDown className="ml-auto text-gray-600" /> : <FiChevronRight className="ml-auto text-gray-600" />}
                     </div>
-                    <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-                        <FiCalendar className="mr-3 text-gray-600" />
-                        <span>Calendrier</span>
-                    </div>
-                    <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-                        <FiMessageCircle className="mr-3 text-gray-600" />
-                        <span>Chat</span>
-                    </div>
-                    <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-                        <FiBell className="mr-3 text-gray-600" />
-                        <span>Notifications</span>
-                    </div>
-                </nav>
-
-                <div className="border-t border-gray-200 mt-8 pt-8">
-                    <div className="flex items-center mb-4 cursor-pointer" onClick={handleUserClick}>
-                        <div style={gradientStyle}>
-                            {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
-                        </div>
-                        <div>
-                            <p className="font-bold">{user.name}</p> {/* Affiche le nom de l'utilisateur */}
-                            <p className="text-sm text-gray-500">{user.email}</p> {/* Affiche l'email de l'utilisateur */}
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleLogout} // Ajoutez l'événement onClick
-                        className="w-full duration-300 flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
+                    {/* Animation du sous-menu */}
+                    <motion.div
+                        initial={false}
+                        animate={isTeamsOpen ? "open" : "closed"}
+                        variants={{
+                            open: { height: "auto", opacity: 1 },
+                            closed: { height: 0, opacity: 0 }
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
                     >
-                        <FiLogOut className="mr-3" />
-                        Log out
-                    </button>
+                        <div className="ml-8 space-y-2">
+                            <div
+                                className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+                                onClick={onOpenModal} // Ouvrir le pop-up
+                            >
+                                <span>Membres</span>
+                            </div>
+                            <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                                <span>Ajouter un membre</span>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
+                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                    <FiMessageCircle className="mr-3 text-gray-600" />
+                    <span>Chat</span>
+                </div>
+                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                    <FiBell className="mr-3 text-gray-600" />
+                    <span>Notifications</span>
+                </div>
+            </nav>
+            
+            <div className="border-t border-gray-200 mt-8 pt-8">
+                <div className="flex items-center mb-4 cursor-pointer" onClick={handleUserClick}>
+                    <div style={gradientStyle}>
+                        {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+                    <div className="ml-4">
+                        <p className="font-bold">{user.name}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                    </div>
+                </div>
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
+                >
+                    <FiLogOut className="mr-3" />
+                    Log out
+                </button>
             </div>
         </div>
     );
