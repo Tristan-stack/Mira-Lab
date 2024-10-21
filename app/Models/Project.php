@@ -59,4 +59,12 @@ class Project extends Model
         }
         return $randomString;
     }
+
+    public function isBoardLeader($userId)
+    {
+        return $this->users()
+                    ->wherePivot('user_id', $userId)
+                    ->wherePivot('role', 'Board Leader')
+                    ->exists();
+    }
 }

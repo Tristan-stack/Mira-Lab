@@ -18,7 +18,7 @@ const JoinTeamModal = ({ onClose, onJoinTeam }) => {
                 exit={{ opacity: 0 }}
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
-                <div className="absolute inset-0 bg-gray-500 bg-opacity-50 backdrop-filter backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gray-300 bg-opacity-50 backdrop-filter backdrop-blur-sm"></div>
                 <motion.div
                     className="relative bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full"
                     initial={{ scale: 0.8, opacity: 0 }}

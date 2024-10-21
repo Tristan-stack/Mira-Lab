@@ -55,7 +55,7 @@ export default function Sidebar({ user }) {
     };
 
     return (
-        <div className="bg-white h-screen p-4 shadow-md">
+        <div className="bg-white h-screen p-4 shadow-md w-64">
             <div className="text-2xl font-bold text-purple-600 mb-8">Mira Labs</div>
             <div className="w-full flex flex-col items-center justify-between mr-6">
                 <nav className="space-y-4 w-full">

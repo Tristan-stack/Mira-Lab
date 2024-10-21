@@ -113,18 +113,21 @@ class TeamController extends Controller
         $team = Team::findOrFail($id);
         $team->update(['name' => $validated['name']]); // Mettre à jour le nom de l'équipe
 
-        // Récupérer l'utilisateur connecté
-        $currentUserId = Auth::id();
+        // Si des utilisateurs sont fournis, mettre à jour les utilisateurs de l'équipe
+        if (isset($validated['users'])) {
+            // Récupérer l'utilisateur connecté
+            $currentUserId = Auth::id();
 
-        // Filtrer les utilisateurs pour exclure l'utilisateur connecté
-        $selectedUsers = array_filter($validated['users'], function ($userId) use ($currentUserId) {
-            return $userId != $currentUserId; // Exclure l'utilisateur connecté
-        });
+            // Filtrer les utilisateurs pour exclure l'utilisateur connecté
+            $selectedUsers = array_filter($validated['users'], function ($userId) use ($currentUserId) {
+                return $userId != $currentUserId; // Exclure l'utilisateur connecté
+            });
 
-        // Synchroniser les utilisateurs de l'équipe
-        $team->users()->sync($selectedUsers); // Cela met à jour les utilisateurs associés à l'équipe
+            // Synchroniser les utilisateurs de l'équipe
+            $team->users()->sync($selectedUsers); // Cela met à jour les utilisateurs associés à l'équipe
+        }
 
-        return redirect()->route('teams.index')->with('success', 'Équipe mise à jour avec succès.');
+        return response()->json(['message' => 'Équipe mise à jour avec succès.']);
     }
 
     public function edit($id)

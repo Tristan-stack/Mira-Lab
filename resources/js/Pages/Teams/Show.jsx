@@ -4,7 +4,7 @@ import Base from '../../Layouts/Base';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importer les styles de react-toastify
 import JoinProjectModal from '../../Components/JoinProjectPopUp'; // Assurez-vous que le chemin est correct
-import { FaLock } from 'react-icons/fa'; // Importer l'icône de cadenas
+import { FaLock, FaPen } from 'react-icons/fa'; // Importer l'icône de cadenas et de stylo
 import axios from 'axios'; // Importer axios
 
 const Show = ({ team, removeUserUrl, currentUser }) => {
@@ -12,6 +12,8 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
     const [selectedProject, setSelectedProject] = useState(null); // État pour le projet sélectionné
     const [projects, setProjects] = useState(team.projects); // État local pour les projets
     const [searchTerm, setSearchTerm] = useState(''); // État pour la recherche
+    const [isEditingTitle, setIsEditingTitle] = useState(false); // État pour l'édition du titre de l'équipe
+    const [teamTitle, setTeamTitle] = useState(team.name); // État pour le titre de l'équipe
 
     const handleRemoveUser = (userId) => {
         Inertia.delete(removeUserUrl, { data: { user_id: userId } });
@@ -90,6 +92,33 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
         }
     };
 
+    const handleUpdateTeamTitle = async () => {
+        try {
+            await axios.put(`/teams/${team.id}`, { name: teamTitle });
+            toast.success('Le titre de l\'équipe a été mis à jour avec succès.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            setIsEditingTitle(false);
+        } catch (error) {
+            toast.error('Erreur lors de la mise à jour du titre de l\'équipe.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            console.error('Erreur lors de la mise à jour du titre de l\'équipe :', error);
+        }
+    };
+
     const currentUserRoleInTeam = team?.users?.find(user => user.id === currentUser.id)?.pivot?.role;
 
     // Filtrer les projets en fonction de la valeur de la recherche
@@ -103,7 +132,32 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 <div className="flex flex-col items-center space-y-4">
                     <div className='flex items-center'>
                         <div className="team-icon" style={{ background: 'linear-gradient(to right, #6a11cb, #2575fc)', width: '50px', height: '50px', borderRadius: '8px', marginRight: '16px' }}></div>
-                        <h2 className="text-xl font-semibold">{team?.name}</h2>
+                        {isEditingTitle ? (
+                            <div className="flex items-center">
+                                <input
+                                    type="text"
+                                    value={teamTitle}
+                                    onChange={(e) => setTeamTitle(e.target.value)}
+                                    className="text-xl font-semibold border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+                                />
+                                <button
+                                    className="ml-2 text-blue-500"
+                                    onClick={handleUpdateTeamTitle}
+                                >
+                                    Enregistrer
+                                </button>
+                            </div>
+                        ) : (
+                            <h2 className="text-xl font-semibold flex items-center">
+                                {teamTitle}
+                                {currentUserRoleInTeam === 'admin' && (
+                                    <FaPen
+                                        className="ml-2 text-gray-500 cursor-pointer"
+                                        onClick={() => setIsEditingTitle(true)}
+                                    />
+                                )}
+                            </h2>
+                        )}
                     </div>
                     <h3 className="text-lg text-gray-600">Votre espace membre !</h3>
                     <p className="text-gray-500 text-center">

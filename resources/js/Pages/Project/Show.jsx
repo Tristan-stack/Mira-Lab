@@ -1,7 +1,9 @@
 import React from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import Base from '../../Layouts/BaseProject';
+
 import TeamMembersModal from '../../Components/TeamMemberModal'; // Assurez-vous que le chemin est correct
+import MiniNav from '../../Components/MiniNav'; // Importer MiniNav
 
 const ShowProject = ({ project, currentUser, team, teamUsers }) => {
     const handleDeleteProject = () => {
@@ -29,14 +31,15 @@ const ShowProject = ({ project, currentUser, team, teamUsers }) => {
 
     return (
         <Base user={currentUser} teamUsers={teamUsers}>
-            <div className="project-view relative flex-1">
+            <MiniNav project={project} currentUser={currentUser} />
+            <div className="text-white project-view relative flex-1 mt-4">
                 <div className="flex flex-col items-center space-y-4">
                     <h2 className="text-xl font-semibold">{project.name}</h2>
 
                     <p>Appartient à la team : {team.name}</p>
-                    <p className="text-gray-600">{project.description}</p>
-                    <p className="text-gray-500">Statut : {project.status}</p>
-                    <p className="text-gray-500">Dates : {project.start_date} - {project.end_date}</p>
+                    <p className="">{project.description}</p>
+                    <p className="">Statut : {project.status}</p>
+                    <p className="">Dates : {project.start_date} - {project.end_date}</p>
 
                     <div className="project-actions space-x-2 mt-4">
                         <button

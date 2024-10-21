@@ -130,7 +130,7 @@ export default function Show({ user, teams, projects }) {
                         {errorMessage}
                     </div>
                 )}
-                <div className='w-full flex justify-around'>
+                <div className='w-full flex justify-around items-center'>
 
                     <div className="p-6 bg-white shadow rounded-lg mb-6 relative">
                         <div className='w-80 h-60 bg-gray-300 rounded-lg mb-4'></div>
@@ -181,13 +181,13 @@ export default function Show({ user, teams, projects }) {
                         </div>
                     </div>
 
-                    <div className='flex flex-col'>
+                    <div className='flex flex-col w-1/2'>
                         <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
                             <div className='flex justify-between items-center'>
                                 <h2 className="text-2xl font-semibold">Équipes</h2>
-                                <div>
+                                <div className='space-x-4 flex items-center'>
                                     <button
-                                        className='bg-blue-500 text-white px-2 py-2 rounded-2xl hover:bg-blue-600 duration-300'
+                                        className='bg-blue-500 text-white px-2 py-2 rounded-full hover:bg-blue-600 duration-300'
                                         onClick={() => setIsJoiningTeam(true)} // Ouvrir le pop-up pour rejoindre une équipe
                                     >
                                         Rejoindre une team

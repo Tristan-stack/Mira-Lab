@@ -1,40 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-
-// Fonction pour générer un gradient aléatoire
-const getRandomGradient = () => {
-    const colors = [
-        '#FF5733', '#33FF57', '#3357FF', '#FF33A6', '#FFEB33', '#33FFF6', '#8A33FF',
-    ];
-    const color1 = colors[Math.floor(Math.random() * colors.length)];
-    let color2 = colors[Math.floor(Math.random() * colors.length)];
-    while (color1 === color2) {
-        color2 = colors[Math.floor(Math.random() * colors.length)];
-    }
-    return `linear-gradient(135deg, ${color1}, ${color2})`;
-};
+import { useGradient } from '../contexts/GradientContext.jsx'; // Importer le hook useGradient
 
 export default function SidebarProject({ user, onOpenModal }) {
-    const [gradientStyle, setGradientStyle] = useState({});
-    const [isTeamsOpen, setIsTeamsOpen] = useState(false);
-
-    useEffect(() => {
-        setGradientStyle({
-            background: getRandomGradient(),
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '1rem',
-            marginRight: '1rem',
-        });
-    }, []);
+    const gradient = useGradient(); // Utiliser le hook pour obtenir le dégradé
+    const [isTeamsOpen, setIsTeamsOpen] = useState(false); // État pour gérer l'ouverture des équipes
 
     const handleLogout = async () => {
         try {
@@ -47,10 +19,6 @@ export default function SidebarProject({ user, onOpenModal }) {
 
     const handleUserClick = () => {
         window.location.href = '/profile';
-    };
-
-    const toggleTeamsMenu = () => {
-        setIsTeamsOpen(!isTeamsOpen);
     };
 
     return (
@@ -68,13 +36,12 @@ export default function SidebarProject({ user, onOpenModal }) {
                 <div>
                     <div
                         className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
-                        onClick={toggleTeamsMenu}
+                        onClick={() => setIsTeamsOpen(!isTeamsOpen)}
                     >
                         <FiUsers className="mr-3 text-gray-600" />
                         <span>Teams</span>
                         {isTeamsOpen ? <FiChevronDown className="ml-auto text-gray-600" /> : <FiChevronRight className="ml-auto text-gray-600" />}
                     </div>
-                    {/* Animation du sous-menu */}
                     <motion.div
                         initial={false}
                         animate={isTeamsOpen ? "open" : "closed"}
@@ -88,7 +55,7 @@ export default function SidebarProject({ user, onOpenModal }) {
                         <div className="ml-8 space-y-2">
                             <div
                                 className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
-                                onClick={onOpenModal} // Ouvrir le pop-up
+                                onClick={onOpenModal}
                             >
                                 <span>Membres</span>
                             </div>
@@ -110,7 +77,7 @@ export default function SidebarProject({ user, onOpenModal }) {
             
             <div className="border-t border-gray-200 mt-8 pt-8">
                 <div className="flex items-center mb-4 cursor-pointer" onClick={handleUserClick}>
-                    <div style={gradientStyle}>
+                    <div style={{ background: gradient, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', fontSize: '1rem', marginRight: '1rem' }}>
                         {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
                     </div>
                     <div className="ml-4">

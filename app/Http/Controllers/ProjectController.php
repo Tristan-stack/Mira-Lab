@@ -57,9 +57,6 @@ class ProjectController extends Controller
         return response()->json(['message' => 'Projet créé avec succès', 'project' => $project], 201);
     }
 
-
-
-    // Afficher un projet spécifique
     public function show($id)
     {
         $project = Project::with('tasks', 'users')->findOrFail($id);
@@ -71,7 +68,10 @@ class ProjectController extends Controller
         // Récupérer les utilisateurs de l'équipe
         $teamUsers = $team->users; // Assurez-vous que la relation 'users' est définie dans le modèle Team
 
-        return inertia('Project/Show', compact('project', 'currentUser', 'team', 'teamUsers')); // Renvoie la vue avec le projet, l'utilisateur actuel, l'équipe et les utilisateurs de l'équipe
+        // Vérifier si l'utilisateur actuel est le Board Leader du projet
+        $isBoardLeader = $project->isBoardLeader($currentUser->id);
+
+        return inertia('Project/Show', compact('project', 'currentUser', 'team', 'teamUsers', 'isBoardLeader')); // Renvoie la vue avec le projet, l'utilisateur actuel, l'équipe, les utilisateurs de l'équipe et le rôle de Board Leader
     }
 
     // Mettre à jour un projet
@@ -85,11 +85,42 @@ class ProjectController extends Controller
             'status' => 'nullable|string|max:255',
             'team_id' => 'required|exists:teams,id',
         ]);
-
+    
         $project = Project::findOrFail($id);
         $project->update($validated);
-
+    
         return response()->json(['message' => 'Projet mis à jour avec succès', 'project' => $project]);
+    }
+
+    public function updateTitle(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $project = Project::findOrFail($id);
+        $project->update(['name' => $validated['name']]);
+
+        return response()->json(['message' => 'Le titre du projet a été mis à jour avec succès.', 'project' => $project]);
+    }
+
+    public function updateVisibility(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:Public,Privé',
+        ]);
+
+        $project = Project::findOrFail($id);
+        $currentUser = $request->user();
+
+        // Vérifier si l'utilisateur actuel est le Board Leader du projet
+        if (!$project->isBoardLeader($currentUser->id)) {
+            return response()->json(['message' => 'Vous n\'êtes pas autorisé à mettre à jour la visibilité de ce projet.'], 403);
+        }
+
+        $project->update(['status' => $validated['status']]);
+
+        return response()->json(['message' => 'Visibilité du projet mise à jour avec succès.', 'project' => $project]);
     }
 
     // Supprimer un projet
