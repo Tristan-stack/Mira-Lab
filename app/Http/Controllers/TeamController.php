@@ -83,7 +83,6 @@ class TeamController extends Controller
 
     }
 
-
     /**
      * Display the specified team.
      */
@@ -91,7 +90,7 @@ class TeamController extends Controller
     {
         $team = Team::with(['users' => function ($query) {
             $query->withPivot('role'); // Charger le rôle depuis la table pivot
-        }, 'projects']) // Ajoutez la relation 'projects'
+        }, 'projects.users']) // Charger les utilisateurs associés à chaque projet
         ->findOrFail($id);
 
         $removeUserUrl = route('teams.removeUser', ['id' => $id]); // Génère l'URL de suppression de l'utilisateur
@@ -99,8 +98,6 @@ class TeamController extends Controller
 
         return inertia('Teams/Show', compact('team', 'removeUserUrl', 'currentUser'));
     }
-
-
 
     /**
      * Update the specified team in storage.
@@ -231,6 +228,35 @@ class TeamController extends Controller
         $projects = Project::where('team_id', $team->id)->with('users')->get();
 
         return response()->json($projects);
+    }
+    public function joinTeam(Request $request)
+    {
+        $validated = $request->validate([
+            'team_code' => 'required|string|exists:teams,team_code',
+            'user_id' => 'required|exists:users,id',
+        ]);
+    
+        $team = Team::where('team_code', $validated['team_code'])->firstOrFail();
+        $userId = $validated['user_id'];
+    
+        // Vérifier si l'utilisateur est déjà membre de l'équipe
+        if ($team->users()->where('user_id', $userId)->exists()) {
+            return response()->json(['message' => 'Vous êtes déjà membre de cette équipe.'], 400);
+        }
+    
+        // Ajouter l'utilisateur à l'équipe
+        $team->users()->attach($userId, ['role' => 'member']);
+    
+        // Ajouter l'utilisateur uniquement aux projets publics associés à l'équipe
+        $publicProjects = $team->projects()->where('status', 'Public')->get();
+        foreach ($publicProjects as $project) {
+            // Vérifier si l'utilisateur est déjà lié au projet
+            if (!$project->users()->where('user_id', $userId)->exists()) {
+                $project->users()->attach($userId);
+            }
+        }
+    
+        return response()->json(['message' => 'Vous avez rejoint l\'équipe et tous les projets publics associés avec succès.']);
     }
 
 

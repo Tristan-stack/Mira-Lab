@@ -6,6 +6,7 @@ import CreateProjectForm from '../../Pages/ProjectCreate';
 import TeamCreate from '../../Pages/TeamCreate';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
+import JoinTeamModal from '../../Components/JoinTeamPopUp'; // Assurez-vous que le chemin est correct
 
 export default function Show({ user, teams, projects }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -16,9 +17,10 @@ export default function Show({ user, teams, projects }) {
 
     const [isCreatingProject, setIsCreatingProject] = useState(false); // État pour le formulaire de projet
     const [isCreatingTeam, setIsCreatingTeam] = useState(false); // État pour le formulaire d'équipe
+    const [isJoiningTeam, setIsJoiningTeam] = useState(false); // État pour le pop-up de rejoindre une équipe
     const [errorMessage, setErrorMessage] = useState(''); // État pour les messages d'erreur
-    const [teamsState, setTeamsState] = useState(teams); // État pour les équipes
-    const [projectsState, setProjectsState] = useState(projects); // État pour les projets
+    const [teamsState, setTeamsState] = useState(Array.isArray(teams) ? teams : []); // Initialiser avec un tableau vide si teams n'est pas un tableau
+    const [projectsState, setProjectsState] = useState(Array.isArray(projects) ? projects : []); // Initialiser avec un tableau vide si projects n'est pas un tableau
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -100,6 +102,25 @@ export default function Show({ user, teams, projects }) {
         }
     };
 
+    const handleJoinTeam = async (teamCode) => {
+        try {
+            // API pour rejoindre l'équipe avec le code
+            await axios.post('/teams/join', { team_code: teamCode, user_id: user.id });
+
+            // Mise à jour de l'état des équipes après avoir rejoint l'équipe
+            const response = await axios.get('/teams');
+            const updatedTeams = Array.isArray(response.data) ? response.data : [];
+            setTeamsState(updatedTeams);
+
+            console.log('Vous avez rejoint l\'équipe avec succès.');
+            setIsJoiningTeam(false);
+            window.location.reload(); 
+        } catch (error) {
+            console.error('Erreur lors de la tentative de rejoindre l\'équipe:', error);
+            setErrorMessage('Une erreur est survenue lors de la tentative de rejoindre l\'équipe.');
+        }
+    };
+
     return (
         <Layout user={user}>
             <Head title="Mon Profil" />
@@ -164,16 +185,24 @@ export default function Show({ user, teams, projects }) {
                         <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
                             <div className='flex justify-between items-center'>
                                 <h2 className="text-2xl font-semibold">Équipes</h2>
-                                <button
-                                    className='bg-green-400 px-2 py-2 rounded-2xl hover:bg-white duration-300'
-                                    onClick={() => setIsCreatingTeam(!isCreatingTeam)} // Toggle du formulaire d'équipe
-                                >
-                                    <IoIosAdd className='font-extrabold text-white hover:text-green-400 duration-300' />
-                                </button>
+                                <div>
+                                    <button
+                                        className='bg-blue-500 text-white px-2 py-2 rounded-2xl hover:bg-blue-600 duration-300'
+                                        onClick={() => setIsJoiningTeam(true)} // Ouvrir le pop-up pour rejoindre une équipe
+                                    >
+                                        Rejoindre une team
+                                    </button>
+                                    <button
+                                        className='bg-green-400 px-2 py-2 rounded-2xl hover:bg-white duration-300'
+                                        onClick={() => setIsCreatingTeam(!isCreatingTeam)} // Toggle du formulaire d'équipe
+                                    >
+                                        <IoIosAdd className='font-extrabold text-white hover:text-green-400 duration-300' />
+                                    </button>
+                                </div>
                             </div>
                             <hr className='mb-4 mt-3' />
                             <ul className='space-y-4'>
-                                {teamsState.map((team) => {
+                                {Array.isArray(teamsState) && teamsState.map((team) => {
                                     const associatedProjects = projectsState.filter(project => project.team_id === team.id);
                                     const privateProjects = associatedProjects.filter(project => project.status === "Privé");
 
@@ -266,6 +295,13 @@ export default function Show({ user, teams, projects }) {
                     <div className='w-full'>
                         <TeamCreate onAddTeam={handleAddTeam} />
                     </div>
+                )}
+
+                {isJoiningTeam && (
+                    <JoinTeamModal
+                        onClose={() => setIsJoiningTeam(false)}
+                        onJoinTeam={handleJoinTeam}
+                    />
                 )}
             </div>
         </Layout>

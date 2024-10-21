@@ -135,4 +135,30 @@ class ProjectController extends Controller
         $project = Project::with('tasks')->findOrFail($projectId);
         return response()->json($project->tasks);
     }
+    public function joinPrivateProject(Request $request)
+    {
+        $validated = $request->validate([
+            'project_code' => 'required|string|exists:projects,project_code',
+            'user_id' => 'required|exists:users,id',
+        ]);
+    
+        $project = Project::where('project_code', $validated['project_code'])->firstOrFail();
+        $userId = $validated['user_id'];
+    
+        // Vérifier si l'utilisateur est membre de l'équipe associée au projet
+        $team = $project->team;
+        if (!$team->users()->where('user_id', $userId)->exists()) {
+            return response()->json(['message' => 'Vous devez être membre de l\'équipe pour rejoindre ce projet.'], 400);
+        }
+    
+        // Vérifier si l'utilisateur est déjà lié au projet
+        if ($project->users()->where('user_id', $userId)->exists()) {
+            return response()->json(['message' => 'Vous êtes déjà membre de ce projet.'], 400);
+        }
+    
+        // Ajouter l'utilisateur au projet privé
+        $project->users()->attach($userId);
+    
+        return response()->json(['message' => 'Vous avez rejoint le projet privé avec succès.']);
+    }
 }

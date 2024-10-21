@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
     Route::post('/teams/{teamId}/withdraw', [TeamController::class, 'withdraw'])->name('teams.withdraw');
     Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('teams.destroy');
+    Route::post('/teams/join', [TeamController::class, 'joinTeam'])->name('teams.join');
 
 
     Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/project/{id}', [ProjectController::class, 'show']);
     Route::delete('/project/{id}', [ProjectController::class, 'destroy']);
 
+    Route::post('/projects/join', [ProjectController::class, 'joinPrivateProject'])->name('projects.join');
 
 
 
@@ -60,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
+
     // Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
     // Gestion des tâches liées aux projets
