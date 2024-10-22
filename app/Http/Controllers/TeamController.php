@@ -93,8 +93,14 @@ class TeamController extends Controller
         }, 'projects.users']) // Charger les utilisateurs associés à chaque projet
         ->findOrFail($id);
 
-        $removeUserUrl = route('teams.removeUser', ['id' => $id]); // Génère l'URL de suppression de l'utilisateur
         $currentUser = Auth::user(); // Récupérer l'utilisateur connecté
+
+        // Vérifiez si l'utilisateur fait partie de l'équipe
+        if (!$team->users->contains($currentUser)) {
+            return redirect('/profile')->with('error', 'Vous ne faites pas partie de cette équipe.');
+        }
+
+        $removeUserUrl = route('teams.removeUser', ['id' => $id]); // Génère l'URL de suppression de l'utilisateur
 
         return inertia('Teams/Show', compact('team', 'removeUserUrl', 'currentUser'));
     }

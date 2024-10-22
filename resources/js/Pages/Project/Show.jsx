@@ -5,7 +5,7 @@ import Base from '../../Layouts/BaseProject';
 import TeamMembersModal from '../../Components/TeamMemberModal'; // Assurez-vous que le chemin est correct
 import MiniNav from '../../Components/MiniNav'; // Importer MiniNav
 
-const ShowProject = ({ project, currentUser, team, teamUsers }) => {
+const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const handleDeleteProject = () => {
         if (confirm("Êtes-vous sûr de vouloir supprimer ce projet ?")) {
             Inertia.delete(`/project/${project.id}`, {
@@ -29,9 +29,11 @@ const ShowProject = ({ project, currentUser, team, teamUsers }) => {
     const currentUserInProject = project.users?.find(user => user.id === currentUser.id);
     const isBoardLeader = currentUserInProject?.pivot.role === 'Board Leader';
 
+    console.log("isBoardLeader:", isBoardLeader);
+
     return (
         <Base user={currentUser} teamUsers={teamUsers}>
-            <MiniNav project={project} currentUser={currentUser} />
+            <MiniNav project={project} currentUser={currentUser} isBoardLeader={isBoardLeader} projectId={projectId} />
             <div className="text-white project-view relative flex-1 mt-4">
                 <div className="flex flex-col items-center space-y-4">
                     <h2 className="text-xl font-semibold">{project.name}</h2>

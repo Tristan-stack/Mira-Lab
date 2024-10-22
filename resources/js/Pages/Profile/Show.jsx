@@ -7,6 +7,7 @@ import TeamCreate from '../../Pages/TeamCreate';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import JoinTeamModal from '../../Components/JoinTeamPopUp'; // Assurez-vous que le chemin est correct
+import { toast } from 'react-toastify';
 
 export default function Show({ user, teams, projects }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +22,19 @@ export default function Show({ user, teams, projects }) {
     const [errorMessage, setErrorMessage] = useState(''); // État pour les messages d'erreur
     const [teamsState, setTeamsState] = useState(Array.isArray(teams) ? teams : []); // Initialiser avec un tableau vide si teams n'est pas un tableau
     const [projectsState, setProjectsState] = useState(Array.isArray(projects) ? projects : []); // Initialiser avec un tableau vide si projects n'est pas un tableau
+    useEffect(() => {
+        if (errorMessage) {
+            toast.error(errorMessage, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+    }, [errorMessage]);
 
     const handleEditClick = () => {
         setIsEditing(true);

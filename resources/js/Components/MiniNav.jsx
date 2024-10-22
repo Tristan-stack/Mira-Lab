@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { FaUser, FaEllipsisH } from 'react-icons/fa'; // Importer les icônes nécessaires
+import { FaLock, FaLockOpen, FaEllipsisH, FaCrown } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { useGradient } from '../contexts/GradientContext.jsx'; // Importer le hook useGradient
-import axios from 'axios'; // Importer axios pour les requêtes API
-import VisibilityDialog from './VisibilityDialog'; // Importer le composant VisibilityDialog
+import { useGradient } from '../contexts/GradientContext.jsx';
+import axios from 'axios';
+import VisibilityDialog from './VisibilityDialog';
+import RightBar from './RightBar';
+import { AnimatePresence, motion } from 'framer-motion';
+import Tooltip from './Tooltip';
 
-const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
-    const gradient = useGradient(); // Utiliser le hook pour obtenir le dégradé
-    const [project, setProject] = useState(initialProject); // État pour gérer le projet
-    const [isEditingTitle, setIsEditingTitle] = useState(false); // État pour gérer le mode d'édition du titre
-    const [newTitle, setNewTitle] = useState(project.name); // État pour le nouveau titre
-    const [isDialogOpen, setIsDialogOpen] = useState(false); // État pour gérer la visibilité de la boîte de dialogue
+const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectId }) => {
+    const gradient = useGradient();
+    const [project, setProject] = useState(initialProject);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [newTitle, setNewTitle] = useState(project.name);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         setProject(initialProject);
@@ -65,7 +69,6 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
                     draggable: true,
                     progress: undefined,
                 });
-                // Mettre à jour le titre du projet dans l'état local
                 setProject(prevProject => ({ ...prevProject, name: response.data.project.name }));
             } catch (error) {
                 toast.error('Erreur lors de la mise à jour du titre du projet.', {
@@ -88,8 +91,12 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
         }
     };
 
-    const handleUserIconClick = () => {
+    const handleLockIconClick = () => {
         setIsDialogOpen(!isDialogOpen);
+    };
+
+    const handleEllipsisClick = () => {
+        setIsSidebarOpen(!isSidebarOpen);
     };
 
     const handleVisibilityChange = async (status) => {
@@ -105,7 +112,6 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
             });
             return;
         }
-
         try {
             const response = await axios.put(`/projects/${project.id}/update-visibility`, { status });
             toast.success('Le statut de visibilité du projet a été mis à jour avec succès.', {
@@ -117,10 +123,13 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
                 draggable: true,
                 progress: undefined,
             });
-            // Mettre à jour la visibilité du projet dans l'état local
             setProject(prevProject => ({ ...prevProject, status: response.data.project.status }));
             setIsDialogOpen(false);
         } catch (error) {
+            console.error('Erreur lors de la mise à jour du statut de visibilité du projet :', error);
+            if (error.response) {
+                console.error('Erreur de réponse API :', error.response.data);
+            }
             toast.error('Erreur lors de la mise à jour du statut de visibilité du projet.', {
                 position: "top-center",
                 autoClose: 3000,
@@ -130,13 +139,16 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
                 draggable: true,
                 progress: undefined,
             });
-            console.error('Erreur lors de la mise à jour du statut de visibilité du projet :', error);
         }
     };
 
     return (
         <div className="relative">
-            <div className="flex justify-between items-center p-3 bg-gray-500/20 shadow-md">
+            <motion.div
+                className="flex justify-between items-center p-3 bg-gray-500/20 shadow-md"
+                animate={{ marginRight: isSidebarOpen ? '16rem' : '0rem' }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
                 <div className="flex items-center space-x-4">
                     {isEditingTitle ? (
                         <input
@@ -150,14 +162,18 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
                         />
                     ) : (
                         <h2
-                            className="text-white text-xl font-semibold ml-2 cursor-pointer"
+                            className="text-white p-2 hover:bg-white/30 duration-200 text-xl font-semibold ml-2 cursor-pointer rounded"
                             onClick={handleTitleClick}
                         >
                             {newTitle}
                         </h2>
                     )}
-                    <div className='p-2 rounded hover:bg-white/30 duration-200 cursor-pointer' onClick={handleUserIconClick}>
-                        <FaUser className="text-white" />
+                    <div className='p-2 rounded hover:bg-white/30 duration-200 cursor-pointer' onClick={handleLockIconClick}>
+                        {project.status === 'Public' ? (
+                            <FaLockOpen className="text-white" />
+                        ) : (
+                            <FaLock className="text-white" />
+                        )}
                     </div>
                 </div>
                 <div className="flex items-center space-x-4 mr-2">
@@ -170,18 +186,29 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader }) => {
                     >
                         Partager
                     </button>
-                    <div className='p-2 rounded hover:bg-white/30 duration-200 cursor-pointer'>
+                    {isBoardLeader && (
+                        <Tooltip text="Vous êtes le Board Leader du projet">
+                            <div className='p-2 rounded hover:bg-white/30 duration-200 cursor-pointer'>
+                                <FaCrown className="text-yellow-500" />
+                            </div>
+                        </Tooltip>
+                    )}
+                    <div className='p-2 rounded hover:bg-white/30 duration-200 cursor-pointer' onClick={handleEllipsisClick}>
                         <FaEllipsisH className="text-white cursor-pointer" />
                     </div>
                 </div>
-            </div>
-            {isDialogOpen && (
-                <VisibilityDialog
-                    project={project}
-                    onClose={() => setIsDialogOpen(false)}
-                    onVisibilityChange={handleVisibilityChange}
-                />
-            )}
+            </motion.div>
+            <AnimatePresence>
+                {isDialogOpen && (
+                    <VisibilityDialog
+                        project={project}
+                        onClose={() => setIsDialogOpen(false)}
+                        onVisibilityChange={handleVisibilityChange}
+                        isBoardLeader={isBoardLeader}
+                    />
+                )}
+            </AnimatePresence>
+            <RightBar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} isBoardLeader={isBoardLeader} projectId={projectId} currentUser={currentUser} />
         </div>
     );
 };

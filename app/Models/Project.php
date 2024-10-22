@@ -43,9 +43,7 @@ class Project extends Model
         parent::boot();
 
         static::creating(function ($project) {
-            if ($project->status === 'Privé') {
-                $project->project_code = self::generateProjectCode();
-            }
+            $project->project_code = self::generateProjectCode();
         });
     }
 
@@ -62,9 +60,15 @@ class Project extends Model
 
     public function isBoardLeader($userId)
     {
-        return $this->users()
-                    ->wherePivot('user_id', $userId)
-                    ->wherePivot('role', 'Board Leader')
-                    ->exists();
+        $isLeader = $this->users()
+                        ->wherePivot('user_id', $userId)
+                        ->wherePivot('role', 'Board Leader')
+                        ->exists();
+                        
+        // Ajoute cette ligne pour déboguer
+        // dd($isLeader);
+        
+        return $isLeader;
     }
+
 }

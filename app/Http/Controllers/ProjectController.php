@@ -57,10 +57,17 @@ class ProjectController extends Controller
         return response()->json(['message' => 'Projet créé avec succès', 'project' => $project], 201);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $project = Project::with('tasks', 'users')->findOrFail($id);
         $currentUser = Auth::user(); // Récupérer l'utilisateur connecté
+
+        // Vérifiez si l'utilisateur fait partie du projet
+        if (!$project->users->contains($currentUser)) {
+            return redirect('/profile')->with('error', 'Vous ne faites pas partie de ce projet.');
+        }
+
+        $projectId = $project->id;
 
         // Récupérer l'équipe associée au projet
         $team = $project->team; // Assurez-vous que la relation 'team' est définie dans le modèle Project
@@ -71,7 +78,7 @@ class ProjectController extends Controller
         // Vérifier si l'utilisateur actuel est le Board Leader du projet
         $isBoardLeader = $project->isBoardLeader($currentUser->id);
 
-        return inertia('Project/Show', compact('project', 'currentUser', 'team', 'teamUsers', 'isBoardLeader')); // Renvoie la vue avec le projet, l'utilisateur actuel, l'équipe, les utilisateurs de l'équipe et le rôle de Board Leader
+        return inertia('Project/Show', compact('project', 'currentUser', 'team', 'teamUsers', 'isBoardLeader', 'projectId')); // Renvoie la vue avec le projet, l'utilisateur actuel, l'équipe, les utilisateurs de l'équipe et le rôle de Board Leader
     }
 
     // Mettre à jour un projet
@@ -118,6 +125,7 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Vous n\'êtes pas autorisé à mettre à jour la visibilité de ce projet.'], 403);
         }
 
+        
         $project->update(['status' => $validated['status']]);
 
         return response()->json(['message' => 'Visibilité du projet mise à jour avec succès.', 'project' => $project]);
@@ -165,6 +173,22 @@ class ProjectController extends Controller
     {
         $project = Project::with('tasks')->findOrFail($projectId);
         return response()->json($project->tasks);
+    }
+
+    public function leaveProject($id)
+    {
+        $project = Project::findOrFail($id);
+        $userId = Auth::id();
+
+        // Vérifier si l'utilisateur est membre du projet
+        if (!$project->users()->where('user_id', $userId)->exists()) {
+            return response()->json(['message' => 'Vous n\'êtes pas membre de ce projet.'], 403);
+        }
+
+        // Retirer l'utilisateur du projet
+        $project->users()->detach($userId);
+
+        return response()->json(['message' => 'Vous vous êtes retiré du projet avec succès.']);
     }
     public function joinPrivateProject(Request $request)
     {
