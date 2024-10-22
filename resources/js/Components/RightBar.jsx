@@ -35,6 +35,34 @@ const RightBar = ({ isOpen, onClose, isBoardLeader, projectId, currentUser }) =>
         }
     };
 
+    const handleDeleteProject = async () => {
+        try {
+            await axios.delete(`/projects/${projectId}`);
+            toast.success('Le projet a été supprimé avec succès.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            onClose();
+            Inertia.visit('/profile', { preserveState: true });
+        } catch (error) {
+            console.error('Erreur lors de la tentative de suppression du projet :', error);
+            toast.error('Erreur lors de la tentative de suppression du projet.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+    };
+
     return (
         <motion.div
             initial={{ x: '100%' }}
@@ -52,7 +80,10 @@ const RightBar = ({ isOpen, onClose, isBoardLeader, projectId, currentUser }) =>
                 <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'>Changer le fond d'ecran</p>
                 <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'>Partager le projet</p>
                 {isBoardLeader ? (
-                    <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer'>Supprimer le tableau</p>
+                    <>
+                    <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleLeaveProject}>Se retirer du tableau</p>
+                        <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleDeleteProject}>Supprimer le tableau</p>
+                    </>
                 ) : (
                     <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleLeaveProject}>Se retirer du tableau</p>
                 )}

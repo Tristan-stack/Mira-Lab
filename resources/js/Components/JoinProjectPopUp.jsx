@@ -3,14 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
     const [inputCode, setInputCode] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         setInputCode(projectCode); // Initialiser le champ avec le code du projet si sélectionné
     }, [projectCode]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onJoinProject(inputCode);
+        try {
+            await onJoinProject(inputCode);
+            setError(''); // Réinitialiser l'erreur si la requête réussit
+        } catch (err) {
+            setError(err.message); // Afficher le message d'erreur
+        }
     };
 
     return (
@@ -42,6 +48,7 @@ const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
                                 required
                             />
                         </div>
+                        {error && <p className="text-red-500 mb-4 bg-red-400/20 p-2 rounded">{error}</p>}
                         <div className="flex justify-end space-x-2">
                             <button
                                 type="button"

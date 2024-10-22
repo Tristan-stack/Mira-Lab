@@ -4,7 +4,7 @@ import Base from '../../Layouts/Base';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importer les styles de react-toastify
 import JoinProjectModal from '../../Components/JoinProjectPopUp'; // Assurez-vous que le chemin est correct
-import { FaLock, FaPen } from 'react-icons/fa'; // Importer l'icône de cadenas et de stylo
+import { FaLock, FaPen, FaCrown } from 'react-icons/fa'; // Importer l'icône de cadenas, de stylo et de couronne
 import axios from 'axios'; // Importer axios
 
 const Show = ({ team, removeUserUrl, currentUser }) => {
@@ -53,10 +53,52 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
             });
     };
 
-    const handleJoinProject = async (projectCode) => {
+    const handleJoinProject = async (project) => {
+        if (project.status === 'Public') {
+            try {
+                await axios.post('/projects/join', { project_code: project.project_code, user_id: currentUser.id });
+                toast.success('Vous avez rejoint le projet avec succès.', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+                // Mettre à jour l'état local des projets
+                setProjects(prevProjects => prevProjects.map(p => {
+                    if (p.project_code === project.project_code) {
+                        return {
+                            ...p,
+                            users: [...p.users, { ...currentUser, pivot: { role: 'Member' } }] // Assurez-vous d'ajouter le rôle
+                        };
+                    }
+                    return p;
+                }));
+            } catch (error) {
+                toast.error('Erreur lors de la tentative de rejoindre le projet.', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                console.error('Erreur lors de la tentative de rejoindre le projet :', error);
+            }
+        } else {
+            setSelectedProject(project);
+            setIsJoiningProject(true);
+        }
+    };
+
+    const handleJoinPrivateProject = async (projectCode) => {
         try {
             await axios.post('/projects/join', { project_code: projectCode, user_id: currentUser.id });
-            toast.success('Vous avez rejoint le projet privé avec succès.', {
+            toast.success('Vous avez rejoint le projet avec succès.', {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -71,7 +113,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 if (project.project_code === projectCode) {
                     return {
                         ...project,
-                        users: [...project.users, currentUser]
+                        users: [...project.users, { ...currentUser, pivot: { role: 'Member' } }] // Assurez-vous d'ajouter le rôle
                     };
                 }
                 return project;
@@ -79,7 +121,17 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
 
             setIsJoiningProject(false); // Fermer le pop-up
         } catch (error) {
-            toast.error('Erreur lors de la tentative de rejoindre le projet privé.', {
+            if (error.response && error.response.status === 400) {
+                throw new Error('Le code fourni ne correspond à aucun projet privé.');
+            } else {
+                throw new Error('Erreur lors de la tentative de rejoindre le projet.');
+            }
+        }
+    };
+    const handleLeaveProject = async (projectId) => {
+        try {
+            await axios.post(`/projects/${projectId}/leave`, { userId: currentUser.id });
+            toast.success('Vous avez quitté le projet avec succès.', {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -88,7 +140,28 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 draggable: true,
                 progress: undefined,
             });
-            console.error('Erreur lors de la tentative de rejoindre le projet privé :', error);
+
+            // Mettre à jour l'état local des projets
+            setProjects(prevProjects => prevProjects.map(project => {
+                if (project.id === projectId) {
+                    return {
+                        ...project,
+                        users: project.users.filter(user => user.id !== currentUser.id)
+                    };
+                }
+                return project;
+            }));
+        } catch (error) {
+            toast.error('Erreur lors de la tentative de quitter le projet.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            console.error('Erreur lors de la tentative de quitter le projet :', error);
         }
     };
 
@@ -215,10 +288,14 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 {filteredProjects?.length > 0 ? (
                     filteredProjects.map((project) => {
                         const isUserInProject = project.users.some(user => user.id === currentUser.id);
+                        const isBoardLeader = project.users.some(user => user.id === currentUser.id && user.pivot?.role === 'Board Leader');
                         return (
                             <div key={project.id} className="bg-white project-card border p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center">
                                 <div>
-                                    <h4 className="text-md font-medium">{project.name}</h4>
+                                    <h4 className="text-md font-medium flex items-center">
+                                        {project.name}
+                                        {isBoardLeader && <FaCrown className="ml-2 text-yellow-500" />}
+                                    </h4>
                                     <p className="text-gray-600">{project.description}</p>
                                     <p className="text-gray-500">Statut : {project.status}</p>
                                     <p className="text-gray-500">Dates : {project.start_date} - {project.end_date}</p>
@@ -226,25 +303,32 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                 <div className='space-x-2'>
                                     {project.status === 'Privé' && !isUserInProject && (
                                         <>
-                                            <FaLock className="text-gray-500" />
-                                            <button
-                                                className="join-project-btn bg-green-600 text-white py-1 px-2 rounded hover:bg-green-700 transition"
-                                                onClick={() => {
-                                                    setSelectedProject(project);
-                                                    setIsJoiningProject(true);
-                                                }}
-                                            >
-                                                Rejoindre le projet
-                                            </button>
+                                            <FaLock className="text-gray-400 text-xl" />
                                         </>
                                     )}
-                                    {isUserInProject && (
+                                    {project.status === 'Public' && !isUserInProject && (
                                         <button
-                                            className="view-project-btn bg-blue-600 text-white py-1 px-2 rounded hover:bg-blue-700 transition"
-                                            onClick={() => Inertia.visit(`/project/${project.id}`)} // Redirection vers la vue du projet
+                                            className="join-project-btn bg-green-600 text-white py-1 px-2 rounded hover:bg-green-700 transition"
+                                            onClick={() => handleJoinProject(project)}
                                         >
-                                            Voir le projet
+                                            Rejoindre le projet
                                         </button>
+                                    )}
+                                    {isUserInProject && (
+                                        <>
+                                            <button
+                                                className="view-project-btn bg-blue-600 text-white py-1 px-2 rounded hover:bg-blue-700 transition"
+                                                onClick={() => Inertia.visit(`/project/${project.id}`)} // Redirection vers la vue du projet
+                                            >
+                                                Voir le projet
+                                            </button>
+                                            <button
+                                                className="leave-project-btn bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700 transition"
+                                                onClick={() => handleLeaveProject(project.id)}
+                                            >
+                                                Se retirer du projet
+                                            </button>
+                                        </>
                                     )}
                                     {/* Bouton pour supprimer un projet */}
                                     {currentUserRoleInTeam === 'admin' && (
@@ -267,7 +351,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
             {isJoiningProject && (
                 <JoinProjectModal
                     onClose={() => setIsJoiningProject(false)}
-                    onJoinProject={handleJoinProject}
+                    onJoinProject={handleJoinPrivateProject}
                     projectCode={selectedProject ? selectedProject.project_code : ''} // Passer le code du projet au modal si sélectionné
                 />
             )}
