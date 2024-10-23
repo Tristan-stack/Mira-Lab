@@ -15,7 +15,7 @@ export default function Layout({ children, user, teamUsers }) {
                 <Sidebar user={user} onOpenModal={() => setIsModalOpen(true)} /> {/* Passez la fonction pour ouvrir le modal */}
                 <div className="flex-1 flex flex-col relative">
                     <Navbar />
-                    <main className="flex-1 bg-gradient-to-r from-indigo-900 to-fuchsia-700 overflow-auto custom-scrollbar"> {/* Permet le défilement dans la zone des enfants */}
+                    <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 overflow-auto custom-scrollbar"> {/* Permet le défilement dans la zone des enfants */}
                         {children}
                     </main>
                     <TeamMembersModal

@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/projects/{id}/update-title', [ProjectController::class, 'updateTitle'])->name('projects.updateTitle');
     Route::put('/projects/{id}/update-visibility', [ProjectController::class, 'updateVisibility'])->name('projects.updateVisibility');
     Route::post('/projects/{id}/leave', [ProjectController::class, 'leaveProject'])->name('projects.leave');
+    Route::post('/projects/{id}/promote' , [ProjectController::class, 'promoteUser'])->name('projects.promote');
+    Route::post('/projects/{id}/downgrade' , [ProjectController::class, 'downgrade'])->name('projects.downgrade');
 
     // Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 

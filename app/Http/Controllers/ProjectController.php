@@ -216,4 +216,46 @@ class ProjectController extends Controller
     
         return response()->json(['message' => 'Vous avez rejoint le projet privé avec succès.']);
     }
+
+    public function promoteUser(Request $request, $projectId)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role' => 'required|string|in:Board Leader,Contributor',
+        ]);
+
+        $project = Project::findOrFail($projectId);
+        $currentUser = $request->user();
+
+        // Vérifier si l'utilisateur actuel est le Board Leader du projet
+        if (!$project->isBoardLeader($currentUser->id)) {
+            return response()->json(['message' => 'Vous n\'êtes pas autorisé à promouvoir des rôles dans ce projet.'], 403);
+        }
+
+        // Mettre à jour le rôle de l'utilisateur dans le projet
+        $project->users()->updateExistingPivot($validated['user_id'], ['role' => $validated['role']]);
+
+        return response()->json(['message' => 'Rôle mis à jour avec succès.']);
+    }
+
+    public function downgrade(Request $request, $projectId)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role' => 'required|string|in:Board Leader,Contributor',
+        ]);
+
+        $project = Project::findOrFail($projectId);
+        $currentUser = $request->user();
+
+        // Vérifier si l'utilisateur actuel est le Board Leader du projet
+        if (!$project->isBoardLeader($currentUser->id)) {
+            return response()->json(['message' => 'Vous n\'êtes pas autorisé à rétrograder des rôles dans ce projet.'], 403);
+        }
+
+        // Mettre à jour le rôle de l'utilisateur dans le projet
+        $project->users()->updateExistingPivot($validated['user_id'], ['role' => $validated['role']]);
+
+        return response()->json(['message' => 'Rôle mis à jour avec succès.']);
+    }
 }

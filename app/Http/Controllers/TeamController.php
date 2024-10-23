@@ -90,8 +90,9 @@ class TeamController extends Controller
     {
         $team = Team::with(['users' => function ($query) {
             $query->withPivot('role'); // Charger le rôle depuis la table pivot
-        }, 'projects.users']) // Charger les utilisateurs associés à chaque projet
-        ->findOrFail($id);
+        }, 'projects.users' => function ($query) {
+            $query->withPivot('role'); // Charger le rôle depuis la table pivot pour les utilisateurs des projets
+        }])->findOrFail($id);
 
         $currentUser = Auth::user(); // Récupérer l'utilisateur connecté
 
@@ -195,6 +196,7 @@ class TeamController extends Controller
         // Retourne une redirection Inertia vers la vue de l'équipe
         return Inertia::location(route('teams.show', $teamId));
     }
+
     public function withdraw(Request $request, $id)
     {
         // Valider la requête pour s'assurer que l'utilisateur ID est fourni
@@ -208,23 +210,35 @@ class TeamController extends Controller
 
         // Vérifier si l'utilisateur authentifié fait partie de l'équipe
         if ($team->users()->where('user_id', $userId)->exists()) {
-            // Retirer l'utilisateur de l'équipe
-            $team->users()->detach($userId);
-
             // Récupérer les projets associés à l'équipe
             $projects = Project::where('team_id', $team->id)->get();
 
-            // Retirer l'utilisateur des projets privés
-            $privateProjects = $projects->where('status', 'Privé');
-            foreach ($privateProjects as $project) {
+            // Vérification des projets pour s'assurer qu'il reste au moins un autre "Board Leader"
+            foreach ($projects as $project) {
+                $boardLeaders = $project->users()->wherePivot('role', 'Board Leader')->get();
+                $isCurrentUserBoardLeader = $boardLeaders->contains('id', $userId);
+
+                if ($isCurrentUserBoardLeader && $boardLeaders->count() <= 1) {
+                    return response()->json([
+                        'message' => "Vous devez ajouter un autre Board Leader au projet \"{$project->name}\" avant de quitter l'équipe."
+                    ], 400);
+                }
+            }
+
+            // Retirer l'utilisateur de l'équipe
+            $team->users()->detach($userId);
+
+            // Retirer l'utilisateur de tous les projets associés à l'équipe
+            foreach ($projects as $project) {
                 $project->users()->detach($userId);
             }
 
-            return response()->json(['message' => 'Vous vous êtes retiré de l\'équipe et des projets privés associés.']);
+            return response()->json(['message' => 'Vous vous êtes retiré de l\'équipe et de tous les projets associés.']);
         }
 
         return response()->json(['message' => 'L\'utilisateur ne fait pas partie de cette équipe.'], 400);
     }
+
 
 
 
@@ -256,16 +270,7 @@ class TeamController extends Controller
         // Ajouter l'utilisateur à l'équipe
         $team->users()->attach($userId, ['role' => 'member']);
     
-        // Ajouter l'utilisateur uniquement aux projets publics associés à l'équipe
-        $publicProjects = $team->projects()->where('status', 'Public')->get();
-        foreach ($publicProjects as $project) {
-            // Vérifier si l'utilisateur est déjà lié au projet
-            if (!$project->users()->where('user_id', $userId)->exists()) {
-                $project->users()->attach($userId);
-            }
-        }
-    
-        return response()->json(['message' => 'Vous avez rejoint l\'équipe et tous les projets publics associés avec succès.']);
+        return response()->json(['message' => 'Vous avez rejoint l\'équipe avec succès.']);
     }
 
 

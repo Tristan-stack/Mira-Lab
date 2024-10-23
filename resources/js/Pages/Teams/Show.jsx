@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import Base from '../../Layouts/Base';
 import { ToastContainer, toast } from 'react-toastify';
@@ -128,7 +128,24 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
             }
         }
     };
+
     const handleLeaveProject = async (projectId) => {
+        const project = projects.find(p => p.id === projectId);
+        const boardLeaders = project.users.filter(user => user.pivot.role === 'Board Leader');
+
+        if (boardLeaders.length <= 1 && boardLeaders.some(user => user.id === currentUser.id)) {
+            toast.error('Veuiller nommer un second Board Leader afin de pouvoir quitter le projet.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
         try {
             await axios.post(`/projects/${projectId}/leave`, { userId: currentUser.id });
             toast.success('Vous avez quitté le projet avec succès.', {
@@ -288,7 +305,9 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 {filteredProjects?.length > 0 ? (
                     filteredProjects.map((project) => {
                         const isUserInProject = project.users.some(user => user.id === currentUser.id);
-                        const isBoardLeader = project.users.some(user => user.id === currentUser.id && user.pivot?.role === 'Board Leader');
+                        const currentUserInProject = project.users.find(user => user.id === currentUser.id);
+                        const isBoardLeader = currentUserInProject?.pivot?.role === 'Board Leader';
+
                         return (
                             <div key={project.id} className="bg-white project-card border p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center">
                                 <div>
@@ -331,7 +350,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                         </>
                                     )}
                                     {/* Bouton pour supprimer un projet */}
-                                    {currentUserRoleInTeam === 'admin' && (
+                                    {isBoardLeader && (
                                         <button
                                             className="delete-project-btn bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700 transition"
                                             onClick={() => Inertia.delete(`/projects/${project.id}`)}

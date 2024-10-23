@@ -8,6 +8,8 @@ import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import JoinTeamModal from '../../Components/JoinTeamPopUp'; // Assurez-vous que le chemin est correct
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 export default function Show({ user, teams, projects }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -22,6 +24,7 @@ export default function Show({ user, teams, projects }) {
     const [errorMessage, setErrorMessage] = useState(''); // État pour les messages d'erreur
     const [teamsState, setTeamsState] = useState(Array.isArray(teams) ? teams : []); // Initialiser avec un tableau vide si teams n'est pas un tableau
     const [projectsState, setProjectsState] = useState(Array.isArray(projects) ? projects : []); // Initialiser avec un tableau vide si projects n'est pas un tableau
+
     useEffect(() => {
         if (errorMessage) {
             toast.error(errorMessage, {
@@ -83,33 +86,51 @@ export default function Show({ user, teams, projects }) {
     };
 
     const handleWithdraw = async (teamId) => {
-        const associatedProjects = projectsState.filter(project => project.team_id === teamId);
-        const privateProjects = associatedProjects.filter(project => project.status === "Privé");
+        const associatedProjects = projectsState.filter(project => project.team_id === teamId && project.users.some(u => u.id === user.id));
 
-        if (privateProjects.length > 0) {
-            // Affiche une boîte de dialogue de confirmation pour les projets privés
-            const userConfirmed = window.confirm(
-                `Vous vous retirez de l'équipe. Cela supprimera les projets privés associés : ${privateProjects.map(p => p.name).join(', ')}. Voulez-vous continuer ?`
-            );
+        console.log('Projets associés à l\'équipe:', associatedProjects);
 
-            if (!userConfirmed) {
-                return; // L'utilisateur a annulé
+        // Vérification des projets pour s'assurer qu'il reste au moins un autre "Board Leader"
+        for (const project of associatedProjects) {
+            if (!project.users || !Array.isArray(project.users)) {
+                console.error(`Le projet "${project.name}" n'a pas de propriété 'users' ou 'users' n'est pas un tableau.`);
+                continue; // Passer au projet suivant
+            }
+
+            console.log(`Utilisateurs du projet "${project.name}":`, project.users);
+
+            const boardLeaders = project.users.filter(user => user.pivot && user.pivot.role === 'Board Leader');
+            const isCurrentUserBoardLeader = boardLeaders.some(u => u.id === user.id);
+
+            if (isCurrentUserBoardLeader && boardLeaders.length <= 1) {
+                console.error(`Vous êtes le seul Board Leader du projet "${project.name}".`);
+                console.log('Affichage du toast');
+                toast.error(`Vous devez ajouter un autre Board Leader au projet "${project.name}" avant de quitter l'équipe.`, {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                return; // Empêche l'utilisateur de quitter l'équipe
             }
         }
 
         try {
             // API pour retirer l'utilisateur de l'équipe
-            await axios.post(`/teams/${teamId}/withdraw`, { user_id: user.id });
+            const response = await axios.post(`/teams/${teamId}/withdraw`, { user_id: user.id });
 
-            // Mise à jour de l'état des projets après retrait de l'utilisateur
-            setProjectsState((prevProjects) =>
-                prevProjects.filter((project) => !(project.team_id === teamId && project.status === "Privé"))
-            );
-
-            // Mise à jour de l'état des équipes en retirant l'équipe concernée
-            setTeamsState((prevTeams) => prevTeams.filter((team) => team.id !== teamId));
-
-            console.log('Vous vous êtes retiré de l\'équipe et les projets privés associés ont été supprimés.');
+            if (response.status === 200) {
+                // Mise à jour de l'état des équipes en retirant l'équipe concernée
+                setTeamsState((prevTeams) => prevTeams.filter((team) => team.id !== teamId));
+                // Mise à jour de l'état des projets en retirant les projets associés à l'équipe
+                setProjectsState((prevProjects) => prevProjects.filter((project) => project.team_id !== teamId));
+                console.log('Vous vous êtes retiré de l\'équipe et les projets associés ont été mis à jour.');
+            } else {
+                throw new Error('Erreur lors du retrait de l\'équipe.');
+            }
         } catch (error) {
             console.error('Erreur lors du retrait de l\'équipe:', error);
             setErrorMessage('Une erreur est survenue lors du retrait de l\'équipe.');
@@ -128,7 +149,7 @@ export default function Show({ user, teams, projects }) {
 
             console.log('Vous avez rejoint l\'équipe avec succès.');
             setIsJoiningTeam(false);
-            window.location.reload(); 
+            window.location.reload();
         } catch (error) {
             console.error('Erreur lors de la tentative de rejoindre l\'équipe:', error);
             setErrorMessage('Une erreur est survenue lors de la tentative de rejoindre l\'équipe.');
@@ -138,6 +159,7 @@ export default function Show({ user, teams, projects }) {
     return (
         <Layout user={user}>
             <Head title="Mon Profil" />
+            <ToastContainer />
             <div className="flex flex-col justify-center items-center mx-auto p-6 space-x-10">
                 {errorMessage && (
                     <div className="w-full text-red-500 bg-red-100 p-4 rounded-lg mb-4">
@@ -217,14 +239,14 @@ export default function Show({ user, teams, projects }) {
                             <hr className='mb-4 mt-3' />
                             <ul className='space-y-4'>
                                 {Array.isArray(teamsState) && teamsState.map((team) => {
-                                    const associatedProjects = projectsState.filter(project => project.team_id === team.id);
+                                    const associatedProjects = projectsState.filter(project => project.team_id === team.id && project.users.some(u => u.id === user.id));
                                     const privateProjects = associatedProjects.filter(project => project.status === "Privé");
 
                                     return (
                                         <li key={team.id} className="flex justify-between items-center mb-2">
                                             <div className='mr-32'>
                                                 <p className="text-base font-semibold uppercase">{team.name}</p>
-                                                <p className='text-gray-500 font-light text-sm'>Rôle : {team.pivot.role}</p>
+                                                <p className='text-gray-500 font-light text-sm'>Rôle : {team.pivot?.role || 'N/A'}</p>
                                             </div>
                                             <div className="flex space-x-2">
                                                 <button
@@ -234,7 +256,7 @@ export default function Show({ user, teams, projects }) {
                                                     <FaRegEye />
                                                 </button>
 
-                                                {team.pivot.role === 'admin' ? (
+                                                {team.pivot?.role === 'admin' ? (
                                                     <button
                                                         className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
                                                         onClick={() => handleRemoveTeam(team.id)}
@@ -269,7 +291,7 @@ export default function Show({ user, teams, projects }) {
                                 </div>
                                 <hr className='mb-4 mt-3' />
                                 <ul className='space-y-4'>
-                                    {projectsState.map((project) => (
+                                    {projectsState.filter(project => project.users.some(u => u.id === user.id)).map((project) => (
                                         <li key={project.id} className="flex justify-between items-center mb-2">
                                             <div className='mr-32'>
                                                 <p className="text-base font-semibold uppercase">{project.name}</p>
@@ -283,7 +305,7 @@ export default function Show({ user, teams, projects }) {
                                                     <FaRegEye />
                                                 </button>
 
-                                                {project.pivot.role === 'admin' && (
+                                                {project.pivot?.role === 'admin' && (
                                                     <button
                                                         className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
                                                     >

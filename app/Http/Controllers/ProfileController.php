@@ -6,6 +6,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -18,26 +19,39 @@ class ProfileController extends Controller
     // Méthode pour lister tous les utilisateurs (inchangée)
     public function index(Request $request)
     {
-        $users = User::where('id', '!=', Auth::id())
-                 ->select('id', 'name', 'img_profile', 'created_at')
-                 ->get();
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
 
-        return response()->json($users);
+        // Récupérer les équipes de l'utilisateur
+        $teams = $user->teams;
+
+        // Récupérer les projets de l'utilisateur avec les utilisateurs associés
+        $projects = Project::whereIn('team_id', $teams->pluck('id'))
+                    ->with('users')
+                    ->get();
+
+        return response()->json([
+            'user' => $user,
+            'teams' => $teams,
+            'projects' => $projects,
+        ]);
     }
 
     // Nouvelle méthode pour afficher le profil utilisateur avec équipes et projets
     // ProfileController.php
-
     public function show(Request $request)
     {
         // Récupérer l'utilisateur connecté
         $user = Auth::user();
-
-        // Récupérer les équipes et projets de l'utilisateur
-        $teams = $user->teams; // Récupérer les équipes liées à l'utilisateur
-        $projects = $user->projects; // Récupérer les projets liés à l'utilisateur
-
-        // Retourner la vue avec les données
+    
+        // Récupérer les équipes de l'utilisateur
+        $teams = $user->teams;
+    
+        // Récupérer les projets de l'utilisateur avec les utilisateurs associés
+        $projects = Project::whereIn('team_id', $teams->pluck('id'))
+                    ->with('users')
+                    ->get();
+    
         return Inertia::render('Profile/Show', [
             'user' => $user,
             'teams' => $teams,

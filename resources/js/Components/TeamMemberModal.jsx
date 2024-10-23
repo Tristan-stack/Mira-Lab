@@ -19,7 +19,7 @@ const TeamMembersModal = ({ isOpen, onClose, teamUsers }) => {
                     exit={{ opacity: 0 }}
                     onClick={handleBackdropClick}
                 >
-                    <div className="absolute inset-0 bg-gray-200 bg-opacity-70 backdrop-filter backdrop-blur-sm transition-opacity duration-300" onClick={onClose}></div>
+                    <div className="absolute inset-0 bg-gray-700/30 bg-opacity-70 backdrop-filter backdrop-blur-sm transition-opacity duration-300" onClick={onClose}></div>
                     <motion.div
                         className="relative bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full"
                         initial={{ scale: 0.8, opacity: 0 }}
@@ -27,17 +27,7 @@ const TeamMembersModal = ({ isOpen, onClose, teamUsers }) => {
                         exit={{ scale: 0.8, opacity: 0 }}
                     >
                         <h2 className="text-2xl font-semibold mb-4 text-gray-800 text-center">Membres de l'équipe</h2>
-
-                        {/* Bouton Ajouter un membre */}
-                        <motion.button
-                            className="flex items-center justify-center mx-1 my-1 w-8 h-8 bg-green-600 text-white rounded-full absolute top-0 right-0 transform -translate-y-6 transition-all duration-300 hover:bg-green-500"
-                            onClick={() => console.log('Ajouter un membre')} // Remplacez par votre logique d'ajout
-                            initial={{ scale: 1 }} // État initial
-                            whileHover={{ scale: 1.1 }} // État au survol
-                        >
-                            <FiPlus className="w-5 h-5" />
-                        </motion.button>
-
+                        
                         <ul className="list-disc list-inside mb-4 text-gray-700">
                             {teamUsers.map((user, index) => (
                                 <motion.li
