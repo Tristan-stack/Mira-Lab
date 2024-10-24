@@ -1,40 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/inertia-react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import axios from 'axios';
-import { motion } from 'framer-motion'; // Assurez-vous d'importer motion
-import './custom-style/styles.css';
-import { toast } from 'react-toastify'; // Assurez-vous d'importer toast pour les notifications
+import { toast } from 'react-toastify';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; // Assurez-vous d'importer ces composants
 
-export default function TeamCreate() {
+export default function TeamCreate({ user, onAddTeam, users }) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         users: [],
     });
-
-    const [users, setUsers] = useState([]);
+    const [availableUsers, setAvailableUsers] = useState(users || []); // Utilisez cet état pour les utilisateurs disponibles
     const [teamMembers, setTeamMembers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-
-    useEffect(() => {
-        // Récupération de l'utilisateur connecté
-        axios.get('/user')
-            .then(response => {
-                // Vous pouvez gérer le nom de l'utilisateur si nécessaire ici
-            })
-            .catch(error => {
-                console.error('Il y a eu un problème avec l\'appel à l\'API :', error);
-            });
-
-        // Récupération de tous les utilisateurs
-        axios.get('/users')
-            .then(response => {
-                setUsers(response.data);
-            })
-            .catch(error => {
-                console.error('Il y a eu un problème avec l\'appel à l\'API :', error);
-            });
-    }, []);
 
     useEffect(() => {
         // Met à jour les données du formulaire avec les membres de l'équipe sélectionnés
@@ -43,42 +19,44 @@ export default function TeamCreate() {
 
     const handleDragEnd = (result) => {
         const { source, destination } = result;
-
         if (!destination) return;
 
         if (source.droppableId === 'available-users' && destination.droppableId === 'team-members') {
-            const user = users[source.index];
+            const user = availableUsers[source.index];
             setTeamMembers(prev => [...prev, user]);
-            setUsers(prev => prev.filter((_, index) => index !== source.index));
+            setAvailableUsers(prev => prev.filter((_, index) => index !== source.index));
         } else if (source.droppableId === 'team-members' && destination.droppableId === 'available-users') {
             const member = teamMembers[source.index];
-            setUsers(prev => [...prev, member]);
+            setAvailableUsers(prev => [...prev, member]);
             setTeamMembers(prev => prev.filter((_, index) => index !== source.index));
         }
     };
 
     const handleRemoveMember = (member) => {
         setTeamMembers(prev => prev.filter(m => m.id !== member.id));
-        setUsers(prev => [...prev, member]);
+        setAvailableUsers(prev => [...prev, member]);
     };
 
     const handleDoubleClickAddUser = (user) => {
         setTeamMembers(prev => [...prev, user]);
-        setUsers(prev => prev.filter(u => u.id !== user.id));
+        setAvailableUsers(prev => prev.filter(u => u.id !== user.id));
     };
 
-    const filteredUsers = users.filter(user =>
+    const filteredUsers = Array.isArray(availableUsers) ? availableUsers.filter(user =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ) : [];
 
     const handleSubmit = (e) => {
         e.preventDefault();
         post('/teams-with-users', {
             ...data,
-            onSuccess: () => {
+            onSuccess: (newTeam) => {
                 toast.success('Équipe créée avec succès !'); // Notification de succès
                 setData({ name: '', users: [] }); // Réinitialisation des données du formulaire
                 setTeamMembers([]); // Réinitialisation des membres de l'équipe
+                if (onAddTeam) {
+                    onAddTeam(newTeam);
+                }
             },
             onError: () => {
                 toast.error('Erreur lors de la création de l\'équipe.'); // Notification d'erreur

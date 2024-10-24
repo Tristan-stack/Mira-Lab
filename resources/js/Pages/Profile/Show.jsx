@@ -11,12 +11,15 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-export default function Show({ user, teams, projects }) {
+export default function Show({ user, teams, projects, users }) {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: user.name,
         email: user.email,
     });
+
+    console.log({ user, teams, projects, users });
+
 
     const [isCreatingProject, setIsCreatingProject] = useState(false); // État pour le formulaire de projet
     const [isCreatingTeam, setIsCreatingTeam] = useState(false); // État pour le formulaire d'équipe
@@ -329,7 +332,7 @@ export default function Show({ user, teams, projects }) {
 
                 {isCreatingTeam && (
                     <div className='w-full'>
-                        <TeamCreate onAddTeam={handleAddTeam} />
+                        <TeamCreate user={user} onAddTeam={handleAddTeam} users={users} />
                     </div>
                 )}
 

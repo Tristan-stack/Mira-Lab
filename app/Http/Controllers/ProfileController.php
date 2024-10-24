@@ -20,10 +20,13 @@ class ProfileController extends Controller
     public function index(Request $request)
     {
         // Récupérer l'utilisateur connecté
-        $user = Auth::user();
+        $currentUser = Auth::user();
+
+        //recuperer tout les utilisateurs
+        $users = User::all();
 
         // Récupérer les équipes de l'utilisateur
-        $teams = $user->teams;
+        $teams = $currentUser->teams;
 
         // Récupérer les projets de l'utilisateur avec les utilisateurs associés
         $projects = Project::whereIn('team_id', $teams->pluck('id'))
@@ -31,9 +34,10 @@ class ProfileController extends Controller
                     ->get();
 
         return response()->json([
-            'user' => $user,
+            'user' => $currentUser,
             'teams' => $teams,
             'projects' => $projects,
+            'users' => $users,
         ]);
     }
 
@@ -46,6 +50,8 @@ class ProfileController extends Controller
     
         // Récupérer les équipes de l'utilisateur
         $teams = $user->teams;
+
+        $users = User::all();
     
         // Récupérer les projets de l'utilisateur avec les utilisateurs associés
         $projects = Project::whereIn('team_id', $teams->pluck('id'))
@@ -56,6 +62,7 @@ class ProfileController extends Controller
             'user' => $user,
             'teams' => $teams,
             'projects' => $projects,
+            'users' => $users,
         ]);
     }
 
