@@ -49,7 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/teams/{id}/projects', [TeamController::class, 'getTeamProjects']);
 
     Route::get('/project/{id}', [ProjectController::class, 'show']);
-    Route::delete('/project/{id}', [ProjectController::class, 'destroy']);
+    Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
     Route::post('/projects/join', [ProjectController::class, 'joinPrivateProject'])->name('projects.join');
 

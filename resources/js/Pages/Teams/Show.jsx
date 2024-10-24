@@ -181,6 +181,36 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
             console.error('Erreur lors de la tentative de quitter le projet :', error);
         }
     };
+    const handleDeleteProject = async (projectId) => {
+        if (confirm("Êtes-vous sûr de vouloir supprimer ce projet ?")) {
+            try {
+                await axios.delete(`/projects/${projectId}`);
+                toast.success('Projet supprimé avec succès.', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+                // Mettre à jour l'état local des projets
+                setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
+            } catch (error) {
+                toast.error('Erreur lors de la tentative de suppression du projet.', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                console.error('Erreur lors de la tentative de suppression du projet :', error);
+            }
+        }
+    };
 
     const handleUpdateTeamTitle = async () => {
         try {
@@ -353,7 +383,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                     {isBoardLeader && (
                                         <button
                                             className="delete-project-btn bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700 transition"
-                                            onClick={() => Inertia.delete(`/projects/${project.id}`)}
+                                            onClick={() => handleDeleteProject(project.id)}
                                         >
                                             Supprimer
                                         </button>

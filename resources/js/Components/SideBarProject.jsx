@@ -3,10 +3,12 @@ import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut, FiChevr
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useGradient } from '../contexts/GradientContext.jsx'; // Importer le hook useGradient
+import ProjectMemberModal from './ProjectMemberModal'; // Importer la modal des membres du projet
 
-export default function SidebarProject({ user, onOpenModal }) {
+export default function SidebarProject({ user, projectUsers, currentUser, setProjectUsers, onOpenModal }) {
     const gradient = useGradient(); // Utiliser le hook pour obtenir le dégradé
-    const [isTeamsOpen, setIsTeamsOpen] = useState(false); // État pour gérer l'ouverture des équipes
+    const [openTab, setOpenTab] = useState(null); // État pour gérer l'onglet actuellement ouvert
+    const [isMemberModalOpen, setIsMemberModalOpen] = useState(false); // État pour gérer l'ouverture de la modal des membres
 
     const handleLogout = async () => {
         try {
@@ -19,6 +21,18 @@ export default function SidebarProject({ user, onOpenModal }) {
 
     const handleUserClick = () => {
         window.location.href = '/profile';
+    };
+
+    const handleOpenMemberModal = () => {
+        setIsMemberModalOpen(true);
+    };
+
+    const handleCloseMemberModal = () => {
+        setIsMemberModalOpen(false);
+    };
+
+    const toggleTab = (tab) => {
+        setOpenTab(openTab === tab ? null : tab);
     };
 
     return (
@@ -36,15 +50,15 @@ export default function SidebarProject({ user, onOpenModal }) {
                 <div>
                     <div
                         className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
-                        onClick={() => setIsTeamsOpen(!isTeamsOpen)}
+                        onClick={() => toggleTab('teams')}
                     >
                         <FiUsers className="mr-3 text-gray-600" />
                         <span>Teams</span>
-                        {isTeamsOpen ? <FiChevronDown className="ml-auto text-gray-600" /> : <FiChevronRight className="ml-auto text-gray-600" />}
+                        {openTab === 'teams' ? <FiChevronDown className="ml-auto text-gray-600" /> : <FiChevronRight className="ml-auto text-gray-600" />}
                     </div>
                     <motion.div
                         initial={false}
-                        animate={isTeamsOpen ? "open" : "closed"}
+                        animate={openTab === 'teams' ? "open" : "closed"}
                         variants={{
                             open: { height: "auto", opacity: 1 },
                             closed: { height: 0, opacity: 0 }
@@ -56,6 +70,38 @@ export default function SidebarProject({ user, onOpenModal }) {
                             <div
                                 className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
                                 onClick={onOpenModal}
+                            >
+                                <span>Membres</span>
+                            </div>
+                            <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                                <span>Ajouter un membre</span>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+                <div>
+                    <div
+                        className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+                        onClick={() => toggleTab('project')}
+                    >
+                        <FiGrid className="mr-3 text-gray-600" />
+                        <span>Projet</span>
+                        {openTab === 'project' ? <FiChevronDown className="ml-auto text-gray-600" /> : <FiChevronRight className="ml-auto text-gray-600" />}
+                    </div>
+                    <motion.div
+                        initial={false}
+                        animate={openTab === 'project' ? "open" : "closed"}
+                        variants={{
+                            open: { height: "auto", opacity: 1 },
+                            closed: { height: 0, opacity: 0 }
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="ml-8 space-y-2">
+                            <div
+                                className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+                                onClick={handleOpenMemberModal}
                             >
                                 <span>Membres</span>
                             </div>
@@ -93,6 +139,15 @@ export default function SidebarProject({ user, onOpenModal }) {
                     Log out
                 </button>
             </div>
+
+            {/* Modal pour les membres du projet */}
+            <ProjectMemberModal
+                isOpen={isMemberModalOpen}
+                onClose={handleCloseMemberModal}
+                projectUsers={projectUsers}
+                currentUser={currentUser}
+                setProjectUsers={setProjectUsers}
+            />
         </div>
     );
 }

@@ -8,9 +8,11 @@ const ProjectMemberModal = ({ isOpen, onClose, projectUsers = [], currentUser, s
     const [users, setUsers] = useState(projectUsers);
 
     useEffect(() => {
-        setUsers(projectUsers);
+        if (JSON.stringify(users) !== JSON.stringify(projectUsers)) {
+            setUsers(projectUsers);
+        }
     }, [projectUsers]);
-
+    
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
             onClose();

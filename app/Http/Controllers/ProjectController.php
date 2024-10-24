@@ -135,10 +135,14 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         $project = Project::findOrFail($id);
+
+        // Retirer tous les utilisateurs du projet
+        $project->users()->detach();
+
+        // Supprimer le projet
         $project->delete();
 
-        // Redirige vers la page de profil avec un message flash
-        return redirect()->route('profile')->with('message', 'Projet supprimé avec succès');
+        return response()->json(['message' => 'Projet supprimé avec succès.']);
     }
 
 
