@@ -7,6 +7,9 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Events\CounterUpdated;
+use App\Events\TestEvent;
+use Illuminate\Http\Request;
 
 
 // Route pour la page de connexion
@@ -53,10 +56,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/projects/join', [ProjectController::class, 'joinPrivateProject'])->name('projects.join');
 
-
-
-
-
     // Routes des projets
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
@@ -81,6 +80,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
     Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+
+    Route::post('/project/{project}/tasks', [TaskController::class, 'store']);
+    Route::delete('/project/{project}/tasks/{task}', [TaskController::class, 'destroy']);
+
+
+    Route::post('/trigger-event', function (Request $request) {
+    event(new TestEvent());
+    return response()->json(['message' => 'Event triggered']);
+    });
+
+    Route::post('/update-counter', function (Request $request) {
+    $counter = $request->input('counter');
+    // Diffuse l'événement
+    event(new CounterUpdated($counter));
+    return response()->json(['counter' => $counter, 'message' => 'Counter updated']);
+    });
+
 });
 
 require __DIR__.'/auth.php';

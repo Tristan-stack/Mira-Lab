@@ -35,8 +35,9 @@ class Project extends Model
 
     public function tasks()
     {
-        return $this->belongsToMany(Task::class, 'project_task');
+        return $this->hasMany(Task::class);
     }
+
 
     protected static function boot()
     {

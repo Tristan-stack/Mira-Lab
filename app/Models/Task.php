@@ -19,11 +19,6 @@ class Task extends Model
         'dependencies',
     ];
 
-    // Relation avec le projet
-    public function projects()
-    {
-        return $this->belongsToMany(Project::class, 'project_task');
-    }
 
     // Relation avec l'utilisateur
     public function user()
