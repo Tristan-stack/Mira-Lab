@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/project/{project}/tasks', [TaskController::class, 'store']);
     Route::delete('/project/{project}/tasks/{task}', [TaskController::class, 'destroy']);
+    Route::put('/project/{project}/tasks/{task}', [TaskController::class, 'update']);
 
 
     Route::post('/trigger-event', function (Request $request) {

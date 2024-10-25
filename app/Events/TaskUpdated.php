@@ -1,5 +1,5 @@
 <?php
-// app/Events/TaskCreated.php
+
 namespace App\Events;
 
 use App\Models\Task;
@@ -11,7 +11,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TaskCreated implements ShouldBroadcast
+class TaskUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,12 +19,10 @@ class TaskCreated implements ShouldBroadcast
 
     /**
      * Create a new event instance.
-     *
-     * @return void
      */
     public function __construct(Task $task)
     {
-        $this->task = $task;
+        $this->task = $task; 
     }
 
     /**
@@ -39,6 +37,6 @@ class TaskCreated implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'task.created';
+        return 'task.updated';
     }
 }
