@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FaLock, FaLockOpen, FaEllipsisH, FaCrown } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaLock, FaLockOpen, FaEllipsisH, FaCrown, FaUsers } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useGradient } from '../contexts/GradientContext.jsx';
 import axios from 'axios';
@@ -8,17 +8,32 @@ import RightBar from './RightBar';
 import { AnimatePresence, motion } from 'framer-motion';
 import Tooltip from './Tooltip';
 
-const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectId }) => {
+const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectId, onlineUsers }) => {
     const gradient = useGradient();
     const [project, setProject] = useState(initialProject);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [newTitle, setNewTitle] = useState(project.name);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+    const userDialogRef = useRef(null);
 
     useEffect(() => {
         setProject(initialProject);
     }, [initialProject]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userDialogRef.current && !userDialogRef.current.contains(event.target)) {
+                setIsUserDialogOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleShare = () => {
         navigator.clipboard.writeText(project.project_code)
@@ -93,6 +108,10 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
 
     const handleLockIconClick = () => {
         setIsDialogOpen(!isDialogOpen);
+    };
+
+    const handleUserIconClick = () => {
+        setIsUserDialogOpen(!isUserDialogOpen);
     };
 
     const handleEllipsisClick = () => {
@@ -175,6 +194,9 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                             <FaLock className="text-white" />
                         )}
                     </div>
+                    <div className='p-2 rounded hover:bg-white/30 duration-200 cursor-pointer' onClick={handleUserIconClick}>
+                        <FaUsers className="text-white text-xl" />
+                    </div>
                 </div>
                 <div className="flex items-center space-x-4 mr-2">
                     <div style={{ background: gradient, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', fontSize: '1rem' }}>
@@ -206,6 +228,22 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                         onVisibilityChange={handleVisibilityChange}
                         isBoardLeader={isBoardLeader}
                     />
+                )}
+                {isUserDialogOpen && (
+                    <motion.div
+                        ref={userDialogRef}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute top-14 left-56 bg-white shadow-lg rounded p-4 z-50"
+                    >
+                        <h3 className="text-lg font-semibold mb-2">Utilisateurs connectés : {onlineUsers.length}</h3>
+                        <ul>
+                            {onlineUsers.map(user => (
+                                <li key={user.id} className="text-gray-800">{user.name}</li>
+                            ))}
+                        </ul>
+                    </motion.div>
                 )}
             </AnimatePresence>
             <RightBar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} isBoardLeader={isBoardLeader} projectId={projectId} currentUser={currentUser} />

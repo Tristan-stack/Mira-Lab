@@ -6,6 +6,9 @@ use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\UserConnected;
+use App\Events\UserDisconnected;
+
 
 class ProjectController extends Controller
 {
@@ -77,6 +80,8 @@ class ProjectController extends Controller
 
         // Vérifier si l'utilisateur actuel est le Board Leader du projet
         $isBoardLeader = $project->isBoardLeader($currentUser->id);
+
+        
 
         return inertia('Project/Show', compact('project', 'currentUser', 'team', 'teamUsers', 'isBoardLeader', 'projectId')); // Renvoie la vue avec le projet, l'utilisateur actuel, l'équipe, les utilisateurs de l'équipe et le rôle de Board Leader
     }
