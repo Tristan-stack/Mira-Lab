@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Events\CounterUpdated;
 use App\Events\TestEvent;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ListController;
 
 
 // Route pour la page de connexion
@@ -84,6 +85,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/project/{project}/tasks', [TaskController::class, 'store']);
     Route::delete('/project/{project}/tasks/{task}', [TaskController::class, 'destroy']);
     Route::put('/project/{project}/tasks/{task}', [TaskController::class, 'update']);
+
+    Route::post('/project/{project}/lists', [ListController::class, 'store']);
+    Route::get('/project/{project}/lists', [ListController::class, 'index']);
+    Route::put('/lists/{id}', [ListController::class, 'update']);
+    Route::delete('/project/{project}/lists/{id}', [ListController::class, 'destroy']);
 
 
     Route::post('/trigger-event', function (Request $request) {

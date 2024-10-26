@@ -17,8 +17,8 @@ class Task extends Model
         'project_id',
         'user_id',
         'dependencies',
+        'lists_id',
     ];
-
 
     // Relation avec l'utilisateur
     public function user()
@@ -30,5 +30,11 @@ class Task extends Model
     public function dependency()
     {
         return $this->belongsTo(Task::class, 'dependencies');
+    }
+
+    // Relation avec la liste
+    public function list()
+    {
+        return $this->belongsTo(Lists::class);
     }
 }
