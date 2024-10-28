@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Events\ListCreated;
 use App\Events\ListDeleted;
+use App\Events\ListUpdated;
 
 class ListController extends Controller
 {
@@ -50,20 +51,25 @@ class ListController extends Controller
 
         return response()->json($project);
     }
-
-
-    public function update(Request $request, $id)
+    public function update(Request $request, $projectId, $id)
     {
+        // Valider les données de la requête
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'status' => 'required|string',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
         ]);
+    
+        // Trouver la liste correspondante au projet et à l'ID
+        $list = Lists::where('project_id', $projectId)->findOrFail($id);
+    
+        // Mettre à jour la liste avec les données validées
+        // dd($validatedData);
 
-        $list = Lists::findOrFail($id);
         $list->update($validatedData);
-
+    
+        // Diffuser l'événement ListUpdated
+        broadcast(new ListUpdated($list))->toOthers();
+    
+        // Retourner une réponse JSON avec la liste mise à jour et un message de succès
         return response()->json([
             'list' => $list,
             'message' => 'List updated successfully!'

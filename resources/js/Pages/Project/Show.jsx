@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Base from '../../Layouts/BaseProject';
 import MiniNav from '../../Components/MiniNav';
 import CreateTaskForm from '../../Components/CreateTaskForm';
-import CreateListForm from '../../Components/CreateListForm';
 import TaskList from '../../Components/TaskList';
 
 const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
@@ -19,11 +18,12 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [lists, setLists] = useState([]);
     const [errors, setErrors] = useState({});
     const [isFormVisible, setIsFormVisible] = useState(false);
-    const [isListFormVisible, setIsListFormVisible] = useState(false);
 
     // États pour la modification en ligne
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [updatedTask, setUpdatedTask] = useState({ name: '', description: '' });
+    const [editingListId, setEditingListId] = useState(null);
+    const [updatedListName, setUpdatedListName] = useState('');
 
     useEffect(() => {
         setProjectUsers(project.users);
@@ -46,6 +46,12 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         taskUpdatedChannel.listen('.task.updated', (event) => {
             console.log('Task updated:', event.task);
             setTasks((prevTasks) => prevTasks.map(task => task.id === event.task.id ? event.task : task));
+        });
+
+        const listUpdatedChannel = window.Echo.private(`project.${projectId}`);
+        listUpdatedChannel.listen('.list.updated', (event) => {
+            console.log('List updated:', event.list);
+            setLists((prevLists) => prevLists.map(list => list.id === event.list.id ? event.list : list));
         });
 
         const taskDeletedChannel = window.Echo.private(`project.${projectId}`);
@@ -75,6 +81,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             taskCreationChannel.stopListening('.task.created');
             listCreationChannel.stopListening('.list.created');
             taskUpdatedChannel.stopListening('.task.updated');
+            listUpdatedChannel.stopListening('.list.updated');
             taskDeletedChannel.stopListening('.task.deleted');
             listDeletedChannel.stopListening('.list.deleted');
             presenceChannel.leave();
@@ -117,6 +124,19 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             });
     };
 
+    const handleUpdateList = (listId) => {
+        axios.put(`/project/${projectId}/lists/${listId}`, { name: updatedListName })
+            .then(response => {
+                const updatedList = response.data.list;
+                setLists(prevLists => prevLists.map(list => list.id === updatedList.id ? updatedList : list));
+                setEditingListId(null);
+                setUpdatedListName('');
+            })
+            .catch(error => {
+                console.error('Error updating list:', error);
+            });
+    };
+
     const handleCreateTask = (e) => {
         e.preventDefault();
 
@@ -149,14 +169,26 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         }
     };
 
-    const handleListCreated = (newList) => {
-        setLists((prevLists) => {
-            // Vérifiez si la liste existe déjà pour éviter les doublons
-            if (!prevLists.some(list => list.id === newList.id)) {
-                return [...prevLists, newList];
-            }
-            return prevLists;
-        });
+    const handleCreateList = () => {
+        const newListName = `liste${lists.length + 1}`;
+        axios.post(`/project/${projectId}/lists`, {
+            name: newListName,
+            status: 'en cours',
+            project_id: projectId,
+        })
+            .then(response => {
+                const newList = response.data.list;
+                setLists((prevLists) => {
+                    // Vérifiez si la liste existe déjà pour éviter les doublons
+                    if (!prevLists.some(list => list.id === newList.id)) {
+                        return [...prevLists, newList];
+                    }
+                    return prevLists;
+                });
+            })
+            .catch(error => {
+                console.error('Error creating list:', error);
+            });
     };
 
     const handleDeleteList = (listId) => {
@@ -176,6 +208,11 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         setUpdatedTask({ name: task.name, description: task.description });
     };
 
+    const startEditingList = (list) => {
+        setEditingListId(list.id);
+        setUpdatedListName(list.name);
+    };
+
     const handleTaskChange = (e) => {
         const { name, value } = e.target;
         setUpdatedTask((prevTask) => ({ ...prevTask, [name]: value }));
@@ -188,8 +225,6 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const toggleFormVisibility = () => {
         setIsFormVisible(!isFormVisible);
     };
-
-    const toggleListFormVisibility = () => setIsListFormVisible(!isListFormVisible);
 
     const currentUserInProject = projectUsers?.find(user => user.id === currentUser.id);
     const isBoardLeader = currentUserInProject?.pivot.role === 'Board Leader';
@@ -204,8 +239,8 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 {isFormVisible ? 'Annuler' : 'Ajouter une tâche'}
             </button>
 
-            <button onClick={toggleListFormVisibility} className="mb-4 p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-100">
-                {isListFormVisible ? 'Annuler' : 'Ajouter une liste'}
+            <button onClick={handleCreateList} className="mb-4 p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-100">
+                Ajouter une liste
             </button>
 
             <AnimatePresence>
@@ -224,29 +259,42 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 )}
             </AnimatePresence>
 
-            <AnimatePresence>
-                {isListFormVisible && (
-                    <div className="p-6 bg-gray-100 rounded-lg shadow-md w-1/2 mx-auto">
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="mb-4"
-                        >
-                            <CreateListForm projectId={projectId} onListCreated={handleListCreated} />
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
             <div className="mb-4">
                 <h2 className="text-xl font-bold mb-2">Listes</h2>
                 {lists.length > 0 ? (
                     <ul>
                         {lists.map((list) => (
                             <li key={list.id} className="mb-2 mx-auto w-1/2 p-2 border bg-white rounded flex justify-between items-center">
-                                <span>{list.name} - {list.status}</span>
+                                {editingListId === list.id ? (
+                                    <div className="flex">
+                                        <input
+                                            type="text"
+                                            value={updatedListName}
+                                            onChange={(e) => setUpdatedListName(e.target.value)}
+                                            className="border rounded p-1"
+                                        />
+                                        <button
+                                            onClick={() => handleUpdateList(list.id)}
+                                            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                        >
+                                            Enregistrer
+                                        </button>
+                                        <button
+                                            onClick={() => setEditingListId(null)}
+                                            className="ml-2 p-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                                        >
+                                            Annuler
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <span>{list.name} - {list.status}</span>
+                                )}
+                                <button
+                                    onClick={() => startEditingList(list)}
+                                    className="ml-4 p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                >
+                                    Modifier
+                                </button>
                                 <button
                                     onClick={() => handleDeleteList(list.id)}
                                     className="ml-4 p-2 bg-red-500 text-white rounded hover:bg-red-600 duration-100"

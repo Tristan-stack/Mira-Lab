@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/project/{project}/lists', [ListController::class, 'store']);
     Route::get('/project/{project}/lists', [ListController::class, 'index']);
-    Route::put('/lists/{id}', [ListController::class, 'update']);
+    Route::put('/project/{project}/lists/{id}', [ListController::class, 'update']);
     Route::delete('/project/{project}/lists/{id}', [ListController::class, 'destroy']);
 
 
