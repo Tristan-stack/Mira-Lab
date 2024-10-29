@@ -39,6 +39,7 @@ const HomePage = () => {
 
     return (
         <BackgroundLines className="flex items-center justify-center w-full flex-col px-4">
+            
             <div className="flex flex-col items-center justify-center h-screen">
                 <h1 id="welcomeText" className="text-5xl font-bold text-center">
                     Bienvenue sur Mira Lab

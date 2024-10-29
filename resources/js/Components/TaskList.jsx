@@ -1,61 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TaskModal from './TaskModal';
 
-const TaskList = ({ tasks, editingTaskId, updatedTask, startEditingTask, handleTaskChange, handleSaveTask, handleDeleteTask }) => {
+const Task = ({
+    task,
+    editingTaskId,
+    updatedTask,
+    startEditingTask,
+    handleTaskChange,
+    handleSaveTask,
+    setEditingTaskId,
+    handleDeleteTask
+}) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        startEditingTask(task);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingTaskId(null);
+    };
+
     return (
-        <div className="mt-8">
-            <h3 className="text-xl font-semibold mb-4">Tâches du projet</h3>
-            <ul className="space-y-2 w-1/2 mx-auto">
-                {tasks.map(task => (
-                    <li key={task.id} className="p-4 bg-white rounded shadow flex justify-between items-center">
-                        {editingTaskId === task.id ? (
-                            <div>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={updatedTask.name}
-                                    onChange={handleTaskChange}
-                                    className="block text-lg mb-2 p-2 border border-gray-300 rounded"
-                                />
-                                <textarea
-                                    name="description"
-                                    value={updatedTask.description}
-                                    onChange={handleTaskChange}
-                                    className="block text-gray-700 p-2 border border-gray-300 rounded"
-                                />
-                                <button
-                                    onClick={() => handleSaveTask(task.id)}
-                                    className="mt-2 p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-100"
-                                >
-                                    Enregistrer
-                                </button>
-                            </div>
-                        ) : (
-                            <div>
-                                <strong className="block text-lg">{task.name}</strong>
-                                <span className="block text-gray-700">{task.description}</span>
-                            </div>
-                        )}
-                        <div>
-                            {editingTaskId !== task.id && (
-                                <button
-                                    onClick={() => startEditingTask(task)}
-                                    className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 duration-100"
-                                >
-                                    Modifier
-                                </button>
-                            )}
-                            <button
-                                onClick={() => handleDeleteTask(task.id)}
-                                className="p-2 bg-red-500 text-white rounded hover:bg-red-600 duration-100 ml-2"
-                            >
-                                Supprimer
-                            </button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+        <div className="mb-2 p-2 bg-white rounded shadow relative hover:border border-blue-500 cursor-pointer">
+            <div className="flex items-center justify-between" onClick={openModal}>
+                <div>
+                    <span className="font-bold">{task.name}</span>
+                    {/* <p>{task.description}</p> */}
+                </div>
+                <div>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteTask(task.id);
+                        }}
+                        className="text-red-500 hover:text-red-700 text-2xl"
+                    >
+                        &times;
+                    </button>
+                </div>
+            </div>
+
+            <TaskModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                task={task}
+                updatedTask={updatedTask}
+                handleTaskChange={handleTaskChange}
+                handleSaveTask={handleSaveTask}
+            />
         </div>
     );
 };
 
-export default TaskList;
+export default Task;

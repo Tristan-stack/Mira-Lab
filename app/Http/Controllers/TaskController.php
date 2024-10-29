@@ -11,7 +11,6 @@ use App\Events\TaskUpdated;
 
 class TaskController extends Controller
 {
-
     public function store(Request $request)
     {
         // Valider les données de la requête
@@ -22,6 +21,7 @@ class TaskController extends Controller
             'end_date' => 'nullable|date',
             'status' => 'nullable|string',
             'project_id' => 'required|exists:projects,id',
+            'lists_id' => 'required|exists:lists,id', 
             'dependencies' => 'nullable|exists:tasks,id',
         ]);
 
@@ -31,6 +31,7 @@ class TaskController extends Controller
         // Créer une nouvelle tâche avec les données validées
         $task = Task::create($validatedData);
 
+        // Diffuser l'événement de création de la tâche
         broadcast(new TaskCreated($task))->toOthers();
 
         // Renvoyer une réponse avec la tâche créée
@@ -44,8 +45,9 @@ class TaskController extends Controller
     {
         // Validation des données
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
+            'lists_id' => 'sometimes|exists:lists,id',
         ]);
 
         // Trouver et mettre à jour la tâche
@@ -67,11 +69,11 @@ class TaskController extends Controller
         // Trouver la tâche par ID et vérifier qu'elle appartient au projet
         $task = Task::where('project_id', $projectId)->findOrFail($taskId);
 
+        // Diffuser l'événement de suppression de la tâche
         broadcast(new TaskDeleted($task))->toOthers();
 
         // Supprimer la tâche
         $task->delete();
-
 
         // Renvoyer une réponse de succès
         return response()->json([

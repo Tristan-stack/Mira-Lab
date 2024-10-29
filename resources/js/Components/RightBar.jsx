@@ -104,6 +104,7 @@ const RightBar = ({ isOpen, onClose, isBoardLeader, projectId, currentUser }) =>
                 <div className="p-4 space-y-4">
                     <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'>Changer le fond d'ecran</p>
                     <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'>Partager le projet</p>
+                    <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'> Model prédéfini</p>
 
                     {isBoardLeader ? (
                         <>

@@ -22,7 +22,9 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                 <div className="flex-1 flex flex-col relative">
                     <Navbar />
                     <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 overflow-auto custom-scrollbar"> {/* Permet le défilement dans la zone des enfants */}
-                        {children}
+                        <div className="overflow-x-auto custom-scrollbar h-full">
+                            {children}
+                        </div>
                     </main>
                     <TeamMembersModal
                         isOpen={isModalOpen}
@@ -34,6 +36,7 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                 <style>{`
                     .custom-scrollbar::-webkit-scrollbar {
                         width: 8px; /* Largeur de la barre de défilement */
+                        height: 8px; /* Hauteur de la barre de défilement */
                     }
 
                     .custom-scrollbar::-webkit-scrollbar-track {
