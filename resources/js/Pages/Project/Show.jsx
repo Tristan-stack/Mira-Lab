@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
 import Base from '../../Layouts/BaseProject';
 import MiniNav from '../../Components/MiniNav';
-import CreateTaskForm from '../../Components/CreateTaskForm';
-import TaskList from '../../Components/TaskList';
 import ListDisplay from '../../Components/ListDisplay';
+import ModelSelection from '../../Components/ModelSelection';
 
 const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [projectUsers, setProjectUsers] = useState(project.users);
     const [onlineUsers, setOnlineUsers] = useState([]);
 
     // États pour le formulaire de tâche
-    const [taskName, setTaskName] = useState('');
-    const [taskDescription, setTaskDescription] = useState('');
     const [tasks, setTasks] = useState(project.tasks);
     const [lists, setLists] = useState([]);
     const [errors, setErrors] = useState({});
@@ -33,9 +29,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     useEffect(() => {
         const taskCreationChannel = window.Echo.private(`project.${projectId}`);
         taskCreationChannel.listen('.task.created', (event) => {
-            console.log('Task created:', event.task);
             setTasks((prevTasks) => {
-                // Vérifiez si la tâche existe déjà pour éviter les doublons
                 if (!prevTasks.some(task => task.id === event.task.id)) {
                     return [...prevTasks, event.task];
                 }
@@ -45,9 +39,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
 
         const listCreationChannel = window.Echo.private(`project.${projectId}`);
         listCreationChannel.listen('.list.created', (event) => {
-            console.log('List created:', event.list);
             setLists((prevLists) => {
-                // Vérifiez si la liste existe déjà pour éviter les doublons
                 if (!prevLists.some(list => list.id === event.list.id)) {
                     return [...prevLists, event.list];
                 }
@@ -57,25 +49,21 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
 
         const taskUpdatedChannel = window.Echo.private(`project.${projectId}`);
         taskUpdatedChannel.listen('.task.updated', (event) => {
-            console.log('Task updated:', event.task);
             setTasks((prevTasks) => prevTasks.map(task => task.id === event.task.id ? event.task : task));
         });
 
         const listUpdatedChannel = window.Echo.private(`project.${projectId}`);
         listUpdatedChannel.listen('.list.updated', (event) => {
-            console.log('List updated:', event.list);
             setLists((prevLists) => prevLists.map(list => list.id === event.list.id ? event.list : list));
         });
 
         const taskDeletedChannel = window.Echo.private(`project.${projectId}`);
         taskDeletedChannel.listen('.task.deleted', (event) => {
-            console.log('Task deleted:', event.task);
             setTasks((prevTasks) => prevTasks.filter(task => task.id !== event.task.id));
         });
 
         const listDeletedChannel = window.Echo.private(`project.${projectId}`);
         listDeletedChannel.listen('.list.deleted', (event) => {
-            console.log('List deleted:', event.list);
             setLists((prevLists) => prevLists.filter(list => list.id !== event.list.id));
         });
 
@@ -102,7 +90,6 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     }, [projectId]);
 
     useEffect(() => {
-        // Charger les listes du projet lors du montage du composant
         axios.get(`/project/${projectId}/lists`)
             .then(response => {
                 setLists(response.data.lists);
@@ -160,7 +147,6 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             .then(response => {
                 const newTask = response.data.task;
                 setTasks((prevTasks) => {
-                    // Vérifiez si la tâche existe déjà pour éviter les doublons
                     if (!prevTasks.some(task => task.id === newTask.id)) {
                         return [...prevTasks, newTask];
                     }
@@ -173,28 +159,24 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     };
 
     const handleDeleteTask = (taskId) => {
-        if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
-            axios.delete(`/project/${projectId}/tasks/${taskId}`)
-                .then(() => {
-                    setTasks(tasks.filter(task => task.id !== taskId));
-                })
-                .catch(error => {
-                    console.error('Error deleting task:', error);
-                });
-        }
+        axios.delete(`/project/${projectId}/tasks/${taskId}`)
+            .then(() => {
+                setTasks(tasks.filter(task => task.id !== taskId));
+            })
+            .catch(error => {
+                console.error('Error deleting task:', error);
+            });
     };
 
-    const handleCreateList = () => {
-        const newListName = `liste${lists.length + 1}`;
+    const handleCreateList = (name) => {
         axios.post(`/project/${projectId}/lists`, {
-            name: newListName,
+            name,
             status: 'en cours',
             project_id: projectId,
         })
             .then(response => {
                 const newList = response.data.list;
                 setLists((prevLists) => {
-                    // Vérifiez si la liste existe déjà pour éviter les doublons
                     if (!prevLists.some(list => list.id === newList.id)) {
                         return [...prevLists, newList];
                     }
@@ -244,34 +226,56 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const currentUserInProject = projectUsers?.find(user => user.id === currentUser.id);
     const isBoardLeader = currentUserInProject?.pivot.role === 'Board Leader';
 
+    const handleSelectModel = (model) => {
+        const todoLists = ['A faire', 'En cours', 'Fini', 'Abandonné'];
+        const agileLists = ['Fait', 'Sprint en cours', 'En attentes', 'A venir', 'Validé', 'Terminé'];
+
+        const listsToCreate = model === 'todo' ? todoLists : agileLists;
+
+        listsToCreate.forEach(name => handleCreateList(name));
+    };
+
     return (
         <Base user={currentUser} teamUsers={teamUsers} projectUsers={projectUsers} currentUser={currentUser} setProjectUsers={setProjectUsers}>
             <MiniNav project={project} currentUser={currentUser} isBoardLeader={isBoardLeader} projectId={projectId} onlineUsers={onlineUsers} />
-            <button onClick={handleCreateList} className="mb-4 p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-100">
-                Ajouter une liste
-            </button>
-            <div className=" custom-scrollbar w-full">
-                <ListDisplay
-                    lists={lists}
-                    tasks={tasks}
-                    setTasks={setTasks}
-                    projectId={projectId}
-                    editingListId={editingListId}
-                    updatedListName={updatedListName}
-                    startEditingList={startEditingList}
-                    handleUpdateList={handleUpdateList}
-                    setEditingListId={setEditingListId}
-                    setUpdatedListName={setUpdatedListName}
-                    handleDeleteList={handleDeleteList}
-                    handleCreateTask={handleCreateTask}
-                    startEditingTask={startEditingTask}
-                    editingTaskId={editingTaskId}
-                    updatedTask={updatedTask}
-                    handleTaskChange={handleTaskChange}
-                    handleSaveTask={handleSaveTask}
-                    handleDeleteTask={handleDeleteTask}
-                    setEditingTaskId={setEditingTaskId}
-                />
+
+            <div className="space-x-3 flex justify-start items-start">
+                {lists.length > 0 ? (
+                    <>
+                        <ListDisplay
+                            lists={lists}
+                            tasks={tasks}
+                            setTasks={setTasks}
+                            projectId={projectId}
+                            editingListId={editingListId}
+                            updatedListName={updatedListName}
+                            startEditingList={startEditingList}
+                            handleUpdateList={handleUpdateList}
+                            setEditingListId={setEditingListId}
+                            setUpdatedListName={setUpdatedListName}
+                            handleDeleteList={handleDeleteList}
+                            handleCreateTask={handleCreateTask}
+                            startEditingTask={startEditingTask}
+                            editingTaskId={editingTaskId}
+                            updatedTask={updatedTask}
+                            handleTaskChange={handleTaskChange}
+                            handleSaveTask={handleSaveTask}
+                            handleDeleteTask={handleDeleteTask}
+                            setEditingTaskId={setEditingTaskId}
+                        />
+                        <button onClick={() => handleCreateList(`liste${lists.length + 1}`)} className="p-2 mt-3 bg-green-500 text-white rounded hover:bg-green-600 duration-300">
+                            Ajouter une liste
+                        </button>
+                    </>
+                ) : (
+                    <div className='w-full'>
+                        <button onClick={() => handleCreateList(`liste${lists.length + 1}`)} className="p-2 mt-1 ml-1 bg-green-500 text-white rounded-full px-4 hover:bg-green-600 duration-300">
+                            +
+                        </button>
+                        <ModelSelection onSelectModel={handleSelectModel}/>
+                        
+                    </div>
+                )}
             </div>
         </Base>
     );

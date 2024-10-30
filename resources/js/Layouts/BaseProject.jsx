@@ -21,8 +21,8 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                 />
                 <div className="flex-1 flex flex-col relative">
                     <Navbar />
-                    <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 overflow-auto custom-scrollbar"> {/* Permet le défilement dans la zone des enfants */}
-                        <div className="overflow-x-auto custom-scrollbar h-full">
+                    <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 custom-scrollbar"> {/* Permet le défilement dans la zone des enfants */}
+                        <div className="custom-scrollbar h-full ">
                             {children}
                         </div>
                     </main>
