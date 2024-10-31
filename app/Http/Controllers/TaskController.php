@@ -11,6 +11,31 @@ use App\Events\TaskUpdated;
 
 class TaskController extends Controller
 {
+    public function index($projectId)
+    {
+        $tasks = Task::where('project_id', $projectId)->get();
+    
+        return response()->json([
+            'tasks' => $tasks,
+        ]);
+    }
+
+    public function show($taskId)
+    {
+        try {
+            $task = Task::findOrFail($taskId);
+    
+            return response()->json([
+                'task' => $task,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching task details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         // Valider les données de la requête
@@ -78,6 +103,45 @@ class TaskController extends Controller
         // Renvoyer une réponse de succès
         return response()->json([
             'message' => 'Task deleted successfully!'
+        ], 200);
+    }
+
+    public function addDependency(Request $request, $projectId, $taskId)
+    {
+        // Validation des données
+        $validatedData = $request->validate([
+            'dependencies' => 'required|exists:tasks,id',
+        ]);
+
+        // Trouver la tâche et ajouter la dépendance
+        $task = Task::where('project_id', $projectId)->findOrFail($taskId);
+        $task->dependencies = $validatedData['dependencies'];
+        $task->save();
+
+        // Diffuser l'événement de mise à jour de la tâche
+        broadcast(new TaskUpdated($task))->toOthers();
+
+        // Retourner la tâche mise à jour en réponse JSON
+        return response()->json([
+            'message' => 'Dependency added successfully!',
+            'task' => $task
+        ], 200);
+    }
+
+    public function removeDependency($projectId, $taskId)
+    {
+        // Trouver la tâche et supprimer la dépendance
+        $task = Task::where('project_id', $projectId)->findOrFail($taskId);
+        $task->dependencies = null;
+        $task->save();
+
+        // Diffuser l'événement de mise à jour de la tâche
+        broadcast(new TaskUpdated($task))->toOthers();
+
+        // Retourner la tâche mise à jour en réponse JSON
+        return response()->json([
+            'message' => 'Dependency removed successfully!',
+            'task' => $task
         ], 200);
     }
 }

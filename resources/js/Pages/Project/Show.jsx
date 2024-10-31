@@ -9,14 +9,12 @@ import ModelSelection from '../../Components/ModelSelection';
 const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [projectUsers, setProjectUsers] = useState(project.users);
     const [onlineUsers, setOnlineUsers] = useState([]);
-
-    // États pour le formulaire de tâche
     const [tasks, setTasks] = useState(project.tasks);
     const [lists, setLists] = useState([]);
     const [errors, setErrors] = useState({});
     const [isFormVisible, setIsFormVisible] = useState(false);
+    const [availableTasks, setAvailableTasks] = useState([]); // Nouvel état pour les tâches disponibles
 
-    // États pour la modification en ligne
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [updatedTask, setUpdatedTask] = useState({ name: '', description: '' });
     const [editingListId, setEditingListId] = useState(null);
@@ -96,6 +94,17 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             })
             .catch(error => {
                 console.error('Error loading lists:', error);
+            });
+    }, [projectId]);
+
+    useEffect(() => {
+        axios.get(`/project/${projectId}/tasks`)
+            .then(response => {
+                console.log("Tâches récupérées :", response.data.tasks); // Ajoutez ce log pour vérifier la réponse
+                setAvailableTasks(response.data.tasks);
+            })
+            .catch(error => {
+                console.error('Error loading tasks:', error);
             });
     }, [projectId]);
 
@@ -235,11 +244,14 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         listsToCreate.forEach(name => handleCreateList(name));
     };
 
+    // afficher la list des taches
+    console.log("taches disponible", availableTasks)
+
     return (
         <Base user={currentUser} teamUsers={teamUsers} projectUsers={projectUsers} currentUser={currentUser} setProjectUsers={setProjectUsers}>
             <MiniNav project={project} currentUser={currentUser} isBoardLeader={isBoardLeader} projectId={projectId} onlineUsers={onlineUsers} />
 
-            <div className="space-x-3 flex justify-start items-start">
+            <div className="space-x-3 flex justify-start items-start mt-4">
                 {lists.length > 0 ? (
                     <>
                         <ListDisplay
@@ -262,19 +274,14 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                             handleSaveTask={handleSaveTask}
                             handleDeleteTask={handleDeleteTask}
                             setEditingTaskId={setEditingTaskId}
+                            availableTasks={availableTasks} // Passer les tâches disponibles
                         />
-                        <button onClick={() => handleCreateList(`liste${lists.length + 1}`)} className="p-2 mt-3 bg-green-500 text-white rounded hover:bg-green-600 duration-300">
+                        <button onClick={() => handleCreateList(`liste${lists.length + 1}`)} className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300">
                             Ajouter une liste
                         </button>
                     </>
                 ) : (
-                    <div className='w-full'>
-                        <button onClick={() => handleCreateList(`liste${lists.length + 1}`)} className="p-2 mt-1 ml-1 bg-green-500 text-white rounded-full px-4 hover:bg-green-600 duration-300">
-                            +
-                        </button>
-                        <ModelSelection onSelectModel={handleSelectModel}/>
-                        
-                    </div>
+                    <ModelSelection onSelectModel={handleSelectModel} />
                 )}
             </div>
         </Base>

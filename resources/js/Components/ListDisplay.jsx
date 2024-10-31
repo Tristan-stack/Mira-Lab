@@ -23,7 +23,8 @@ const ListDisplay = ({
     handleSaveTask,
     handleDeleteTask,
     setEditingTaskId,
-    projectId
+    projectId,
+    availableTasks // Passer availableTasks ici
 }) => {
     const [newTaskNames, setNewTaskNames] = useState({});
     const [newTaskDescriptions, setNewTaskDescriptions] = useState({});
@@ -166,6 +167,7 @@ const ListDisplay = ({
                                                                 handleSaveTask={handleSaveTask}
                                                                 setEditingTaskId={setEditingTaskId}
                                                                 handleDeleteTask={handleDeleteTask}
+                                                                availableTasks={availableTasks} // Passer availableTasks ici
                                                             />
                                                         </div>
                                                     )}

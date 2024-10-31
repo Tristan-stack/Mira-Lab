@@ -76,11 +76,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{id}/tasks', [ProjectController::class, 'listTasks'])->name('projects.listTasks');
 
     // Routes des tâches
-    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+
+    Route::get('/project/{project}/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
+    Route::get('/tasks/{taskId}', [TaskController::class, 'show'])->name('tasks.show');
     Route::put('/projects/{projectId}/tasks/{taskId}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::post('/projects/{projectId}/tasks/{taskId}/add-dependency', [TaskController::class, 'addDependency']);
+    Route::delete('/projects/{projectId}/tasks/{taskId}/remove-dependency', [TaskController::class, 'removeDependency']);
 
     Route::post('/project/{project}/tasks', [TaskController::class, 'store']);
     Route::delete('/project/{project}/tasks/{task}', [TaskController::class, 'destroy']);
