@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navbar from '../Components/NavBar'; // Chemin vers votre composant Navbar
 import SidebarProject from '../Components/SidebarProject';
 import TeamMembersModal from '../Components/TeamMemberModal'; // Assurez-vous que le chemin est correct
@@ -6,8 +7,27 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importer les styles de react-toastify
 import { GradientProvider } from '../contexts/GradientContext.jsx'; // Importer le GradientProvider
 
-export default function Layout({ children, user, teamUsers, projectUsers, currentUser, setProjectUsers }) {
+export default function Layout({ children, user, teamUsers, projectUsers, currentUser, setProjectUsers, projectId }) {
     const [isModalOpen, setIsModalOpen] = useState(false); // État pour gérer la visibilité du pop-up
+    const [tasks, setTasks] = useState([]); // État pour stocker les tâches
+
+    useEffect(() => {
+        // Fonction pour récupérer les tâches d'un projet spécifique
+        const fetchTasks = async () => {
+            try {
+                const response = await axios.get(`/project/${projectId}/tasks`); // Utilisez projectId pour récupérer les tâches du projet spécifique
+                console.log("Projet ID :", projectId); // Affichez l'ID du projet
+                console.log("Tâches récupérées :", response.data.tasks); // Affichez les tâches récupérées
+                setTasks(response.data.tasks);
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        };
+
+        if (projectId) {
+            fetchTasks();
+        }
+    }, [projectId]);
 
     return (
         <GradientProvider>
@@ -18,6 +38,7 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                     currentUser={currentUser}
                     setProjectUsers={setProjectUsers}
                     onOpenModal={() => setIsModalOpen(true)} // Passez la fonction pour ouvrir le modal
+                    tasks={tasks} // Passez les tâches à SidebarProject
                 />
                 <div className="flex-1 flex flex-col relative">
                     <Navbar />

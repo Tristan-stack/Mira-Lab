@@ -9,6 +9,7 @@ use App\Events\TaskCreated;
 use App\Events\TaskDeleted;
 use App\Events\TaskUpdated;
 
+
 class TaskController extends Controller
 {
     public function index($projectId)
@@ -110,20 +111,38 @@ class TaskController extends Controller
     {
         // Validation des données
         $validatedData = $request->validate([
-            'dependencies' => 'required|exists:tasks,id',
+            'dependencies' => 'nullable|exists:tasks,id',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
         ]);
-
-        // Trouver la tâche et ajouter la dépendance
+    
+        // Trouver la tâche
         $task = Task::where('project_id', $projectId)->findOrFail($taskId);
-        $task->dependencies = $validatedData['dependencies'];
+    
+        // Mettre à jour les champs si présents
+        if (isset($validatedData['dependencies'])) {
+            $task->dependencies = $validatedData['dependencies'];
+        }
+        if (isset($validatedData['start_date'])) {
+            $task->start_date = $validatedData['start_date'];
+        }
+        if (isset($validatedData['end_date'])) {
+            $task->end_date = $validatedData['end_date'];
+        }
+    
+        // Vérifier si la date de fin est passée et mettre à jour le statut
+        if (isset($validatedData['end_date']) && new \DateTime($validatedData['end_date']) < new \DateTime()) {
+            $task->status = 'Fini';
+        }
+    
         $task->save();
-
+    
         // Diffuser l'événement de mise à jour de la tâche
         broadcast(new TaskUpdated($task))->toOthers();
-
+    
         // Retourner la tâche mise à jour en réponse JSON
         return response()->json([
-            'message' => 'Dependency added successfully!',
+            'message' => 'Task updated successfully!',
             'task' => $task
         ], 200);
     }

@@ -248,7 +248,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     console.log("taches disponible", availableTasks)
 
     return (
-        <Base user={currentUser} teamUsers={teamUsers} projectUsers={projectUsers} currentUser={currentUser} setProjectUsers={setProjectUsers}>
+        <Base user={currentUser} teamUsers={teamUsers} projectUsers={projectUsers} currentUser={currentUser} setProjectUsers={setProjectUsers} projectId={projectId} tasks={tasks}>
             <MiniNav project={project} currentUser={currentUser} isBoardLeader={isBoardLeader} projectId={projectId} onlineUsers={onlineUsers} />
 
             <div className="space-x-3 flex justify-start items-start mt-4">

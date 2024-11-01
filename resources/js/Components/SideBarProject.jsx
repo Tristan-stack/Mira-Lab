@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { createPortal } from 'react-dom';
 import { useGradient } from '../contexts/GradientContext.jsx'; // Importer le hook useGradient
 import ProjectMemberModal from './ProjectMemberModal'; // Importer la modal des membres du projet
+import CalendarView from './CalendarView.jsx'; // Importer le composant CalendarView
 
-export default function SidebarProject({ user, projectUsers, currentUser, setProjectUsers, onOpenModal }) {
+export default function SidebarProject({ user, projectUsers, currentUser, setProjectUsers, onOpenModal, tasks }) {
     const gradient = useGradient(); // Utiliser le hook pour obtenir le dégradé
     const [openTab, setOpenTab] = useState(null); // État pour gérer l'onglet actuellement ouvert
     const [isMemberModalOpen, setIsMemberModalOpen] = useState(false); // État pour gérer l'ouverture de la modal des membres
+    const [showCalendar, setShowCalendar] = useState(false); // État pour gérer l'affichage du calendrier
 
     const handleLogout = async () => {
         try {
@@ -35,6 +38,14 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
         setOpenTab(openTab === tab ? null : tab);
     };
 
+    const handleCalendarClick = () => {
+        setShowCalendar(true);
+    };
+
+    const handleCloseCalendar = () => {
+        setShowCalendar(false);
+    };
+
     return (
         <div className="bg-white h-screen p-4 shadow-md w-64 flex flex-col">
             <div className="text-2xl font-bold text-purple-600 mb-8">Board View</div>
@@ -43,7 +54,7 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
                     <FiGrid className="mr-3 text-gray-600" />
                     <span>Tableau</span>
                 </div>
-                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer" onClick={handleCalendarClick}>
                     <FiCalendar className="mr-3 text-gray-600" />
                     <span>Calendrier</span>
                 </div>
@@ -148,6 +159,22 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
                 currentUser={currentUser}
                 setProjectUsers={setProjectUsers}
             />
+
+            {/* Affichage du calendrier */}
+            {showCalendar && createPortal(
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-4xl relative">
+                        <button
+                            onClick={handleCloseCalendar}
+                            className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+                        >
+                            &times;
+                        </button>
+                        <CalendarView tasks={tasks} />
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 }
