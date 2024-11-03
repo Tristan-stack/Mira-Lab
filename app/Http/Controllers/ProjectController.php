@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Events\UserConnected;
 use App\Events\UserDisconnected;
+use App\Models\Chat;
 
 
 class ProjectController extends Controller
@@ -40,6 +41,14 @@ class ProjectController extends Controller
 
         // Créer le projet
         $project = Project::create($validated);
+
+        // Créer un chat pour le projet
+        $chat = Chat::create([
+            'project_id' => $project->id,
+            'user_id' => Auth::id(), // Utilisez l'ID de l'utilisateur authentifié
+        ]);
+        $project->chat_id = $chat->id;
+        $project->save();
 
         // Ajouter l'utilisateur connecté à la table project_user avec le rôle "Board Leader"
         $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté

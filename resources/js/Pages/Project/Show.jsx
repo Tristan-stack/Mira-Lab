@@ -5,6 +5,8 @@ import Base from '../../Layouts/BaseProject';
 import MiniNav from '../../Components/MiniNav';
 import ListDisplay from '../../Components/ListDisplay';
 import ModelSelection from '../../Components/ModelSelection';
+import ChatWindow from '../../Components/ChatWindow'; // Importer le composant ChatWindow
+import { FiMessageCircle } from 'react-icons/fi'; // Importer l'icône de dialogue
 
 const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [projectUsers, setProjectUsers] = useState(project.users);
@@ -14,6 +16,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [errors, setErrors] = useState({});
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [availableTasks, setAvailableTasks] = useState([]); // Nouvel état pour les tâches disponibles
+    const [isChatOpen, setIsChatOpen] = useState(false); // État pour gérer l'affichage de la fenêtre de chat
 
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [updatedTask, setUpdatedTask] = useState({ name: '', description: '' });
@@ -284,6 +287,17 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                     <ModelSelection onSelectModel={handleSelectModel} />
                 )}
             </div>
+
+            {/* Bouton rond avec icône de dialogue en bas à droite */}
+            <button
+                className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none duration-200"
+                onClick={() => setIsChatOpen(!isChatOpen)}
+            >
+                <FiMessageCircle size={24} />
+            </button>
+
+            {/* Composant ChatWindow */}
+            {isChatOpen && <ChatWindow projectId={projectId} currentUser={currentUser} onClose={() => setIsChatOpen(false)} />}
         </Base>
     );
 };

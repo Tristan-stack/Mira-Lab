@@ -16,7 +16,8 @@ class Project extends Model
         'end_date',
         'status',
         'team_id',
-        'project_code', // Ajout de project_code aux attributs remplissables
+        'project_code',
+        'chat_id',
     ];
 
     // Relation avec l'équipe
@@ -38,6 +39,11 @@ class Project extends Model
         return $this->hasMany(Task::class);
     }
 
+    // Relation avec le chat
+    public function chat()
+    {
+        return $this->hasOne(Chat::class);
+    }
 
     protected static function boot()
     {
@@ -71,5 +77,4 @@ class Project extends Model
         
         return $isLeader;
     }
-
 }

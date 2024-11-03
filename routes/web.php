@@ -11,6 +11,7 @@ use App\Events\CounterUpdated;
 use App\Events\TestEvent;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ListController;
+use App\Http\Controllers\MessageController;
 
 
 // Route pour la page de connexion
@@ -105,6 +106,12 @@ Route::middleware('auth')->group(function () {
     // Diffuse l'événement
     event(new CounterUpdated($counter));
     return response()->json(['counter' => $counter, 'message' => 'Counter updated']);
+    });
+
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/project/{projectId}/messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::post('/project/{projectId}/messages', [MessageController::class, 'store'])->name('messages.store');
     });
 
 });
