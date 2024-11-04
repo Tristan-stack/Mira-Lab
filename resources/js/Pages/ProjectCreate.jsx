@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { IoMdClose } from 'react-icons/io'; // Importer l'icône de fermeture
 import './custom-style/styles.css';
 
-const CreateProjectForm = ({ onCreate }) => {
+const CreateProjectForm = ({ onCreate, onCancel }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -44,7 +45,7 @@ const CreateProjectForm = ({ onCreate }) => {
             console.log('Projet créé avec succès:', response.data);
 
             if (onCreate) {
-                onCreate(response.data);
+                onCreate(response.data.project); // Passer le projet créé à la fonction onCreate
             }
 
             setFormData({
@@ -66,9 +67,15 @@ const CreateProjectForm = ({ onCreate }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="mx-auto bg-white rounded-lg max-w-md w-full p-8"
+            className="relative mx-auto bg-white rounded-lg max-w-md w-full p-8"
             style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}
         >
+            <button
+                onClick={onCancel}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+                <IoMdClose size={24} />
+            </button>
             <h1 className="gradient-title text-center mb-6">Créer un projet</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">

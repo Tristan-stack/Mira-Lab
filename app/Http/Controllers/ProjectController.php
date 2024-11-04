@@ -38,34 +38,33 @@ class ProjectController extends Controller
             'status' => 'nullable|string|max:255',
             'team_id' => 'required|exists:teams,id',
         ]);
-
+    
         // Créer le projet
         $project = Project::create($validated);
-
+    
         // Créer un chat pour le projet
         $chat = Chat::create([
             'project_id' => $project->id,
-            'user_id' => Auth::id(), // Utilisez l'ID de l'utilisateur authentifié
+            'user_id' => Auth::id(),
         ]);
         $project->chat_id = $chat->id;
         $project->save();
-
-        // Ajouter l'utilisateur connecté à la table project_user avec le rôle "Board Leader"
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
-        $project->users()->attach($userId, ['role' => 'Board Leader']); // Ajouter l'utilisateur avec le rôle "Board Leader"
-
-        // Ajouter les utilisateurs de l'équipe associée sans inclure l'utilisateur créateur du projet
-        $teamUsers = $project->team->users; // Récupérer les utilisateurs de l'équipe
-        $userIds = $teamUsers->pluck('id')->toArray(); // Récupérer les IDs des utilisateurs de l'équipe
-
-        // Filtrer les IDs pour exclure l'utilisateur créateur du projet
-        $filteredUserIds = array_diff($userIds, [$userId]);
-
-        // Ajouter chaque utilisateur avec le rôle "Contributor"
+    
+        // Ajouter l'utilisateur connecté au projet avec le rôle "Board Leader"
+        $userId = Auth::id();
+        $project->users()->attach($userId, ['role' => 'Board Leader']);
+    
+        // Ajouter les autres membres de l'équipe au projet avec le rôle "Contributor"
+        $teamUsers = $project->team->users->pluck('id')->toArray();
+        $filteredUserIds = array_diff($teamUsers, [$userId]);
+    
         foreach ($filteredUserIds as $teamUserId) {
             $project->users()->attach($teamUserId, ['role' => 'Contributor']);
         }
-
+    
+        // Recharger le projet avec les relations nécessaires
+        $project = Project::with('users')->find($project->id);
+    
         return response()->json(['message' => 'Projet créé avec succès', 'project' => $project], 201);
     }
 

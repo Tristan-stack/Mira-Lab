@@ -52,6 +52,7 @@ class TeamController extends Controller
     /**
      * Store a newly created team with selected users in storage.
      */
+
     public function storeWithUsers(Request $request)
     {
         $validated = $request->validate([
@@ -79,8 +80,7 @@ class TeamController extends Controller
             $team->users()->attach($selectedUsers, ['role' => 'member']);
         }
 
-        return redirect('/profile')->with('success', 'Équipe créée avec succès.');
-
+        return response()->json(['team' => $team->load('users')], 201);
     }
 
     /**

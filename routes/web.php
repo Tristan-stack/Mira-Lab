@@ -16,8 +16,13 @@ use App\Http\Controllers\MessageController;
 
 // Route pour la page de connexion
 Route::get('/', function () {
-    return Inertia::render('HomePage'); // Rediriger vers HomePage
+    return Inertia::render('Accueil'); // Rediriger vers Accueil
 });
+
+// Route pour HomePage
+Route::get('/home', function () {
+    return Inertia::render('HomePage'); // Rediriger vers HomePage
+})->name('home');
 
 Route::get('/dashboard', function () {
     return redirect('/profile');

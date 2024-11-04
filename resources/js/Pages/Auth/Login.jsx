@@ -70,25 +70,13 @@ export default function Login({ status, canResetPassword }) {
                     </div>
 
                     <div className="mt-6">
-                        <PrimaryButton className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg focus:ring-4 focus:ring-purple-500 disabled:opacity-50" disabled={processing}>
+                        <PrimaryButton className=" rounded w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium focus:ring-4 focus:ring-purple-500 disabled:opacity-50" disabled={processing}>
                             Sign In
                         </PrimaryButton>
                     </div>
 
-                    <div className="flex items-center justify-center mt-4">
-                        <button type="button" className="w-full py-2 text-sm border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                                <path fill="#4285F4" d="M47.74 24.56c0-.56-.05-1.12-.13-1.66H24v7.31h13.41c-.58 2.97-2.32 5.49-4.91 7.18l7.6 5.87c4.47-4.13 7.06-10.23 7.06-17.7z" />
-                                <path fill="#34A853" d="M24 48c6.48 0 11.91-2.15 15.87-5.83l-7.6-5.87c-2.1 1.42-4.78 2.29-8.27 2.29-6.35 0-11.73-4.29-13.64-10.06H1.69v6.33C5.62 43.14 13.89 48 24 48z" />
-                                <path fill="#FBBC05" d="M10.36 28.49a13.93 13.93 0 010-8.98V13.2H1.69a23.94 23.94 0 000 21.6l8.67-6.31z" />
-                                <path fill="#EA4335" d="M24 9.42c3.32 0 6.29 1.14 8.64 3.36l6.43-6.43C34.62 2.56 29.84 0 24 0 13.89 0 5.62 4.86 1.69 13.2l8.67 6.32C12.27 13.71 17.65 9.42 24 9.42z" />
-                            </svg>
-                            <span>Sign in with Google</span>
-                        </button>
-                    </div>
-
                     <p className="mt-4 text-sm text-center text-gray-600">
-                        Don't have an account? <Link href={route('register')} className="font-medium text-indigo-600 hover:text-indigo-500">Sign up</Link>
+                        Vous n'avez pas de compte? <Link href={route('register')} className="font-medium text-indigo-600 hover:text-indigo-500">S'inscrire</Link>
                     </p>
                 </form>
             </div>

@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from '@inertiajs/inertia-react';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; // Assurez-vous d'importer ces composants
+import { motion } from 'framer-motion'; // Importer Framer Motion
+import { IoMdClose } from 'react-icons/io'; // Importer l'icône de fermeture
 
-export default function TeamCreate({ user, onAddTeam, users }) {
-    const { data, setData, post, processing, errors } = useForm({
+export default function TeamCreate({ user, onAddTeam, users, onCancel }) {
+    const [data, setData] = useState({
         name: '',
         users: [],
     });
-    const [availableUsers, setAvailableUsers] = useState(users || []); // Utilisez cet état pour les utilisateurs disponibles
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({});
+
+    // Exclure l'utilisateur connecté de la liste des utilisateurs disponibles
+    const [availableUsers, setAvailableUsers] = useState(users.filter(u => u.id !== user.id));
     const [teamMembers, setTeamMembers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         // Met à jour les données du formulaire avec les membres de l'équipe sélectionnés
-        setData('users', teamMembers.map(member => member.id));
+        setData(prevData => ({ ...prevData, users: teamMembers.map(member => member.id) }));
     }, [teamMembers]);
 
     const handleDragEnd = (result) => {
@@ -46,27 +52,47 @@ export default function TeamCreate({ user, onAddTeam, users }) {
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) : [];
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        post('/teams-with-users', {
-            ...data,
-            onSuccess: (newTeam) => {
-                toast.success('Équipe créée avec succès !'); // Notification de succès
-                setData({ name: '', users: [] }); // Réinitialisation des données du formulaire
-                setTeamMembers([]); // Réinitialisation des membres de l'équipe
-                if (onAddTeam) {
-                    onAddTeam(newTeam);
-                }
-            },
-            onError: () => {
+        setProcessing(true);
+        setErrors({});
+
+        try {
+            const response = await axios.post('/teams-with-users', data);
+            const newTeam = response.data.team;
+            newTeam.pivot = { role: 'admin' }; // Ajouter le rôle admin à l'utilisateur qui crée l'équipe
+            toast.success('Équipe créée avec succès !'); // Notification de succès
+            setData({ name: '', users: [] }); // Réinitialisation des données du formulaire
+            setTeamMembers([]); // Réinitialisation des membres de l'équipe
+            if (onAddTeam) {
+                onAddTeam(newTeam); // Appel de la fonction de rappel pour mettre à jour la liste des équipes
+            }
+        } catch (error) {
+            if (error.response && error.response.data.errors) {
+                setErrors(error.response.data.errors);
+            } else {
                 toast.error('Erreur lors de la création de l\'équipe.'); // Notification d'erreur
-            },
-        });
+            }
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
-        <div className="mx-auto bg-white rounded-lg max-w-md w-full p-8"
-            style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative mx-auto bg-white rounded-lg max-w-md w-full p-8"
+            style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}
+        >
+            <button
+                onClick={onCancel}
+                className="absolute top-4 right-4 text-red-500 hover:text-red-700 duration-150"
+            >
+                <IoMdClose size={24} />
+            </button>
             <h1 className="gradient-title text-center mb-6">Créer ta team</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
@@ -77,7 +103,7 @@ export default function TeamCreate({ user, onAddTeam, users }) {
                         type="text"
                         id="name"
                         value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e) => setData({ ...data, name: e.target.value })}
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.name && <div className="text-red-500 text-sm">{errors.name}</div>}
@@ -174,6 +200,6 @@ export default function TeamCreate({ user, onAddTeam, users }) {
                     </button>
                 </div>
             </form>
-        </div>
+        </motion.div>
     );
 }

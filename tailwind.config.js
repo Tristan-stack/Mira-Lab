@@ -24,7 +24,7 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ['Raleway', 'sans-serif'],
+                sans: ['Poppins', 'sans-serif'],
             },
             boxShadow: {
                 'shadow-custom': '0px 0px 27px 19px rgba(0,0,0,0.1)',
@@ -85,5 +85,32 @@ export default {
             },
         },
     },
-    plugins: [forms, animate],
+    plugins: [
+        forms, 
+        animate,
+        function({ addBase, theme }) {
+            let allColors = flattenColorPalette(theme("colors"));
+            let newVars = Object.fromEntries(
+                Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+            );
+
+            addBase({
+                ":root": newVars,
+            });
+        }
+    ],
+}
+
+function flattenColorPalette(colors) {
+    const result = {};
+    for (const [key, value] of Object.entries(colors)) {
+        if (typeof value === 'string') {
+            result[key] = value;
+        } else {
+            for (const [subKey, subValue] of Object.entries(value)) {
+                result[`${key}-${subKey}`] = subValue;
+            }
+        }
+    }
+    return result;
 }
