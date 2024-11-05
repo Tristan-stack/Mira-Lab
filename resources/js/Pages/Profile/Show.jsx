@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { IoIosAdd } from 'react-icons/io';
 import { FaRegEye, FaTrash } from 'react-icons/fa';
 import Layout from '../../Layouts/Base';
+import UserProfile from '../../Components/UserProfile';
 import CreateProjectForm from '../../Pages/ProjectCreate';
+import ProjectList from '../../Components/ProjectList';
 import TeamCreate from '../../Pages/TeamCreate';
+import TeamList from '../../Components/TeamList';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import JoinTeamModal from '../../Components/JoinTeamPopUp'; // Assurez-vous que le chemin est correct
@@ -63,6 +66,7 @@ export default function Show({ user, teams, projects, users }) {
     const handleAddProject = (newProject) => {
         setProjectsState((prevProjects) => [...prevProjects, newProject]);
         setIsCreatingProject(false);
+        toast.success('Projet créé avec succès.')
     };
 
     const handleCancelTeam = () => {
@@ -185,160 +189,29 @@ export default function Show({ user, teams, projects, users }) {
                 )}
                 <AnimatePresence>
                     {!isCreatingTeam && !isCreatingProject ? (
-                        <div className='w-full flex justify-around items-center'
-                        >
-                            <div className="p-6 bg-white shadow rounded-lg mb-6 relative">
-                                <div className='w-80 h-60 bg-gray-300 rounded-lg mb-4'></div>
-                                <div className="w-full space-y-2 mb-4">
-                                    <h3 className='font-black text-2xl'>Mon profil</h3>
-                                    <p className='text-gray-400 font-light text-xs text-right'>Membre depuis : {new Date(user.created_at).toLocaleDateString()}</p>
-                                    <p className='text-gray-400 font-light text-xs text-right'>Dernière modification : {new Date(user.updated_at).toLocaleDateString()}</p>
-                                </div>
-                                <div className='space-y-3'>
-                                    <div className='w-full flex justify-between'>
-                                        {isEditing ? (
-                                            <div className="relative w-full">
-                                                <input
-                                                    type="text"
-                                                    name="name"
-                                                    value={formData.name}
-                                                    onChange={handleChange}
-                                                    className="text-purple-600 w-1/2 p-2 border-white rounded-none focus:outline-none"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <p className="text-gray-400">{formData.name}</p>
-                                        )}
-                                        <p className='text-gray-400 font-normal whitespace-nowrap'>
-                                            Compte n°<span className='text-purple-800 font-bold'>{user.id}</span>
-                                        </p>
-                                    </div>
-                                    {isEditing ? (
-                                        <div className="relative w-full ">
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                className="text-purple-600 border-white p-2 rounded-none w-full focus:outline-none"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <p className="text-gray-400">{formData.email}</p>
-                                    )}
-                                </div>
-                                <div className='w-full flex justify-center mt-4'>
-                                    {isEditing ? (
-                                        <button onClick={handleSaveClick} className='py-1 px-4 text-white rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition duration-300'>Enregistrer</button>
-                                    ) : (
-                                        <button onClick={handleEditClick} className='py-1 px-4 text-white rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition duration-300'>Modifier</button>
-                                    )}
-                                </div>
-                            </div>
+                        <div className='w-full flex justify-around items-center '>
+                            <UserProfile user={user} />
 
                             <div className='flex flex-col w-1/2'>
-                                <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
-                                    <div className='flex justify-between items-center'>
-                                        <h2 className="text-2xl font-semibold">Équipes</h2>
-                                        <div className='space-x-4 flex items-center'>
-                                            <button
-                                                className='bg-blue-500 text-white px-2 py-2 rounded-full hover:bg-blue-600 duration-300'
-                                                onClick={() => setIsJoiningTeam(true)} // Ouvrir le pop-up pour rejoindre une équipe
-                                            >
-                                                Rejoindre une team
-                                            </button>
-                                            <button
-                                                className='bg-green-400 px-2 py-2 rounded-2xl hover:bg-white duration-300'
-                                                onClick={() => setIsCreatingTeam(true)} // Afficher le formulaire de création d'équipe
-                                            >
-                                                <IoIosAdd className='font-extrabold text-white hover:text-green-400 duration-300' />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <hr className='mb-4 mt-3' />
-                                    <ul className='space-y-4'>
-                                        {Array.isArray(teamsState) && teamsState.map((team) => {
-                                            const associatedProjects = projectsState.filter(project => project.team_id === team.id && Array.isArray(project.users) && project.users.some(u => u.id === user.id));
-                                            const privateProjects = associatedProjects.filter(project => project.status === "Privé");
 
-                                            return (
-                                                <li key={team.id} className="flex justify-between items-center mb-2">
-                                                    <div className='mr-32'>
-                                                        <p className="text-base font-semibold uppercase">{team.name}</p>
-                                                        <p className='text-gray-500 font-light text-sm'>Rôle : {team.pivot?.role || 'N/A'}</p>
-                                                    </div>
-                                                    <div className="flex space-x-2">
-                                                        <button
-                                                            className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-blue-500 hover:bg-blue-600 transition duration-300"
-                                                            onClick={() => handleViewTeam(team.id)}
-                                                        >
-                                                            <FaRegEye />
-                                                        </button>
+                                <TeamList
+                                    teams={teamsState}
+                                    user={user}
+                                    onViewTeam={handleViewTeam}
+                                    onRemoveTeam={handleRemoveTeam}
+                                    onWithdraw={handleWithdraw}
+                                    setIsJoiningTeam={setIsJoiningTeam}
+                                    setIsCreatingTeam={setIsCreatingTeam}
+                                />
 
-                                                        {team.pivot?.role === 'admin' ? (
-                                                            <button
-                                                                className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
-                                                                onClick={() => handleRemoveTeam(team.id)}
-                                                            >
-                                                                <FaTrash />
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
-                                                                onClick={() => handleWithdraw(team.id)}
-                                                            >
-                                                                Se retirer
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
-                                        <div className='flex justify-between items-center'>
-                                            <h2 className="text-2xl font-semibold">Projets</h2>
-                                            <button
-                                                className='bg-green-400 px-2 py-2 rounded-2xl hover:bg-white duration-300'
-                                                onClick={() => setIsCreatingProject(true)} // Afficher le formulaire de création de projet
-                                            >
-                                                <IoIosAdd className='font-extrabold text-white hover:text-green-400 duration-300' />
-                                            </button>
-                                        </div>
-                                        <hr className='mb-4 mt-3' />
-                                        <ul className='space-y-4'>
-                                            {projectsState
-                                                .filter(project => Array.isArray(project.users) && project.users.some(u => u.id === user.id))
-                                                .map((project) => (
-                                                    <li key={project.id} className="flex justify-between items-center mb-2">
-                                                        <div className='mr-32'>
-                                                            <p className="text-base font-semibold uppercase">{project.name}</p>
-                                                            <p className='text-gray-500 font-light text-sm'>{project.status}</p>
-                                                        </div>
-                                                        <div className="flex space-x-2">
-                                                            <button
-                                                                className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-blue-500 hover:bg-blue-600 transition duration-300"
-                                                                onClick={() => handleViewProject(project.id)}
-                                                            >
-                                                                <FaRegEye />
-                                                            </button>
-
-                                                            {project.pivot?.role === 'admin' && (
-                                                                <button
-                                                                    className="ml-4 text-sm px-2 py-2 text-white rounded-lg bg-red-500 hover:bg-red-600 transition duration-300"
-                                                                >
-                                                                    <FaTrash />
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </li>
-                                                ))}
-                                        </ul>
-                                    </div>
-                                </div>
+                           
+                                <ProjectList
+                                    projects={projectsState}
+                                    user={user}
+                                    onViewProject={handleViewProject}
+                                    onCreateProject={handleAddProject}
+                                    setIsCreatingProject={setIsCreatingProject}
+                                />     
 
                             </div>
                         </div>

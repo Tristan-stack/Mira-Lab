@@ -17,3 +17,8 @@ body {
 .hover\:logo-purple:hover .logo {
     color: #6b46c1; /* Couleur violette */
 }
+
+/* Dans votre fichier CSS global, par exemple app.css */
+:root {
+  --radius: 0.5rem; /* Définissez la valeur que vous souhaitez */
+}

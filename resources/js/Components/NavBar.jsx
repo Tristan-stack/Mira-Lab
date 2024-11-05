@@ -3,14 +3,11 @@ import React from 'react';
 export default function Navbar() {
     return (
         <nav className="flex items-center justify-around p-3 bg-white">
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-md">
-                Créer un tableau
-            </button>
             <div className="flex-1 max-w-xl mx-4">
                 <input
                     type="text"
                     placeholder="Rechercher un tableau"
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    className="w-full p-2 border border-gray-300 rounded-sm"
                 />
             </div>
             <div className="flex space-x-4 items-center">
