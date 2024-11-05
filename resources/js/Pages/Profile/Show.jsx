@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BackgroundBeamsWithCollision } from "../../Components/ui/background-beams-with-collision";
 
 export default function Show({ user, teams, projects, users }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -179,9 +180,11 @@ export default function Show({ user, teams, projects, users }) {
 
     return (
         <Layout user={user}>
+            <BackgroundBeamsWithCollision>
+
             <Head title="Mon Profil" />
             <ToastContainer />
-            <div className="flex flex-col justify-center items-center mx-auto p-6 space-x-10">
+                <div className="flex flex-col justify-center items-center mx-auto p-6 space-x-10 z-10  w-5/6">
                 {errorMessage && (
                     <div className="w-full text-red-500 bg-red-100 p-4 rounded-lg mb-4">
                         {errorMessage}
@@ -217,13 +220,13 @@ export default function Show({ user, teams, projects, users }) {
                         </div>
                     ) : isCreatingTeam ? (
                         <div
-                            className='w-full'
+                                    className='w-full '
                         >
                             <TeamCreate user={user} onAddTeam={handleAddTeam} users={users} onCancel={handleCancelTeam} />
                         </div>
                     ) : (
                         <div
-                            className='w-full'
+                            className='w-full '
                         >
                             <CreateProjectForm onCreate={handleAddProject} onCancel={handleCancelProject} />
                         </div>
@@ -237,6 +240,7 @@ export default function Show({ user, teams, projects, users }) {
                     />
                 )}
             </div>
+            </BackgroundBeamsWithCollision>
         </Layout>
     );
 }

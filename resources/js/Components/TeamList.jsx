@@ -17,7 +17,7 @@ export default function TeamList({
                 <h2 className="text-2xl font-semibold">Équipes</h2>
                 <div className='space-x-4 flex items-center'>
                     <button
-                        className='bg-blue-500 text-white px-2 py-2 rounded-md hover:bg-blue-600 duration-300'
+                        className='bg-blue-50 border border-blue-600 text-blue-600 px-2 py-2 rounded-md hover:bg-blue-600 hover:text-white duration-300'
                         onClick={() => setIsJoiningTeam(true)}
                     >
                         Rejoindre une équipe
@@ -35,7 +35,7 @@ export default function TeamList({
                 {Array.isArray(teams) && teams.map((team) => (
                     <li key={team.id} className="flex justify-between items-center mb-2">
                         <div className='mr-32'>
-                            <p className="text-base font-semibold uppercase">{team.name}</p>
+                            <p className="text-base font-medium uppercase">{team.name}</p>
                             <p className='text-gray-500 font-light text-sm'>Rôle : {team.pivot?.role || 'N/A'}</p>
                         </div>
                         <div className="flex space-x-2">
