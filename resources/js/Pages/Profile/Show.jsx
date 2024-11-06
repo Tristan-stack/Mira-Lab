@@ -47,39 +47,31 @@ export default function Show({ user, teams, projects, users }) {
     }, [errorMessage]);
 
     useEffect(() => {
-        const echo = window.Echo.private('teams'); // Abonnement au canal privé
+        const teamChannel = window.Echo.channel('teams');
 
-        echo.listen('.team.created', (e) => {
+        teamChannel.listen('.team.created', (e) => {
+            if (e.creatorId === user.id) {
+                return; // Ignorer l'événement si l'utilisateur est le créateur
+            }
             setTeamsState((prevTeams) => {
-                const teamExists = prevTeams.some(team => team.id === e.team.id);
-
-                // Vérifier que l'ID du créateur est différent de celui de l'utilisateur connecté
-                const isCreator = e.team.creator_id === user.id; // Remplacez `creator_id` par la clé correcte
-
-                if (!teamExists && !isCreator) {
-                    console.log(`Ajout de l'équipe avec l'ID: ${e.team.id}`);
+                if (!prevTeams.some(team => team.id === e.team.id)) {
                     return [...prevTeams, e.team];
                 }
                 return prevTeams;
             });
         });
 
-        echo.listen('.team.deleted', (e) => {
+        teamChannel.listen('.team.deleted', (e) => {
             setTeamsState((prevTeams) => {
-                const newTeams = prevTeams.filter((team) => {
-                    const teamId = Number(team.id);
-                    const eventTeamId = Number(e.teamId);
-                    return teamId !== eventTeamId;
-                });
-                return newTeams;
+                return prevTeams.filter(team => team.id !== e.teamId);
             });
         });
 
         return () => {
-            echo.stopListening('.team.created');
-            echo.stopListening('.team.deleted');
+            teamChannel.stopListening('.team.created');
+            teamChannel.stopListening('.team.deleted');
         };
-    }, [user.id]);
+    }, []);
 
     const handleEditClick = () => {
         setIsEditing(true);
