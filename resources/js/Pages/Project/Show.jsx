@@ -1,3 +1,4 @@
+// Show.jsx
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
@@ -36,6 +37,14 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 }
                 return prevTasks;
             });
+
+            // Mettre à jour availableTasks
+            setAvailableTasks((prevAvailableTasks) => {
+                if (!prevAvailableTasks.some(task => task.id === event.task.id)) {
+                    return [...prevAvailableTasks, event.task];
+                }
+                return prevAvailableTasks;
+            });
         });
 
         const listCreationChannel = window.Echo.private(`project.${projectId}`);
@@ -50,17 +59,36 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
 
         const taskUpdatedChannel = window.Echo.private(`project.${projectId}`);
         taskUpdatedChannel.listen('.task.updated', (event) => {
-            setTasks((prevTasks) => prevTasks.map(task => task.id === event.task.id ? event.task : task));
+            console.log('Événement .task.updated reçu:', event);
+            setTasks((prevTasks) =>
+                prevTasks.map(task => task.id === event.task.id ? event.task : task)
+            );
+
+            // Mettre à jour availableTasks
+            setAvailableTasks((prevAvailableTasks) => {
+                const index = prevAvailableTasks.findIndex(t => t.id === event.task.id);
+                if (index !== -1) {
+                    const updatedAvailableTasks = [...prevAvailableTasks];
+                    updatedAvailableTasks[index] = event.task;
+                    console.log('availableTasks mis à jour avec la tâche:', event.task);
+                    return updatedAvailableTasks;
+                }
+                console.log('Ajout de la tâche mise à jour à availableTasks:', event.task);
+                return [...prevAvailableTasks, event.task];
+            });
         });
 
         const listUpdatedChannel = window.Echo.private(`project.${projectId}`);
         listUpdatedChannel.listen('.list.updated', (event) => {
-            setLists((prevLists) => prevLists.map(list => list.id === event.list.id ? event.list : list));
+            setLists((prevLists) =>
+                prevLists.map(list => list.id === event.list.id ? event.list : list)
+            );
         });
 
         const taskDeletedChannel = window.Echo.private(`project.${projectId}`);
         taskDeletedChannel.listen('.task.deleted', (event) => {
             setTasks((prevTasks) => prevTasks.filter(task => task.id !== event.task.id));
+            setAvailableTasks((prevAvailableTasks) => prevAvailableTasks.filter(task => task.id !== event.task.id));
         });
 
         const listDeletedChannel = window.Echo.private(`project.${projectId}`);
@@ -103,7 +131,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     useEffect(() => {
         axios.get(`/project/${projectId}/tasks`)
             .then(response => {
-                console.log("Tâches récupérées :", response.data.tasks); // Ajoutez ce log pour vérifier la réponse
+                console.log("Tâches récupérées :", response.data.tasks);
                 setAvailableTasks(response.data.tasks);
             })
             .catch(error => {
@@ -127,6 +155,9 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 const updatedTask = response.data;
                 setTasks((prevTasks) =>
                     prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)
+                );
+                setAvailableTasks((prevAvailableTasks) =>
+                    prevAvailableTasks.map(task => task.id === updatedTask.id ? updatedTask : task)
                 );
                 setEditingTaskId(null);
                 setUpdatedTask({ name: '', description: '' });
@@ -164,6 +195,12 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                     }
                     return prevTasks;
                 });
+                setAvailableTasks((prevAvailableTasks) => {
+                    if (!prevAvailableTasks.some(task => task.id === newTask.id)) {
+                        return [...prevAvailableTasks, newTask];
+                    }
+                    return prevAvailableTasks;
+                });
             })
             .catch(error => {
                 console.error('Error creating task:', error);
@@ -174,6 +211,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         axios.delete(`/project/${projectId}/tasks/${taskId}`)
             .then(() => {
                 setTasks(tasks.filter(task => task.id !== taskId));
+                setAvailableTasks(availableTasks.filter(task => task.id !== taskId));
             })
             .catch(error => {
                 console.error('Error deleting task:', error);
@@ -247,12 +285,26 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         listsToCreate.forEach(name => handleCreateList(name));
     };
 
-    // afficher la list des taches
-    console.log("taches disponible", availableTasks)
+    // Afficher la liste des tâches disponibles
+    console.log("Tâches disponibles", availableTasks);
 
     return (
-        <Base user={currentUser} teamUsers={teamUsers} projectUsers={projectUsers} currentUser={currentUser} setProjectUsers={setProjectUsers} projectId={projectId} tasks={tasks}>
-            <MiniNav project={project} currentUser={currentUser} isBoardLeader={isBoardLeader} projectId={projectId} onlineUsers={onlineUsers} />
+        <Base 
+            user={currentUser} 
+            teamUsers={teamUsers} 
+            projectUsers={projectUsers} 
+            currentUser={currentUser} 
+            setProjectUsers={setProjectUsers} 
+            projectId={projectId} 
+            tasks={tasks}
+        >
+            <MiniNav 
+                project={project} 
+                currentUser={currentUser} 
+                isBoardLeader={isBoardLeader} 
+                projectId={projectId} 
+                onlineUsers={onlineUsers} 
+            />
 
             <div className="space-x-3 flex justify-start items-start mt-4">
                 {lists.length > 0 ? (
@@ -277,9 +329,12 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                             handleSaveTask={handleSaveTask}
                             handleDeleteTask={handleDeleteTask}
                             setEditingTaskId={setEditingTaskId}
-                            availableTasks={availableTasks} // Passer les tâches disponibles
+                            availableTasks={availableTasks} 
                         />
-                        <button onClick={() => handleCreateList(`liste${lists.length + 1}`)} className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300">
+                        <button 
+                            onClick={() => handleCreateList(`liste${lists.length + 1}`)} 
+                            className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300"
+                        >
                             Ajouter une liste
                         </button>
                     </>
@@ -297,7 +352,13 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             </button>
 
             {/* Composant ChatWindow */}
-            {isChatOpen && <ChatWindow projectId={projectId} currentUser={currentUser} onClose={() => setIsChatOpen(false)} />}
+            {isChatOpen && (
+                <ChatWindow 
+                    projectId={projectId} 
+                    currentUser={currentUser} 
+                    onClose={() => setIsChatOpen(false)} 
+                />
+            )}
         </Base>
     );
 };

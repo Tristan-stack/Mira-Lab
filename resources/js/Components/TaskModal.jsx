@@ -80,14 +80,16 @@ const TaskModal = ({
             <div ref={containerRef} className="flex justify-center items-center gap-4 w-full h-full">
                 <div className="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4 relative flex flex-col justify-between h-2/3">
                     <div>
-                        <button
-                            onClick={onClose}
-                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-3xl duration-200"
-                        >
-                            &times;
-                        </button>
+                        <div className='flex justify-between items-center'>
+                            <h2 className="text-xl font-bold mb-4">Modifier la tâche</h2>
+                            <button
+                                onClick={onClose}
+                                className=" text-red-500 hover:text-red-700 text-3xl duration-200"
+                            >
+                                &times;
+                            </button>
 
-                        <h2 className="text-xl font-bold mb-4">Modifier la tâche</h2>
+                        </div>
 
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">

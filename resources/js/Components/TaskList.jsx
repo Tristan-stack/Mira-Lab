@@ -11,7 +11,7 @@ const Task = ({
     handleSaveTask,
     setEditingTaskId,
     handleDeleteTask,
-    availableTasks // Passer availableTasks ici
+    availableTasks 
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);

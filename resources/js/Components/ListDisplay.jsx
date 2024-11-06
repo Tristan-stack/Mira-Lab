@@ -25,7 +25,7 @@ const ListDisplay = ({
     handleDeleteTask,
     setEditingTaskId,
     projectId,
-    availableTasks // Passer availableTasks ici
+    availableTasks 
 }) => {
     const [newTaskNames, setNewTaskNames] = useState({});
     const [newTaskDescriptions, setNewTaskDescriptions] = useState({});
