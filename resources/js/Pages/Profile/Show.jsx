@@ -46,6 +46,41 @@ export default function Show({ user, teams, projects, users }) {
         }
     }, [errorMessage]);
 
+    useEffect(() => {
+        const echo = window.Echo.private('teams'); // Abonnement au canal privé
+
+        echo.listen('.team.created', (e) => {
+            setTeamsState((prevTeams) => {
+                const teamExists = prevTeams.some(team => team.id === e.team.id);
+
+                // Vérifier que l'ID du créateur est différent de celui de l'utilisateur connecté
+                const isCreator = e.team.creator_id === user.id; // Remplacez `creator_id` par la clé correcte
+
+                if (!teamExists && !isCreator) {
+                    console.log(`Ajout de l'équipe avec l'ID: ${e.team.id}`);
+                    return [...prevTeams, e.team];
+                }
+                return prevTeams;
+            });
+        });
+
+        echo.listen('.team.deleted', (e) => {
+            setTeamsState((prevTeams) => {
+                const newTeams = prevTeams.filter((team) => {
+                    const teamId = Number(team.id);
+                    const eventTeamId = Number(e.teamId);
+                    return teamId !== eventTeamId;
+                });
+                return newTeams;
+            });
+        });
+
+        return () => {
+            echo.stopListening('.team.created');
+            echo.stopListening('.team.deleted');
+        };
+    }, [user.id]);
+
     const handleEditClick = () => {
         setIsEditing(true);
     };

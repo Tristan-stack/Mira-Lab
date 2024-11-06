@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Project;
+use App\Events\TeamCreated;
+use App\Events\TeamDeleted;
 
 
 class TeamController extends Controller
@@ -79,6 +81,8 @@ class TeamController extends Controller
         if (!empty($selectedUsers)) {
             $team->users()->attach($selectedUsers, ['role' => 'member']);
         }
+
+        broadcast(new TeamCreated($team))->toOthers();
 
         return response()->json(['team' => $team->load('users')], 201);
     }
@@ -278,14 +282,17 @@ class TeamController extends Controller
      * Remove the specified team from storage.
      */
 
+
     public function destroy($id)
     {
         $team = Team::findOrFail($id);
         $team->users()->detach(); // Détache tous les utilisateurs de l'équipe
         $team->delete(); // Supprime l'équipe
-
+    
+        // Émet uniquement l'ID de l'équipe supprimée
+        broadcast(new TeamDeleted($team->id))->toOthers();
+    
         return response()->json(['message' => 'Équipe supprimée avec succès.'], 200); // Retourne une réponse JSON
     }
-
 
 }
