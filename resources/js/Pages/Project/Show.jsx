@@ -289,61 +289,66 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     console.log("Tâches disponibles", availableTasks);
 
     return (
-        <Base 
-            user={currentUser} 
-            teamUsers={teamUsers} 
-            projectUsers={projectUsers} 
-            currentUser={currentUser} 
-            setProjectUsers={setProjectUsers} 
-            projectId={projectId} 
+        <Base
+            user={currentUser}
+            teamUsers={teamUsers}
+            projectUsers={projectUsers}
+            currentUser={currentUser}
+            setProjectUsers={setProjectUsers}
+            projectId={projectId}
             tasks={tasks}
         >
-            <MiniNav 
-                project={project} 
-                currentUser={currentUser} 
-                isBoardLeader={isBoardLeader} 
-                projectId={projectId} 
-                onlineUsers={onlineUsers} 
+            <MiniNav
+                project={project}
+                currentUser={currentUser}
+                isBoardLeader={isBoardLeader}
+                projectId={projectId}
+                onlineUsers={onlineUsers}
             />
 
-            <div className="space-x-3 flex justify-start items-start mt-4">
-                {lists.length > 0 ? (
-                    <>
-                        <ListDisplay
-                            lists={lists}
-                            tasks={tasks}
-                            setTasks={setTasks}
-                            projectId={projectId}
-                            editingListId={editingListId}
-                            updatedListName={updatedListName}
-                            startEditingList={startEditingList}
-                            handleUpdateList={handleUpdateList}
-                            setEditingListId={setEditingListId}
-                            setUpdatedListName={setUpdatedListName}
-                            handleDeleteList={handleDeleteList}
-                            handleCreateTask={handleCreateTask}
-                            startEditingTask={startEditingTask}
-                            editingTaskId={editingTaskId}
-                            updatedTask={updatedTask}
-                            handleTaskChange={handleTaskChange}
-                            handleSaveTask={handleSaveTask}
-                            handleDeleteTask={handleDeleteTask}
-                            setEditingTaskId={setEditingTaskId}
-                            availableTasks={availableTasks} 
-                        />
-                        <button 
-                            onClick={() => handleCreateList(`liste${lists.length + 1}`)} 
-                            className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300"
-                        >
-                            Ajouter une liste
-                        </button>
-                    </>
-                ) : (
-                    <ModelSelection onSelectModel={handleSelectModel} />
-                )}
+            {/* Conteneur pour le défilement horizontal des listes */}
+            <div className="flex-1">
+                <div className="mt-4 overflow-x-auto">
+                    <div className="flex space-x-3">
+                        {lists.length > 0 ? (
+                            <>
+                                <ListDisplay
+                                    lists={lists}
+                                    tasks={tasks}
+                                    setTasks={setTasks}
+                                    projectId={projectId}
+                                    editingListId={editingListId}
+                                    updatedListName={updatedListName}
+                                    startEditingList={startEditingList}
+                                    handleUpdateList={handleUpdateList}
+                                    setEditingListId={setEditingListId}
+                                    setUpdatedListName={setUpdatedListName}
+                                    handleDeleteList={handleDeleteList}
+                                    handleCreateTask={handleCreateTask}
+                                    startEditingTask={startEditingTask}
+                                    editingTaskId={editingTaskId}
+                                    updatedTask={updatedTask}
+                                    handleTaskChange={handleTaskChange}
+                                    handleSaveTask={handleSaveTask}
+                                    handleDeleteTask={handleDeleteTask}
+                                    setEditingTaskId={setEditingTaskId}
+                                    availableTasks={availableTasks}
+                                />
+                                <button
+                                    onClick={() => handleCreateList(`liste${lists.length + 1}`)}
+                                    className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300 min-w-[200px]"
+                                >
+                                    Ajouter une liste
+                                </button>
+                            </>
+                        ) : (
+                            <ModelSelection onSelectModel={handleSelectModel} />
+                        )}
+                    </div>
+                </div>
             </div>
 
-            {/* Bouton rond avec icône de dialogue en bas à droite */}
+            {/* Bouton de chat et autres composants */}
             <button
                 className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none duration-200"
                 onClick={() => setIsChatOpen(!isChatOpen)}
@@ -351,12 +356,11 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 <FiMessageCircle size={24} />
             </button>
 
-            {/* Composant ChatWindow */}
             {isChatOpen && (
-                <ChatWindow 
-                    projectId={projectId} 
-                    currentUser={currentUser} 
-                    onClose={() => setIsChatOpen(false)} 
+                <ChatWindow
+                    projectId={projectId}
+                    currentUser={currentUser}
+                    onClose={() => setIsChatOpen(false)}
                 />
             )}
         </Base>

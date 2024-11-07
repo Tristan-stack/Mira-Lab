@@ -205,13 +205,13 @@ export default function Show({ user, teams, projects, users }) {
         }
     };
 
+        // Show.jsx
+    
     return (
         <Layout user={user}>
-            <BackgroundBeamsWithCollision>
-
             <Head title="Mon Profil" />
             <ToastContainer />
-                <div className="flex flex-col justify-center items-center mx-auto p-6 space-x-10 z-10  w-5/6">
+            <div className="w-full md:w-5/6 h-full flex flex-col justify-center items-center mx-auto p-6 space-y-10 z-10">
                 {errorMessage && (
                     <div className="w-full text-red-500 bg-red-100 p-4 rounded-lg mb-4">
                         {errorMessage}
@@ -219,11 +219,11 @@ export default function Show({ user, teams, projects, users }) {
                 )}
                 <AnimatePresence>
                     {!isCreatingTeam && !isCreatingProject ? (
-                        <div className='w-full flex justify-around items-center '>
+                        <div className='w-full flex flex-col md:flex-row justify-around items-start space-y-10 md:space-y-0'>
                             <UserProfile user={user} />
-
-                            <div className='flex flex-col w-1/2'>
-
+    
+                            <div className='flex flex-col w-full md:w-1/2 space-y-8'>
+    
                                 <TeamList
                                     teams={teamsState}
                                     user={user}
@@ -233,8 +233,7 @@ export default function Show({ user, teams, projects, users }) {
                                     setIsJoiningTeam={setIsJoiningTeam}
                                     setIsCreatingTeam={setIsCreatingTeam}
                                 />
-
-                           
+    
                                 <ProjectList
                                     projects={projectsState}
                                     user={user}
@@ -242,24 +241,20 @@ export default function Show({ user, teams, projects, users }) {
                                     onCreateProject={handleAddProject}
                                     setIsCreatingProject={setIsCreatingProject}
                                 />     
-
+    
                             </div>
                         </div>
                     ) : isCreatingTeam ? (
-                        <div
-                                    className='w-full '
-                        >
+                        <div className='w-full max-w-lg'>
                             <TeamCreate user={user} onAddTeam={handleAddTeam} users={users} onCancel={handleCancelTeam} />
                         </div>
                     ) : (
-                        <div
-                            className='w-full '
-                        >
+                        <div className='w-full max-w-lg'>
                             <CreateProjectForm onCreate={handleAddProject} onCancel={handleCancelProject} />
                         </div>
                     )}
                 </AnimatePresence>
-
+    
                 {isJoiningTeam && (
                     <JoinTeamModal
                         onClose={() => setIsJoiningTeam(false)}
@@ -267,7 +262,6 @@ export default function Show({ user, teams, projects, users }) {
                     />
                 )}
             </div>
-            </BackgroundBeamsWithCollision>
         </Layout>
     );
 }

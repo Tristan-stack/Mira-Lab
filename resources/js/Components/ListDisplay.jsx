@@ -142,7 +142,7 @@ const ListDisplay = ({
                 {lists.map((list) => (
                     <div
                         key={list.id}
-                        className="w-64 p-4 bg-gray-100 rounded shadow-md relative flex-shrink-0"
+                        className="min-w-64 p-4 bg-gray-100 rounded shadow-md flex-shrink-0"
                     >
                         {editingListId === list.id ? (
                             <input

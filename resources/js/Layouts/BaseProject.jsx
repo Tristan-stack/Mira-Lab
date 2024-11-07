@@ -1,23 +1,22 @@
+// BaseProject.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../Components/NavBar'; // Chemin vers votre composant Navbar
+import Navbar from '../Components/NavBar';
 import SidebarProject from '../Components/SidebarProject';
-import TeamMembersModal from '../Components/TeamMemberModal'; // Assurez-vous que le chemin est correct
+import TeamMembersModal from '../Components/TeamMemberModal';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Importer les styles de react-toastify
-import { GradientProvider } from '../contexts/GradientContext.jsx'; // Importer le GradientProvider
+import 'react-toastify/dist/ReactToastify.css';
+import { GradientProvider } from '../contexts/GradientContext.jsx';
 
 export default function Layout({ children, user, teamUsers, projectUsers, currentUser, setProjectUsers, projectId }) {
-    const [isModalOpen, setIsModalOpen] = useState(false); // État pour gérer la visibilité du pop-up
-    const [tasks, setTasks] = useState([]); // État pour stocker les tâches
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        // Fonction pour récupérer les tâches d'un projet spécifique
         const fetchTasks = async () => {
             try {
-                const response = await axios.get(`/project/${projectId}/tasks`); // Utilisez projectId pour récupérer les tâches du projet spécifique
-                console.log("Projet ID :", projectId); // Affichez l'ID du projet
-                console.log("Tâches récupérées :", response.data.tasks); // Affichez les tâches récupérées
+                const response = await axios.get(`/project/${projectId}/tasks`);
                 setTasks(response.data.tasks);
             } catch (error) {
                 console.error('Error loading tasks:', error);
@@ -31,46 +30,46 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
 
     return (
         <GradientProvider>
-            <div className="flex h-screen overflow-hidden"> {/* Empêche le défilement global */}
+            <div className="flex h-screen overflow-y-hidden">
                 <SidebarProject
                     user={user}
                     projectUsers={projectUsers}
                     currentUser={currentUser}
                     setProjectUsers={setProjectUsers}
-                    onOpenModal={() => setIsModalOpen(true)} // Passez la fonction pour ouvrir le modal
-                    tasks={tasks} // Passez les tâches à SidebarProject
+                    onOpenModal={() => setIsModalOpen(true)}
+                    tasks={tasks}
                 />
                 <div className="flex-1 flex flex-col relative">
                     <Navbar />
-                    <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 custom-scrollbar"> {/* Permet le défilement dans la zone des enfants */}
-                        <div className="custom-scrollbar h-full ">
+                    <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 flex flex-col overflow-hidden">
+                        <div className="flex-1 overflow-auto custom-scrollbar">
                             {children}
                         </div>
                     </main>
                     <TeamMembersModal
                         isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)} // Fermer le pop-up
+                        onClose={() => setIsModalOpen(false)}
                         teamUsers={teamUsers}
                     />
                 </div>
                 <ToastContainer />
                 <style>{`
                     .custom-scrollbar::-webkit-scrollbar {
-                        width: 8px; /* Largeur de la barre de défilement */
-                        height: 8px; /* Hauteur de la barre de défilement */
+                        width: 8px;
+                        height: 8px;
                     }
 
                     .custom-scrollbar::-webkit-scrollbar-track {
-                        background: #f1f1f1; /* Couleur de la piste */
+                        background: #f1f1f1;
                     }
 
                     .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background: #888; /* Couleur de la barre de défilement */
-                        border-radius: 10px; /* Arrondir les coins */
+                        background: #888;
+                        border-radius: 10px;
                     }
 
                     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                        background: #555; /* Couleur de la barre de défilement au survol */
+                        background: #555;
                     }
                 `}</style>
             </div>
