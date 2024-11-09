@@ -27,6 +27,19 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
     }, [initialProject]);
 
     useEffect(() => {
+        const userId = currentUser.id;
+
+        window.Echo.channel(`user.${userId}`)
+            .listen('.notification.created', (e) => {
+                setNotifications((prevNotifications) => [e.notification, ...prevNotifications]);
+            });
+
+        return () => {
+            window.Echo.leave(`user.${userId}`);
+        };
+    }, [currentUser.id]);
+
+    useEffect(() => {
         const handleClickOutside = (event) => {
             if (userDialogRef.current && !userDialogRef.current.contains(event.target)) {
                 setIsUserDialogOpen(false);

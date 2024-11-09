@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Events\TaskCreated;
 use App\Events\TaskDeleted;
 use App\Events\TaskUpdated;
-
+use App\Events\NotificationCreated;
 
 class TaskController extends Controller
 {
@@ -77,8 +77,12 @@ class TaskController extends Controller
             $notification->users()->attach($user->id, ['status' => 'unread']);
         }
 
+        $userIds = $projectUsers->pluck('id');
+        event(new NotificationCreated($notification, $userIds));
+
         // Diffuser l'événement TaskCreated
         broadcast(new TaskCreated($task))->toOthers();
+        
 
         // Renvoyer une réponse
         return response()->json([

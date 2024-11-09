@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Events\ListCreated;
 use App\Events\ListDeleted;
 use App\Events\ListUpdated;
+use App\Events\NotificationCreated;
 use Illuminate\Support\Facades\Auth;
 
 class ListController extends Controller
@@ -51,6 +52,9 @@ class ListController extends Controller
         foreach ($projectUsers as $user) {
             $notification->users()->attach($user->id, ['status' => 'unread']);
         }
+
+        $userIds = $projectUsers->pluck('id');
+        event(new NotificationCreated($notification, $userIds));
 
         // Diffuser l'événement ListCreated
         broadcast(new ListCreated($list))->toOthers();
