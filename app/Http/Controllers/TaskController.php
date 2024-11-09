@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Notification;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Events\TaskCreated;
@@ -36,7 +38,6 @@ class TaskController extends Controller
             ], 500);
         }
     }
-
     public function store(Request $request)
     {
         // Valider les données de la requête
@@ -47,26 +48,44 @@ class TaskController extends Controller
             'end_date' => 'nullable|date',
             'status' => 'nullable|string',
             'project_id' => 'required|exists:projects,id',
-            'lists_id' => 'required|exists:lists,id', 
+            'lists_id' => 'required|exists:lists,id',
             'dependencies' => 'nullable|exists:tasks,id',
         ]);
 
-        // Ajouter l'ID de l'utilisateur authentifié aux données validées
+        // Ajouter l'ID de l'utilisateur authentifié
         $validatedData['user_id'] = Auth::id();
 
-        // Créer une nouvelle tâche avec les données validées
+        // Créer une nouvelle tâche
         $task = Task::create($validatedData);
 
-        // Diffuser l'événement de création de la tâche
+        // Récupérer le projet avec ses utilisateurs
+        $project = Project::with('users')->find($validatedData['project_id']);
+
+        // Obtenir tous les utilisateurs du projet sauf le créateur de la tâche
+        $projectUsers = $project->users->where('id', '!=', Auth::id());
+
+        // Créer la notification
+        $notification = Notification::create([
+            'text' => 'Nouvelle tâche créée : ' . $task->name,
+            'user_id' => Auth::id(), // L'utilisateur qui a créé la notification
+            'task_id' => $task->id,
+            'list_id' => $task->lists_id,
+        ]);
+
+        // Associer la notification aux utilisateurs (sauf le créateur)
+        foreach ($projectUsers as $user) {
+            $notification->users()->attach($user->id, ['status' => 'unread']);
+        }
+
+        // Diffuser l'événement TaskCreated
         broadcast(new TaskCreated($task))->toOthers();
 
-        // Renvoyer une réponse avec la tâche créée
+        // Renvoyer une réponse
         return response()->json([
             'task' => $task,
-            'message' => 'Task created successfully!'
+            'message' => 'Task created successfully!',
         ], 201);
     }
-
     public function update(Request $request, $projectId, $taskId)
     {
         // Validation des données

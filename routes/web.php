@@ -12,6 +12,7 @@ use App\Events\TestEvent;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\NotificationController;
 
 
 // Route pour la page de connexion
@@ -118,6 +119,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/project/{projectId}/messages', [MessageController::class, 'index'])->name('messages.index');
         Route::post('/project/{projectId}/messages', [MessageController::class, 'store'])->name('messages.store');
     });
+
+    Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
+    Route::post('/notifications/{notificationId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{notificationId}', [NotificationController::class, 'deleteNotification']);
 
 });
 

@@ -16,15 +16,8 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
-    const [isNotificationOpen, setIsNotificationOpen] = useState(false); // Déclaration de l'état
-    const [readNotifications, setReadNotifications] = useState([]); // État pour les notifications lues
-    const [notifications, setNotifications] = useState([
-        { id: 1, message: 'Nouvelle tâche assignée : Corriger les bugs' },
-        { id: 2, message: 'Alice a commenté sur la tâche : Mettre à jour la documentation' },
-        { id: 3, message: 'La date limite du projet est dans 3 jours' },
-        { id: 4, message: 'Nouvelle tâche assignée : Réviser le code' },
-        { id: 5, message: 'Bob a commenté sur la tâche : Ajouter des tests unitaires' },
-    ]); // État pour les notifications
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false); // État pour les notifications
+    const [notifications, setNotifications] = useState([]); // Initialisé comme tableau vide
 
     const userDialogRef = useRef(null);
     const notificationRef = useRef(null);
@@ -49,28 +42,36 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
         };
     }, []);
 
+    // Récupérer les notifications lorsque le menu est ouvert
+    useEffect(() => {
+        if (isNotificationOpen) {
+            axios.get('/notifications')
+                .then(response => {
+                    setNotifications(response.data.notifications);
+                    console.log('Notifications récupérées avec succès :', response.data.notifications);
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des notifications :', error);
+                    toast.error('Erreur lors de la récupération des notifications.', {
+                        position: "top-center",
+                        autoClose: 3000,
+                    });
+                });
+        }
+    }, [isNotificationOpen]);
+
     const handleShare = () => {
         navigator.clipboard.writeText(project.project_code)
             .then(() => {
                 toast.success('Code du projet copié !', {
                     position: "top-center",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
                 });
             })
             .catch(err => {
                 toast.error('Erreur lors de la copie du code du projet.', {
                     position: "top-center",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
                 });
                 console.error('Erreur lors de la copie du code du projet :', err);
             });
@@ -92,22 +93,12 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                 toast.success('Le titre du projet a été mis à jour avec succès.', {
                     position: "top-center",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
                 });
                 setProject(prevProject => ({ ...prevProject, name: response.data.project.name }));
             } catch (error) {
                 toast.error('Erreur lors de la mise à jour du titre du projet.', {
                     position: "top-center",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
                 });
                 console.error('Erreur lors de la mise à jour du titre du projet :', error);
             }
@@ -137,11 +128,6 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
             toast.error('Seul le Board Leader peut changer le statut de visibilité.', {
                 position: "top-center",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
             });
             return;
         }
@@ -150,27 +136,14 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
             toast.success('Le statut de visibilité du projet a été mis à jour avec succès.', {
                 position: "top-center",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
             });
             setProject(prevProject => ({ ...prevProject, status: response.data.project.status }));
             setIsDialogOpen(false);
         } catch (error) {
             console.error('Erreur lors de la mise à jour du statut de visibilité du projet :', error);
-            if (error.response) {
-                console.error('Erreur de réponse API :', error.response.data);
-            }
             toast.error('Erreur lors de la mise à jour du statut de visibilité du projet.', {
                 position: "top-center",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
             });
         }
     };
@@ -183,12 +156,40 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
         setIsNotificationOpen(false);
     };
 
-    const handleMarkAsRead = (id) => {
-        setReadNotifications([...readNotifications, id]);
+    // Marquer une notification comme lue
+    const handleMarkAsRead = async (id) => {
+        try {
+            await axios.post(`/notifications/${id}/mark-as-read`);
+            setNotifications(notifications.filter(notification => notification.id !== id));
+            toast.success('Notification marquée comme lue.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            console.error('Erreur lors du marquage de la notification comme lue :', error);
+            toast.error('Erreur lors du marquage de la notification comme lue.', {
+                position: "top-center",
+                autoClose: 3000,
+            });
+        }
     };
 
-    const handleDeleteNotification = (id) => {
-        setNotifications(notifications.filter(notification => notification.id !== id));
+    // Supprimer une notification
+    const handleDeleteNotification = async (id) => {
+        try {
+            await axios.delete(`/notifications/${id}`);
+            setNotifications(notifications.filter(notification => notification.id !== id));
+            toast.success('Notification supprimée.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            console.error('Erreur lors de la suppression de la notification :', error);
+            toast.error('Erreur lors de la suppression de la notification.', {
+                position: "top-center",
+                autoClose: 3000,
+            });
+        }
     };
 
     return (
@@ -238,6 +239,11 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                         onClick={handleNotificationIconClick}
                     >
                         <FaBell className="text-white text-lg" />
+                        {notifications.length > 0 && (
+                            <span className="absolute top-2 right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                                {notifications.length}
+                            </span>
+                        )}
                     </div>
                 </div>
                 <div className="flex items-center space-x-4 mr-2">
@@ -302,15 +308,15 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                                 notifications.map((notification) => (
                                     <div key={notification.id} className="p-2 bg-gray-200 rounded shadow flex justify-between items-center">
                                         <div className="flex items-center space-x-2">
-                                            {!readNotifications.includes(notification.id) && (
+                                            {notification.status === 'unread' && (
                                                 <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                                             )}
                                             <span onClick={() => handleMarkAsRead(notification.id)} className="cursor-pointer">
-                                                {notification.message}
+                                                {notification.text}
                                             </span>
                                         </div>
                                         <button onClick={() => handleDeleteNotification(notification.id)} className="text-red-500 hover:text-red-700 text-xs">
-                                            <FaTimes />
+                                            <FaTrash />
                                         </button>
                                     </div>
                                 ))
@@ -375,6 +381,7 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
             `}</style>
         </div>
     );
+
 };
 
 export default MiniNav;

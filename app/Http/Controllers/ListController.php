@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lists;
 use Illuminate\Http\Request;
+use App\Models\Lists;
 use App\Models\Project;
+use App\Models\Notification;
 use App\Events\ListCreated;
 use App\Events\ListDeleted;
 use App\Events\ListUpdated;
+use Illuminate\Support\Facades\Auth;
 
 class ListController extends Controller
 {
@@ -20,25 +22,43 @@ class ListController extends Controller
             'lists' => $lists,
         ]);
     }
-
     public function store(Request $request)
     {
         // Valider les données de la requête
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'status' => 'required|string',
-            'project_id' => 'required|exists:projects,id', // Vérifie que le projet existe
+            'project_id' => 'required|exists:projects,id',
         ]);
 
-        // Créer une nouvelle liste avec les données validées
+        // Créer une nouvelle liste
         $list = Lists::create($validatedData);
 
+        // Récupérer le projet avec ses utilisateurs
+        $project = Project::with('users')->find($validatedData['project_id']);
+
+        // Obtenir tous les utilisateurs du projet sauf le créateur de la liste
+        $projectUsers = $project->users->where('id', '!=', Auth::id());
+
+        // Créer la notification
+        $notification = Notification::create([
+            'text' => 'Nouvelle liste créée : ' . $list->name,
+            'user_id' => Auth::id(), // L'utilisateur qui a créé la notification
+            'list_id' => $list->id,
+        ]);
+
+        // Associer la notification aux utilisateurs (sauf le créateur)
+        foreach ($projectUsers as $user) {
+            $notification->users()->attach($user->id, ['status' => 'unread']);
+        }
+
+        // Diffuser l'événement ListCreated
         broadcast(new ListCreated($list))->toOthers();
 
-        // Renvoyer une réponse avec la liste créée
+        // Renvoyer une réponse
         return response()->json([
-            'list' => $list->load('tasks'), // Inclut les tâches associées
-            'message' => 'List created successfully!'
+            'list' => $list->load('tasks'),
+            'message' => 'List created successfully!',
         ], 201);
     }
 
