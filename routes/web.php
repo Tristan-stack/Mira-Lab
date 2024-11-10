@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/projects/{projectId}/tasks/{taskId}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('/projects/{projectId}/tasks/{taskId}/add-dependency', [TaskController::class, 'addDependency']);
+    Route::put('/projects/{projectId}/tasks/{taskId}/update-status', [TaskController::class, 'updateStatus']);
     Route::delete('/projects/{projectId}/tasks/{taskId}/remove-dependency', [TaskController::class, 'removeDependency']);
 
     Route::post('/project/{project}/tasks', [TaskController::class, 'store']);

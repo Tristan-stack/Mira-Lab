@@ -153,10 +153,10 @@ class TaskController extends Controller
             $task->end_date = $validatedData['end_date'];
         }
     
-        // Vérifier si la date de fin est passée et mettre à jour le statut
-        if (isset($validatedData['end_date']) && new \DateTime($validatedData['end_date']) < new \DateTime()) {
-            $task->status = 'Fini';
-        }
+        // // Vérifier si la date de fin est passée et mettre à jour le statut
+        // if (isset($validatedData['end_date']) && new \DateTime($validatedData['end_date']) < new \DateTime()) {
+        //     $task->status = 'Fini';
+        // }
     
         $task->save();
     
@@ -166,6 +166,32 @@ class TaskController extends Controller
         // Retourner la tâche mise à jour en réponse JSON
         return response()->json([
             'message' => 'Task updated successfully!',
+            'task' => $task
+        ], 200);
+    }
+
+    public function updateStatus(Request $request, $projectId, $taskId)
+    {
+        // Validation des données
+        $validatedData = $request->validate([
+            'status' => 'required|in:Non commencer,En cours,Fini',
+        ]);
+
+        // Trouver la tâche
+        $task = Task::where('project_id', $projectId)->findOrFail($taskId);
+
+        // Mettre à jour le statut
+        $task->status = $validatedData['status'];
+
+        // Sauvegarder les modifications
+        $task->save();
+
+        // Diffuser l'événement de mise à jour de la tâche
+        broadcast(new TaskUpdated($task))->toOthers();
+
+        // Retourner la tâche mise à jour en réponse JSON
+        return response()->json([
+            'message' => 'Statut de la tâche mis à jour avec succès!',
             'task' => $task
         ], 200);
     }

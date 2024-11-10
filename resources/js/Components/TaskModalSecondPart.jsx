@@ -14,36 +14,12 @@ const TaskDetails = ({
 }) => {
     const [startDate, setStartDate] = useState(task.start_date || '');
     const [endDate, setEndDate] = useState(task.end_date || '');
-    const [status, setStatus] = useState(task.status || 'pending');
-
-    useEffect(() => {
-        checkAndUpdateStatus();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [endDate]);
+    const [status, setStatus] = useState(task.status || 'Pas commencer');
 
     useEffect(() => {
         console.log('TaskDetails : availableTasks mis à jour:', availableTasks);
         console.log('TaskDetails : task.dependencies mis à jour:', task.dependencies);
     }, [availableTasks, task.dependencies]);
-
-    const checkAndUpdateStatus = async () => {
-        if (endDate && new Date(endDate) < new Date()) {
-            if (status !== 'Fini') {
-                try {
-                    await axios.post(`/projects/${task.project_id}/tasks/${task.id}/add-dependency`, {
-                        status: 'Fini'
-                    });
-                    setStatus('Fini');
-                    toast.success('Status mis à jour !');
-                } catch (error) {
-                    console.error('Error updating status:', error);
-                    toast.error('Error lors de la mise à jour du status.');
-                }
-            }
-        } else {
-            setStatus('pending');
-        }
-    };
 
     const handleDependencyChange = (event) => {
         setSelectedDependencyId(event.target.value);
@@ -56,10 +32,10 @@ const TaskDetails = ({
                     dependencies: selectedDependencyId
                 });
                 setSelectedDependencyId('');
-                toast.success('Dependance mis a jour avec succès !');
+                toast.success('Dépendance mise à jour avec succès !');
             } catch (error) {
-                console.error('Error adding dependency:', error);
-                toast.error('Failed to add dependency.');
+                console.error('Erreur lors de l\'ajout de la dépendance:', error);
+                toast.error('Échec de l\'ajout de la dépendance.');
             }
         }
     };
@@ -67,13 +43,13 @@ const TaskDetails = ({
     const handleRemoveDependency = async () => {
         try {
             await axios.delete(`/projects/${task.project_id}/tasks/${task.id}/remove-dependency`, {
-                data: { dependencies: '' } // Correct usage with axios DELETE
+                data: { dependencies: '' }
             });
-            setSelectedDependencyId(''); // Reset selected dependency
-            toast.success('Dépendance retirer avec succès !');
+            setSelectedDependencyId('');
+            toast.success('Dépendance retirée avec succès !');
         } catch (error) {
-            console.error('Error removing dependency:', error);
-            toast.error('Failed to remove dependency.');
+            console.error('Erreur lors de la suppression de la dépendance:', error);
+            toast.error('Échec de la suppression de la dépendance.');
         }
     };
 
@@ -102,13 +78,31 @@ const TaskDetails = ({
                 setStartDate(value);
             } else if (field === 'end_date') {
                 setEndDate(value);
-                checkAndUpdateStatus();
             }
             toast.success('Date mise à jour avec succès !');
         } catch (error) {
-            console.error(`Error updating ${field}:`, error);
-            toast.error(`Failed to update ${field}.`);
+            console.error(`Erreur lors de la mise à jour de ${field}:`, error);
+            toast.error(`Échec de la mise à jour de ${field}.`);
         }
+    };
+
+    const cycleStatus = () => {
+        const statuses = ['Non commencer', 'En cours', 'Fini'];
+        const currentIndex = statuses.indexOf(status);
+        const nextIndex = (currentIndex + 1) % statuses.length;
+        const nextStatus = statuses[nextIndex];
+
+        setStatus(nextStatus);
+        toast.success(`Statut mis à jour en "${nextStatus}" !`);
+
+        // Mise à jour du statut sur le serveur
+        axios.put(`/projects/${task.project_id}/tasks/${task.id}/update-status`, {
+            status: nextStatus
+        })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour du statut:', error);
+                toast.error('Échec de la mise à jour du statut.');
+            });
     };
 
     // Obtention de la date de création de la tâche actuelle
@@ -129,17 +123,39 @@ const TaskDetails = ({
     // Format today's date for the min attribute
     const todayDate = new Date().toISOString().split('T')[0];
 
+    // Définir la couleur du bouton en fonction du statut
+    const getStatusButtonColor = () => {
+        switch (status) {
+            case 'Non commencer':
+                return 'bg-blue-500 hover:bg-blue-600';
+            case 'En cours':
+                return 'bg-red-500 hover:bg-red-600';
+            case 'Fini':
+                return 'bg-green-500 hover:bg-green-600';
+            default:
+                return 'bg-gray-500 hover:bg-gray-600';
+        }
+    };
+
     return (
         <div className='bg-white p-6 rounded shadow-md w-1/4 max-w-lg flex flex-col space-y-4 h-2/3'>
             <h1 className='text-2xl font-semibold text-gray-800'>Détails de la tâche</h1>
             <div className='space-y-2'>
-                <p className='text-gray-600'>Status : <span className='font-medium'>{status}</span></p>
+                <div className='flex items-center space-x-4 mb-4'>
+                    <p className='text-gray-600'>Status :</p>
+                    <button
+                        onClick={cycleStatus}
+                        className={`${getStatusButtonColor()} text-white text-xs font-medium px-4 py-2 rounded-full`}
+                    >
+                        {status}
+                    </button>
+                </div>
                 <div>
                     <label className='block text-gray-600'>Date de début :</label>
                     <input
                         type="date"
                         value={startDate}
-                        min={todayDate} // Prevent selecting a date before today
+                        min={todayDate}
                         onChange={(e) => handleDateChange('start_date', e.target.value)}
                         className="border rounded-lg p-2 w-full mt-1"
                     />
@@ -149,7 +165,7 @@ const TaskDetails = ({
                     <input
                         type="date"
                         value={endDate}
-                        min={todayDate} // Prevent selecting a date before today
+                        min={todayDate}
                         onChange={(e) => handleDateChange('end_date', e.target.value)}
                         className="border rounded-lg p-2 w-full mt-1"
                     />
