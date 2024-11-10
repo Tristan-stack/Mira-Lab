@@ -18,6 +18,7 @@ const TaskDetails = ({
 
     useEffect(() => {
         checkAndUpdateStatus();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [endDate]);
 
     useEffect(() => {
@@ -33,10 +34,10 @@ const TaskDetails = ({
                         status: 'Fini'
                     });
                     setStatus('Fini');
-                    toast.success('Status updated to Fini!');
+                    toast.success('Status mis à jour !');
                 } catch (error) {
                     console.error('Error updating status:', error);
-                    toast.error('Failed to update status.');
+                    toast.error('Error lors de la mise à jour du status.');
                 }
             }
         } else {
@@ -55,7 +56,7 @@ const TaskDetails = ({
                     dependencies: selectedDependencyId
                 });
                 setSelectedDependencyId('');
-                toast.success('Dependency added successfully!');
+                toast.success('Dependance mis a jour avec succès !');
             } catch (error) {
                 console.error('Error adding dependency:', error);
                 toast.error('Failed to add dependency.');
@@ -66,10 +67,10 @@ const TaskDetails = ({
     const handleRemoveDependency = async () => {
         try {
             await axios.delete(`/projects/${task.project_id}/tasks/${task.id}/remove-dependency`, {
-                data: { dependencies: '' } // Correction : Utilisation de 'data' pour axios delete
+                data: { dependencies: '' } // Correct usage with axios DELETE
             });
-            setSelectedDependencyId(''); // Réinitialiser la dépendance sélectionnée
-            toast.success('Dependency removed successfully!');
+            setSelectedDependencyId(''); // Reset selected dependency
+            toast.success('Dépendance retirer avec succès !');
         } catch (error) {
             console.error('Error removing dependency:', error);
             toast.error('Failed to remove dependency.');
@@ -77,6 +78,17 @@ const TaskDetails = ({
     };
 
     const handleDateChange = async (field, value) => {
+        const today = new Date();
+        const selectedDate = new Date(value);
+
+        // Format today's date as YYYY-MM-DD
+        const formattedToday = today.toISOString().split('T')[0];
+
+        if (selectedDate < today.setHours(0, 0, 0, 0)) {
+            toast.error(`La date ${field === 'start_date' ? 'de début' : 'de fin'} ne peut pas être antérieure à aujourd'hui.`);
+            return;
+        }
+
         if ((field === 'start_date' && value === startDate) || (field === 'end_date' && value === endDate)) {
             return;
         }
@@ -85,13 +97,14 @@ const TaskDetails = ({
             await axios.post(`/projects/${task.project_id}/tasks/${task.id}/add-dependency`, {
                 [field]: value
             });
+
             if (field === 'start_date') {
                 setStartDate(value);
             } else if (field === 'end_date') {
                 setEndDate(value);
                 checkAndUpdateStatus();
             }
-            toast.success('Date updated successfully!');
+            toast.success('Date mise à jour avec succès !');
         } catch (error) {
             console.error(`Error updating ${field}:`, error);
             toast.error(`Failed to update ${field}.`);
@@ -113,6 +126,9 @@ const TaskDetails = ({
         return depTask ? depTask.name : 'Tâche inconnue';
     };
 
+    // Format today's date for the min attribute
+    const todayDate = new Date().toISOString().split('T')[0];
+
     return (
         <div className='bg-white p-6 rounded shadow-md w-1/4 max-w-lg flex flex-col space-y-4 h-2/3'>
             <h1 className='text-2xl font-semibold text-gray-800'>Détails de la tâche</h1>
@@ -123,6 +139,7 @@ const TaskDetails = ({
                     <input
                         type="date"
                         value={startDate}
+                        min={todayDate} // Prevent selecting a date before today
                         onChange={(e) => handleDateChange('start_date', e.target.value)}
                         className="border rounded-lg p-2 w-full mt-1"
                     />
@@ -132,6 +149,7 @@ const TaskDetails = ({
                     <input
                         type="date"
                         value={endDate}
+                        min={todayDate} // Prevent selecting a date before today
                         onChange={(e) => handleDateChange('end_date', e.target.value)}
                         className="border rounded-lg p-2 w-full mt-1"
                     />
