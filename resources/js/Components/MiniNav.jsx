@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaLock, FaLockOpen, FaEllipsisH, FaCrown, FaUsers, FaBell, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaLock, FaLockOpen, FaEllipsisH, FaCrown, FaUsers } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useGradient } from '../contexts/GradientContext.jsx';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import VisibilityDialog from './VisibilityDialog';
 import RightBar from './RightBar';
 import { AnimatePresence, motion } from 'framer-motion';
 import Tooltip from './Tooltip';
+import NotificationMenu from './NotificationMenu';
 
 const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectId, onlineUsers }) => {
     const gradient = useGradient();
@@ -16,36 +17,17 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
-    const [isNotificationOpen, setIsNotificationOpen] = useState(false); // État pour les notifications
-    const [notifications, setNotifications] = useState([]); // Initialisé comme tableau vide
 
     const userDialogRef = useRef(null);
-    const notificationRef = useRef(null);
 
     useEffect(() => {
         setProject(initialProject);
     }, [initialProject]);
 
     useEffect(() => {
-        const userId = currentUser.id;
-
-        window.Echo.channel(`user.${userId}`)
-            .listen('.notification.created', (e) => {
-                setNotifications((prevNotifications) => [e.notification, ...prevNotifications]);
-            });
-
-        return () => {
-            window.Echo.leave(`user.${userId}`);
-        };
-    }, [currentUser.id]);
-
-    useEffect(() => {
         const handleClickOutside = (event) => {
             if (userDialogRef.current && !userDialogRef.current.contains(event.target)) {
                 setIsUserDialogOpen(false);
-            }
-            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-                setIsNotificationOpen(false);
             }
         };
 
@@ -54,24 +36,6 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
-    // Récupérer les notifications lorsque le menu est ouvert
-    useEffect(() => {
-        if (isNotificationOpen) {
-            axios.get('/notifications')
-                .then(response => {
-                    setNotifications(response.data.notifications);
-                    console.log('Notifications récupérées avec succès :', response.data.notifications);
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la récupération des notifications :', error);
-                    toast.error('Erreur lors de la récupération des notifications.', {
-                        position: "top-center",
-                        autoClose: 3000,
-                    });
-                });
-        }
-    }, [isNotificationOpen]);
 
     const handleShare = () => {
         navigator.clipboard.writeText(project.project_code)
@@ -161,50 +125,6 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
         }
     };
 
-    const handleNotificationIconClick = () => {
-        setIsNotificationOpen(!isNotificationOpen);
-    };
-
-    const handleCloseNotification = () => {
-        setIsNotificationOpen(false);
-    };
-
-    // Marquer une notification comme lue
-    const handleMarkAsRead = async (id) => {
-        try {
-            await axios.post(`/notifications/${id}/mark-as-read`);
-            setNotifications(notifications.filter(notification => notification.id !== id));
-            toast.success('Notification marquée comme lue.', {
-                position: "top-center",
-                autoClose: 2000,
-            });
-        } catch (error) {
-            console.error('Erreur lors du marquage de la notification comme lue :', error);
-            toast.error('Erreur lors du marquage de la notification comme lue.', {
-                position: "top-center",
-                autoClose: 3000,
-            });
-        }
-    };
-
-    // Supprimer une notification
-    const handleDeleteNotification = async (id) => {
-        try {
-            await axios.delete(`/notifications/${id}`);
-            setNotifications(notifications.filter(notification => notification.id !== id));
-            toast.success('Notification supprimée.', {
-                position: "top-center",
-                autoClose: 2000,
-            });
-        } catch (error) {
-            console.error('Erreur lors de la suppression de la notification :', error);
-            toast.error('Erreur lors de la suppression de la notification.', {
-                position: "top-center",
-                autoClose: 3000,
-            });
-        }
-    };
-
     return (
         <div className="relative">
             <motion.div
@@ -247,17 +167,7 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                     >
                         <FaUsers className="text-white text-xl" />
                     </div>
-                    <div
-                        className="p-2 rounded hover:bg-white/30 duration-200 cursor-pointer"
-                        onClick={handleNotificationIconClick}
-                    >
-                        <FaBell className="text-white text-lg" />
-                        {notifications.length > 0 && (
-                            <span className="absolute top-2 right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                                {notifications.length}
-                            </span>
-                        )}
-                    </div>
+                    <NotificationMenu currentUser={currentUser} variant="mininav" />
                 </div>
                 <div className="flex items-center space-x-4 mr-2">
                     <div
@@ -298,48 +208,6 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                 </div>
             </motion.div>
 
-            {/* Fenêtre contextuelle des notifications */}
-            <AnimatePresence>
-                {isNotificationOpen && (
-                    <motion.div
-                        ref={notificationRef}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-14 left-24 bg-white shadow-lg rounded p-4 z-50 w-72"
-                    >
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-lg font-semibold">Notifications</h3>
-                            <button onClick={handleCloseNotification} className="text-red-500 hover:text-red-700 duration-150">
-                                <FaTimes />
-                            </button>
-                        </div>
-                        <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                            {notifications.length === 0 ? (
-                                <div className="text-gray-800 text-center">Aucune notification</div>
-                            ) : (
-                                notifications.map((notification) => (
-                                    <div key={notification.id} className="p-2 bg-gray-200 rounded shadow flex justify-between items-center">
-                                        <div className="flex items-center space-x-2">
-                                            {notification.status === 'unread' && (
-                                                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                                            )}
-                                            <span onClick={() => handleMarkAsRead(notification.id)} className="cursor-pointer">
-                                                {notification.text}
-                                            </span>
-                                        </div>
-                                        <button onClick={() => handleDeleteNotification(notification.id)} className="text-red-500 hover:text-red-700 text-xs">
-                                            <FaTrash />
-                                        </button>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Fenêtres contextuelles existantes */}
             <AnimatePresence>
                 {isDialogOpen && (
                     <VisibilityDialog
@@ -377,24 +245,8 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                 projectId={projectId}
                 currentUser={currentUser}
             />
-            <style>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #f1f1f1;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #888;
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                }
-            `}</style>
         </div>
     );
-
 };
 
 export default MiniNav;

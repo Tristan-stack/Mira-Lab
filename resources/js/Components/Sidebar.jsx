@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut } from 'react-icons/fi';
 import axios from 'axios';
+import NotificationMenu from './NotificationMenu'; // Import du composant NotificationMenu
 
 // Fonction pour générer un gradient aléatoire
 const getRandomGradient = () => {
@@ -67,17 +68,9 @@ export default function Sidebar({ user }) {
             <FiUsers className="mr-3 text-gray-600" />
             <span>Teams</span>
           </div>
-          <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-            <FiCalendar className="mr-3 text-gray-600" />
-            <span>Calendrier</span>
-          </div>
-          <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-            <FiMessageCircle className="mr-3 text-gray-600" />
-            <span>Chat</span>
-          </div>
-          <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-            <FiBell className="mr-3 text-gray-600" />
-            <span>Notifications</span>
+          {/* Intégration du menu des notifications */}
+          <div className="relative">
+            <NotificationMenu currentUser={user} variant="sidebar" />
           </div>
         </nav>
       </div>
