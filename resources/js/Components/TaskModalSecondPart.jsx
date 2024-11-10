@@ -9,7 +9,8 @@ const TaskDetails = ({
     task,
     availableTasks,
     selectedDependencyId,
-    setSelectedDependencyId
+    setSelectedDependencyId,
+    lists
 }) => {
     const [startDate, setStartDate] = useState(task.start_date || '');
     const [endDate, setEndDate] = useState(task.end_date || '');
@@ -53,8 +54,6 @@ const TaskDetails = ({
                 await axios.post(`/projects/${task.project_id}/tasks/${task.id}/add-dependency`, {
                     dependencies: selectedDependencyId
                 });
-                // Supprimer l'appel à setCurrentDependency
-                // setCurrentDependency(selectedDependencyId);
                 setSelectedDependencyId('');
                 toast.success('Dependency added successfully!');
             } catch (error) {
@@ -69,9 +68,7 @@ const TaskDetails = ({
             await axios.delete(`/projects/${task.project_id}/tasks/${task.id}/remove-dependency`, {
                 data: { dependencies: '' } // Correction : Utilisation de 'data' pour axios delete
             });
-            // Supprimer l'appel à setCurrentDependency
-            // setCurrentDependency('');
-            setSelectedDependencyId(''); // Ajouté pour réinitialiser la dépendance sélectionnée
+            setSelectedDependencyId(''); // Réinitialiser la dépendance sélectionnée
             toast.success('Dependency removed successfully!');
         } catch (error) {
             console.error('Error removing dependency:', error);
@@ -101,7 +98,15 @@ const TaskDetails = ({
         }
     };
 
-    const filteredTasks = availableTasks.filter(t => t.id !== task.id);
+    // Obtention de la date de création de la tâche actuelle
+    const currentTaskCreatedAt = new Date(task.created_at);
+
+    // Filtrer les tâches disponibles en fonction de la date de création
+    const filteredTasks = availableTasks.filter(t => {
+        if (t.id === task.id) return false;
+        const taskCreatedAt = new Date(t.created_at);
+        return taskCreatedAt >= currentTaskCreatedAt;
+    });
 
     const getDependencyName = (depId) => {
         const depTask = availableTasks.find(t => String(t.id) === String(depId));
@@ -172,13 +177,15 @@ const TaskDetails = ({
             </div>
         </div>
     );
+
 };
 
 TaskDetails.propTypes = {
     task: PropTypes.object.isRequired,
     availableTasks: PropTypes.array.isRequired,
     selectedDependencyId: PropTypes.string.isRequired,
-    setSelectedDependencyId: PropTypes.func.isRequired
+    setSelectedDependencyId: PropTypes.func.isRequired,
+    lists: PropTypes.array.isRequired
 };
 
 export default TaskDetails;

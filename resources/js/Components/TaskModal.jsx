@@ -14,7 +14,8 @@ const TaskModal = ({
     updatedTask,
     handleTaskChange,
     handleSaveTask,
-    availableTasks = []
+    availableTasks = [],
+    lists
 }) => {
     const containerRef = useRef(null);
     const quillRef = useRef(null);
@@ -134,6 +135,7 @@ const TaskModal = ({
                     setSelectedDependencyId={setSelectedDependencyId}
                     currentDependency={currentDependency}
                     setCurrentDependency={setCurrentDependency}
+                    lists={lists}
                 />
             </div>
         </div>

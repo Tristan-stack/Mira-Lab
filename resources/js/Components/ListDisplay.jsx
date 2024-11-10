@@ -205,7 +205,8 @@ const ListDisplay = ({
                                                             handleSaveTask={handleSaveTask}
                                                             setEditingTaskId={setEditingTaskId}
                                                             handleDeleteTask={handleDeleteTask}
-                                                            availableTasks={availableTasks} // Passer availableTasks ici
+                                                            availableTasks={availableTasks}
+                                                            lists={lists}
                                                         />
                                                     </div>
                                                 )}
