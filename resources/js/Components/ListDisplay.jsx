@@ -138,7 +138,7 @@ const ListDisplay = ({
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex space-x-3 ml-3">
+            <div className="flex space-x-3 ml-3 ">
                 {lists.map((list) => (
                     <div
                         key={list.id}

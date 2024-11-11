@@ -9,6 +9,7 @@ import ModelSelection from '../../Components/ModelSelection';
 import ChatWindow from '../../Components/ChatWindow'; // Importer le composant ChatWindow
 import { FiMessageCircle } from 'react-icons/fi'; // Importer l'icône de dialogue
 
+
 const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [projectUsers, setProjectUsers] = useState(project.users);
     const [onlineUsers, setOnlineUsers] = useState([]);
@@ -309,7 +310,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             {/* Conteneur pour le défilement horizontal des listes */}
             <div className="flex-1">
                 <div className="mt-4 overflow-x-auto">
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 justify-start items-start">
                         {lists.length > 0 ? (
                             <>
                                 <ListDisplay
