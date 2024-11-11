@@ -6,6 +6,7 @@ import { IoIosAdd } from 'react-icons/io';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import Echo from 'laravel-echo';
 
 export default function ProjectList({
     projects,
@@ -15,9 +16,7 @@ export default function ProjectList({
 }) {
     const scrollContainerRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [projectTasks, setProjectTasks] = useState({}); // Stocke les tâches par projet
-
-    
+    const [projectTasks, setProjectTasks] = useState({});
 
     useEffect(() => {
         const el = scrollContainerRef.current;
@@ -43,7 +42,7 @@ export default function ProjectList({
             if (!isDown) return;
             e.preventDefault();
             const x = e.pageX - el.offsetLeft;
-            const walk = (x - startX) * 1.2; // Ajustez la vitesse de défilement ici
+            const walk = (x - startX) * 1.2;
             el.scrollLeft = scrollLeft - walk;
         };
 
@@ -54,7 +53,7 @@ export default function ProjectList({
 
         const wheelHandler = (e) => {
             e.preventDefault();
-            el.scrollLeft += e.deltaY * 0.5; // Rend le scroll plus smooth
+            el.scrollLeft += e.deltaY * 0.5;
         };
 
         el.addEventListener('wheel', wheelHandler);
@@ -68,15 +67,62 @@ export default function ProjectList({
         };
     }, []);
 
-    // Filtrer les projets en fonction de l'utilisateur et du terme de recherche
-    const filteredProjects = projects.filter(
-        (project) =>
-            Array.isArray(project.users) &&
-            project.users.some((u) => u.id === user.id) &&
-            project.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Fetch initial tasks for each project
+    useEffect(() => {
+        const fetchTasksForProjects = async () => {
+            const tasksMap = {};
 
-    // Fonction pour calculer la progression
+            const projectIdsToFetch = projects
+                .filter((project) => !projectTasks.hasOwnProperty(project.id))
+                .map((project) => project.id);
+
+            if (projectIdsToFetch.length === 0) return;
+
+            try {
+                const promises = projectIdsToFetch.map((projectId) =>
+                    axios.get(`/project/${projectId}/tasks`)
+                );
+
+                const responses = await Promise.all(promises);
+
+                responses.forEach((response, index) => {
+                    const projectId = projectIdsToFetch[index];
+                    tasksMap[projectId] = Array.isArray(response.data.tasks) ? response.data.tasks : [];
+                });
+
+                setProjectTasks((prevTasks) => ({ ...prevTasks, ...tasksMap }));
+            } catch (error) {
+                console.error('Erreur lors de la récupération des tâches:', error);
+            }
+        };
+
+        fetchTasksForProjects();
+    }, [projects]);
+
+    // Listen to real-time task updates
+    useEffect(() => {
+        projects.forEach((project) => {
+            const taskUpdatedChannel = window.Echo.private(`project.${project.id}`);
+            taskUpdatedChannel.listen('.task.updated', (event) => {
+                console.log('Événement .task.updated reçu:', event);
+
+                // Update the tasks in the specific project
+                setProjectTasks((prevTasks) => ({
+                    ...prevTasks,
+                    [project.id]: prevTasks[project.id]?.map((task) =>
+                        task.id === event.task.id ? event.task : task
+                    ) || [event.task],
+                }));
+            });
+        });
+
+        return () => {
+            projects.forEach((project) => {
+                window.Echo.private(`project.${project.id}`).stopListening('.task.updated');
+            });
+        };
+    }, [projects]);
+
     const calculateProgress = (tasks = []) => {
         if (!Array.isArray(tasks) || tasks.length === 0) return 0;
 
@@ -93,52 +139,22 @@ export default function ProjectList({
             }
         }, 0);
 
-        const maxScore = tasks.length; // Chaque tâche contribue au maximum 1
-        const progressPercentage = (totalScore / maxScore) * 100;
-
-        return Math.round(progressPercentage);
+        const maxScore = tasks.length;
+        return Math.round((totalScore / maxScore) * 100);
     };
 
-    // Récupérer les tâches pour chaque projet filtré
-    useEffect(() => {
-        const fetchTasksForProjects = async () => {
-            const tasksMap = {};
-
-            const projectIdsToFetch = filteredProjects
-                .filter((project) => !projectTasks.hasOwnProperty(project.id)) // Récupérer seulement si non déjà fait
-                .map((project) => project.id);
-
-            if (projectIdsToFetch.length === 0) return;
-
-            try {
-                const promises = projectIdsToFetch.map((projectId) =>
-                    axios.get(`/project/${projectId}/tasks`)
-                );
-
-                const responses = await Promise.all(promises);
-
-                responses.forEach((response, index) => {
-                    const projectId = projectIdsToFetch[index];
-                    console.log(`Tasks for project ${projectId}:`, response.data);
-                    // Extraire le tableau des tâches depuis response.data.tasks
-                    tasksMap[projectId] = Array.isArray(response.data.tasks) ? response.data.tasks : [];
-                });
-
-                setProjectTasks((prevTasks) => ({ ...prevTasks, ...tasksMap }));
-            } catch (error) {
-                console.error('Erreur lors de la récupération des tâches:', error);
-            }
-        };
-
-        fetchTasksForProjects();
-    }, [filteredProjects]); // Supprimé projectTasks des dépendances
+    const filteredProjects = projects.filter(
+        (project) =>
+            Array.isArray(project.users) &&
+            project.users.some((u) => u.id === user.id) &&
+            project.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-semibold">Tableaux</h2>
                 <div className="flex items-center space-x-2">
-                    {/* Barre de recherche */}
                     <input
                         type="text"
                         placeholder="Rechercher un projet..."
@@ -190,21 +206,19 @@ export default function ProjectList({
                                     )}
                                 </div>
                             </div>
-                            {/* Barre de Progression */}
                             <div className="mt-2">
                                 <div className="w-full bg-gray-300 rounded-full h-1">
-                                    <div
-                                        className={`h-full rounded-full ${
-                                            calculateProgress(projectTasks[project.id] || []) === 100
+                                    <motion.div
+                                        className={`h-full rounded-full ${calculateProgress(projectTasks[project.id] || []) === 100
                                                 ? 'bg-green-500'
                                                 : calculateProgress(projectTasks[project.id] || []) >= 50
-                                                ? 'bg-yellow-500'
-                                                : 'bg-red-500'
-                                        }`}
-                                        style={{
-                                            width: `${calculateProgress(projectTasks[project.id] || [])}%`,
-                                        }}
-                                    ></div>
+                                                    ? 'bg-yellow-500'
+                                                    : 'bg-red-500'
+                                            }`}
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${calculateProgress(projectTasks[project.id] || [])}%` }}
+                                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                                    ></motion.div>
                                 </div>
                                 <p className="text-sm text-gray-700 mt-1">
                                     Progression: {calculateProgress(projectTasks[project.id] || [])}%
@@ -217,7 +231,6 @@ export default function ProjectList({
 
             <style>
                 {`
-                /* Style pour une scrollbar fine et esthétique */
                 .custom-scrollbar::-webkit-scrollbar {
                     height: 6px;
                 }
@@ -225,16 +238,23 @@ export default function ProjectList({
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background-color: #cbd5e0; /* Couleur de la scrollbar */
+                    background-color: #cbd5e0;
                     border-radius: 10px;
                     border: 2px solid transparent;
                     background-clip: content-box;
                 }
                 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-                    background-color: #a0aec0; /* Couleur plus foncée au survol */
+                    background-color: #a0aec0;
                 }
                 `}
             </style>
         </div>
     );
 }
+
+ProjectList.propTypes = {
+    projects: PropTypes.array.isRequired,
+    user: PropTypes.object.isRequired,
+    onViewProject: PropTypes.func.isRequired,
+    setIsCreatingProject: PropTypes.func.isRequired,
+};
