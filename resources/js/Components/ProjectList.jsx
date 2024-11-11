@@ -17,6 +17,8 @@ export default function ProjectList({
     const [searchTerm, setSearchTerm] = useState('');
     const [projectTasks, setProjectTasks] = useState({}); // Stocke les tâches par projet
 
+    
+
     useEffect(() => {
         const el = scrollContainerRef.current;
         let isDown = false;

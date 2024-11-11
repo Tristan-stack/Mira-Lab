@@ -14,7 +14,14 @@ const TaskDetails = ({
 }) => {
     const [startDate, setStartDate] = useState(task.start_date || '');
     const [endDate, setEndDate] = useState(task.end_date || '');
-    const [status, setStatus] = useState(task.status || 'Pas commencer');
+    const [status, setStatus] = useState(task.status || 'Non commencer');
+
+    useEffect(() => {
+        setStatus(task.status || 'Non commencer');
+        setStartDate(task.start_date || '');
+        setEndDate(task.end_date || '');
+    }, [task]); // Ce hook se déclenche dès que `task` change
+
 
     useEffect(() => {
         console.log('TaskDetails : availableTasks mis à jour:', availableTasks);
