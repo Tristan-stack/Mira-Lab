@@ -1,7 +1,11 @@
+// ProjectList.jsx
+
 import React, { useRef, useEffect, useState } from 'react';
 import { FaRegEye, FaTrash } from 'react-icons/fa';
 import { IoIosAdd } from 'react-icons/io';
-import { motion, useAnimation, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 
 export default function ProjectList({
     projects,
@@ -10,8 +14,8 @@ export default function ProjectList({
     setIsCreatingProject,
 }) {
     const scrollContainerRef = useRef(null);
-    const controls = useAnimation();
     const [searchTerm, setSearchTerm] = useState('');
+    const [projectTasks, setProjectTasks] = useState({}); // Stocke les tâches par projet
 
     useEffect(() => {
         const el = scrollContainerRef.current;
@@ -62,13 +66,70 @@ export default function ProjectList({
         };
     }, []);
 
-    // Fonction de filtre
+    // Filtrer les projets en fonction de l'utilisateur et du terme de recherche
     const filteredProjects = projects.filter(
         (project) =>
             Array.isArray(project.users) &&
             project.users.some((u) => u.id === user.id) &&
             project.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Fonction pour calculer la progression
+    const calculateProgress = (tasks = []) => {
+        if (!Array.isArray(tasks) || tasks.length === 0) return 0;
+
+        const totalScore = tasks.reduce((acc, task) => {
+            switch (task.status) {
+                case 'Non commencer':
+                    return acc + 0;
+                case 'En cours':
+                    return acc + 0.5;
+                case 'Fini':
+                    return acc + 1;
+                default:
+                    return acc + 0;
+            }
+        }, 0);
+
+        const maxScore = tasks.length; // Chaque tâche contribue au maximum 1
+        const progressPercentage = (totalScore / maxScore) * 100;
+
+        return Math.round(progressPercentage);
+    };
+
+    // Récupérer les tâches pour chaque projet filtré
+    useEffect(() => {
+        const fetchTasksForProjects = async () => {
+            const tasksMap = {};
+
+            const projectIdsToFetch = filteredProjects
+                .filter((project) => !projectTasks.hasOwnProperty(project.id)) // Récupérer seulement si non déjà fait
+                .map((project) => project.id);
+
+            if (projectIdsToFetch.length === 0) return;
+
+            try {
+                const promises = projectIdsToFetch.map((projectId) =>
+                    axios.get(`/project/${projectId}/tasks`)
+                );
+
+                const responses = await Promise.all(promises);
+
+                responses.forEach((response, index) => {
+                    const projectId = projectIdsToFetch[index];
+                    console.log(`Tasks for project ${projectId}:`, response.data);
+                    // Extraire le tableau des tâches depuis response.data.tasks
+                    tasksMap[projectId] = Array.isArray(response.data.tasks) ? response.data.tasks : [];
+                });
+
+                setProjectTasks((prevTasks) => ({ ...prevTasks, ...tasksMap }));
+            } catch (error) {
+                console.error('Erreur lors de la récupération des tâches:', error);
+            }
+        };
+
+        fetchTasksForProjects();
+    }, [filteredProjects]); // Supprimé projectTasks des dépendances
 
     return (
         <div className="p-4 w-full bg-white shadow rounded-lg mb-6">
@@ -95,20 +156,22 @@ export default function ProjectList({
             <motion.div
                 className="flex space-x-4 overflow-x-auto custom-scrollbar cursor-grab"
                 ref={scrollContainerRef}
-                animate={controls}
             >
                 <AnimatePresence>
                     {filteredProjects.map((project) => (
                         <motion.div
                             key={project.id}
-                            className="flex-shrink-0 w-64 h-24 p-4 mb-4 bg-gray-100 rounded-lg shadow-md"
+                            className="flex-shrink-0 w-64 p-4 mb-4 bg-gray-100 rounded-lg shadow-md"
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.3 }}
                         >
                             <div className="flex justify-between items-center mb-2">
-                                <p className="text-base font-medium uppercase">
+                                <p
+                                    className="text-base font-medium uppercase cursor-pointer"
+                                    onClick={() => onViewProject(project.id)}
+                                >
                                     {project.name}
                                 </p>
                                 <div className="flex space-x-2">
@@ -125,9 +188,26 @@ export default function ProjectList({
                                     )}
                                 </div>
                             </div>
-                            <p className="text-gray-500 font-light text-sm">
-                                {project.status}
-                            </p>
+                            {/* Barre de Progression */}
+                            <div className="mt-2">
+                                <div className="w-full bg-gray-300 rounded-full h-1">
+                                    <div
+                                        className={`h-full rounded-full ${
+                                            calculateProgress(projectTasks[project.id] || []) === 100
+                                                ? 'bg-green-500'
+                                                : calculateProgress(projectTasks[project.id] || []) >= 50
+                                                ? 'bg-yellow-500'
+                                                : 'bg-red-500'
+                                        }`}
+                                        style={{
+                                            width: `${calculateProgress(projectTasks[project.id] || [])}%`,
+                                        }}
+                                    ></div>
+                                </div>
+                                <p className="text-sm text-gray-700 mt-1">
+                                    Progression: {calculateProgress(projectTasks[project.id] || [])}%
+                                </p>
+                            </div>
                         </motion.div>
                     ))}
                 </AnimatePresence>
