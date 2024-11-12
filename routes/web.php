@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserActivityController;
 
 
 // Route pour la page de connexion
@@ -124,6 +125,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
     Route::post('/notifications/{notificationId}/mark-as-read', [NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{notificationId}', [NotificationController::class, 'deleteNotification']);
+
+    Route::get('/user/activities', [UserActivityController::class, 'getUserActivities']);
 
 });
 

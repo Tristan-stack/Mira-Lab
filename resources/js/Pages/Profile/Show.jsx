@@ -225,7 +225,7 @@ export default function Show({ user, teams, projects, users }) {
                     <div className="w-full flex flex-col md:flex-row justify-around items-start space-y-10 md:space-y-0">
                         <UserProfile user={user} />
 
-                        <div className='flex flex-col w-full md:w-1/2 space-y-8'>
+                        <div className='flex flex-col w-full md:w-1/2 '>
                             {/* Bouton pour basculer entre les statistiques et le contenu */}
                             <button
                                 className="mb-4 flex items-center text-blue-500 hover:text-blue-700 transition"
