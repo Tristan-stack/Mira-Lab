@@ -67,7 +67,7 @@ const ChatWindow = ({ projectId, currentUser, onClose }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
                 transition={{ duration: 0.3 }}
-                className="fixed bottom-16 right-4 bg-white border border-gray-300 rounded-xl shadow-lg w-80"
+                className="fixed bottom-20 right-4 bg-white border border-gray-300 rounded-xl shadow-lg w-80"
             >
                 <div className="flex justify-between items-center p-4 border-b border-gray-300 mb-1">
                     <h2 className="text-lg font-semibold">Team Chat</h2>
@@ -75,7 +75,7 @@ const ChatWindow = ({ projectId, currentUser, onClose }) => {
                 </div>
                 <div className="p-4 h-64 overflow-y-auto custom-scrollbar">
                     {messages.map((message, index) => (
-                        <div key={index} className={`mb-2 p-2 rounded-full max-w-max ${message.user_id === currentUser.id ? 'bg-blue-500 text-white self-end ml-auto' : 'bg-gray-200 text-black self-start mr-auto'}`}>
+                        <div key={index} className={`mb-2 p-2 rounded-md max-w-max ${message.user_id === currentUser.id ? 'bg-blue-500 text-white self-end ml-auto' : 'bg-gray-200 text-black self-start mr-auto'}`}>
                             <strong>{message.user ? message.user.name : 'Utilisateur inconnu'}:</strong> {message.message}
                         </div>
                     ))}
@@ -88,9 +88,9 @@ const ChatWindow = ({ projectId, currentUser, onClose }) => {
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Message"
-                        className="flex-grow p-2 border border-gray-300 rounded-full"
+                        className="flex-grow p-2 border border-gray-300 rounded-md"
                     />
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-800 duration-150">
+                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-800 duration-150">
                         <FiSend size={20} />
                     </button>
                 </form>

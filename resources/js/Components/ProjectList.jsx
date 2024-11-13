@@ -210,10 +210,10 @@ export default function ProjectList({
                                 <div className="w-full bg-gray-300 rounded-full h-1">
                                     <motion.div
                                         className={`h-full rounded-full ${calculateProgress(projectTasks[project.id] || []) === 100
-                                                ? 'bg-green-500'
+                                                ? 'bg-green-600'
                                                 : calculateProgress(projectTasks[project.id] || []) >= 50
-                                                    ? 'bg-yellow-500'
-                                                    : 'bg-red-500'
+                                                    ? 'bg-yellow-400'
+                                                    : 'bg-red-600'
                                             }`}
                                         initial={{ width: 0 }}
                                         animate={{ width: `${calculateProgress(projectTasks[project.id] || [])}%` }}
@@ -245,6 +245,15 @@ export default function ProjectList({
                 }
                 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
                     background-color: #a0aec0;
+                }
+                .bg-green-600 {
+                    box-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
+                }
+                .bg-yellow-400 {
+                    box-shadow: 0 0 10px rgba(234, 179, 8, 0.7);
+                }
+                .bg-red-600 {
+                    box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
                 }
                 `}
             </style>
