@@ -82,11 +82,11 @@ export default function StatisticsChart({ projects, user }) {
     return (
         <div className="w-full bg-gray-100">
             {/* LineChart actuel */}
-            <div className="w-full h-64 mb-8">
+            <div className="w-full h-40 mb-8">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={lineChartData}>
                         <XAxis dataKey="month" />
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid strokeDasharray="0 3" />
                         <RechartsTooltip />
                         <Line type="monotone" dataKey="count" stroke="#6D326D" />
                     </LineChart>
@@ -95,7 +95,7 @@ export default function StatisticsChart({ projects, user }) {
 
             {/* Graphique d'activité GitHub */}
             <div className="w-full h-64 mb-8 p-4 bg-white rounded-lg border border-gray-300"> {/* Added padding, background, rounded border */}
-                <h2 className="text-lg font-medium mb-4">{totalConnections} Connexions les 8 derniers mois: </h2>
+                <h2 className="text-lg font-medium mb-4">{totalConnections} connexions les 8 derniers mois: </h2>
                 <CalendarHeatmap
                     startDate={startDate}
                     endDate={today}

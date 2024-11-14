@@ -14,10 +14,9 @@ export default function UserProfile({ user }) {
     };
 
     const handleSaveClick = () => {
-        // Vous pouvez ajouter ici la logique pour enregistrer les modifications
+        // Add logic to save changes
         setIsEditing(false);
         toast.success('Profil mis à jour avec succès');
-
     };
 
     const handleChange = (e) => {
@@ -38,8 +37,8 @@ export default function UserProfile({ user }) {
                 <p className='text-gray-400 font-light text-xs text-right'>Dernière modification : {new Date(user.updated_at).toLocaleDateString()}</p>
                 <hr />
             </div>
-            <div className='space-y-3'>
-                <div className='w-full flex justify-between'>
+            <div className='space-y-1 flex flex-row justify-around items-center'>
+                <div className='w-full'>
                     {isEditing ? (
                         <div className="relative w-full">
                             <input
@@ -51,11 +50,8 @@ export default function UserProfile({ user }) {
                             />
                         </div>
                     ) : (
-                        <p className="text-gray-400">{formData.name}</p>
+                        <p className="text-gray-400 h-8">{formData.name}</p> 
                     )}
-                    <p className='text-gray-400 font-normal whitespace-nowrap'>
-                        Compte n°<span className='text-purple-800 font-bold'>{user.id}</span>
-                    </p>
                 </div>
                 {isEditing ? (
                     <div className="relative w-full">
@@ -68,7 +64,7 @@ export default function UserProfile({ user }) {
                         />
                     </div>
                 ) : (
-                    <p className="text-gray-400">{formData.email}</p>
+                    <p className="text-gray-400 h-8">{formData.email}</p>
                 )}
             </div>
             <div className='w-full flex justify-center mt-4'>
@@ -88,6 +84,30 @@ export default function UserProfile({ user }) {
                     </button>
                 )}
             </div>
+            <style>
+                {`
+                .custom-scrollbar::-webkit-scrollbar {
+                    height: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background-color: #cbd5e0;
+                    border-radius: 10px;
+                    border: 2px solid transparent;
+                    background-clip: content-box;
+                }
+                .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+                    background-color: #a0aec0;
+                }
+
+                /* Ensure fixed height for text paragraphs to prevent resizing */
+                .text-gray-400 {
+                    min-height: 2rem; /* Adjust based on your design */
+                }
+                `}
+            </style>
         </div>
     );
 }
