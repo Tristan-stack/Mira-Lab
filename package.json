@@ -54,6 +54,7 @@
         "recharts": "^2.13.3",
         "simplex-noise": "^4.0.3",
         "tailwind-merge": "^2.5.4",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "vanilla-tilt": "^1.8.1"
     }
 }

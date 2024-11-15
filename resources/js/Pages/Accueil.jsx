@@ -1,12 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { BackgroundGradientAnimation } from "../Components/ui/background-gradient-animation.jsx";
+import VanillaTilt from 'vanilla-tilt';
 import Logo from '../../img/image-removebg-preview.png';
+import Chat from '../../img/chat.png';
+import Notification from '../../img/notification.png';
+import Stat from '../../img/statistique.png';
+import DashView from '../../img/dashview1.png';
+import Board from '../../img/board.png';
 import BackgroundGradient from '../../img/Freebie-GradientTextures-01.jpg';
 import { Cover } from "@/components/ui/cover";
 import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt } from 'react-icons/fa';
+import { throttle } from 'lodash';
+import { motion } from 'framer-motion';
 
 const Accueil = () => {
+
+  const card1Ref = useRef(null);
+  const card2Ref = useRef(null);
+  const card3Ref = useRef(null);
+  const card4Ref = useRef(null);
+
+  // Initialiser Vanilla Tilt
+  useEffect(() => {
+    const options = {
+      max: 5,           // Angle maximal de basculement
+      speed: 2000,        // Vitesse de réaction
+      glare: false,      // Désactiver l'effet de glare
+      "max-glare": 0.5,  // Niveau de glare maximum
+      perspective: 1000, // Perspective pour l'effet de parallaxe
+    };
+
+    // Initialiser les cartes
+    [card1Ref, card2Ref, card3Ref, card4Ref].forEach((ref) => {
+      if (ref.current) {
+        VanillaTilt.init(ref.current, options);
+      }
+    });
+
+    // Nettoyage lors du démontage du composant
+    return () => {
+      [card1Ref, card2Ref, card3Ref, card4Ref].forEach((ref) => {
+        if (ref.current?.vanillaTilt) {
+          ref.current.vanillaTilt.destroy();
+        }
+      });
+    };
+  }, []);
+
   const handleButtonClick = () => {
     Inertia.visit('/home');
   };
@@ -102,7 +142,7 @@ const Accueil = () => {
 
           {/* avantage Mira Lab */}
 
-          <section className="w-full p-32 bg-purple-100/60">
+          <section className='w-full p-32 bg-purple-100/60'>
             <div className='w-3/4 mx-auto text-center'>
               <h2 className="text-5xl font-bold text-gray-900 mb-4">
                 Comment Mira Lab <span className="text-purple-500">fonctionne</span> ?
@@ -114,42 +154,95 @@ const Accueil = () => {
                 Découvrir la plateforme →
               </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="p-6 bg-white shadow-lg rounded-lg">
-                  <h3 className="text-4xl font-bold text-purple-500 mb-2">01</h3>
-                  <h4 className="text-xl font-semibold text-gray-900 mb-4">Créez et organisez vos projets</h4>
-                  <p className="text-gray-600">
-                    Connectez-vous à Mira Lab et commencez par organiser vos projets sous forme de tableaux intuitifs. Ajoutez des équipes et répartissez les tâches facilement.
-                  </p>
+              <div className="flex flex-col space-y-16">
+                {/* Première Ligne de Cartes */}
+                <div className='flex space-x-16 justify-center'>
+                  {/* Carte 01 */}
+                  <div
+                    ref={card1Ref}
+                    className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
+                  >
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">01</h3>
+                    <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Créez et organisez vos projets</h4>
+                    <p className="text-gray-600 text-left">
+                      Connectez-vous à Mira Lab et commencez par organiser vos projets sous forme de tableaux intuitifs. Ajoutez des équipes et répartissez les tâches facilement.
+                    </p>
+                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                      <img
+                        src={Board}
+                        alt="Board"
+                        className="rounded-lg shadow-xl mx-auto"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Carte 02 */}
+                  <div
+                    ref={card2Ref}
+                    className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
+                  >
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">02</h3>
+                    <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Collaborez en temps réel</h4>
+                    <p className="text-gray-600 text-left">
+                      Travaillez avec votre équipe de manière synchronisée. Les messages et mises à jour sont visibles en temps réel, permettant une collaboration fluide et efficace.
+                    </p>
+                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                      <img
+                        src={Chat}
+                        alt="Chat"
+                        className="w-1/2 rounded-lg shadow-xl mx-auto"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="p-6 bg-white shadow-lg rounded-lg">
-                  <h3 className="text-4xl font-bold text-purple-500 mb-2">02</h3>
-                  <h4 className="text-xl font-semibold text-gray-900 mb-4">Collaborez en temps réel</h4>
-                  <p className="text-gray-600">
-                    Travaillez avec votre équipe de manière synchronisée. Les messages et mises à jour sont visibles en temps réel, permettant une collaboration fluide et efficace.
-                  </p>
-                </div>
+                {/* Deuxième Ligne de Cartes */}
+                <div className='flex space-x-16 justify-center'>
+                  {/* Carte 03 */}
+                  <div
+                    ref={card3Ref}
+                    className="w-2/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
+                  >
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">03</h3>
+                    <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Suivez vos performances</h4>
+                    <p className="text-gray-600 text-left">
+                      Accédez à des statistiques avancées pour mesurer vos progrès, analyser la productivité de votre équipe et ajuster vos stratégies en fonction des résultats.
+                    </p>
+                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                      <img
+                        src={Stat}
+                        alt="Stat"
+                        className="w-1/2 rounded-lg shadow-xl mx-auto"
+                      />
+                    </div>
+                  </div>
 
-                <div className="p-6 bg-white shadow-lg rounded-lg">
-                  <h3 className="text-4xl font-bold text-purple-500 mb-2">03</h3>
-                  <h4 className="text-xl font-semibold text-gray-900 mb-4">Suivez vos performances</h4>
-                  <p className="text-gray-600">
-                    Accédez à des statistiques avancées pour mesurer vos progrès, analyser la productivité de votre équipe et ajuster vos stratégies en fonction des résultats.
-                  </p>
-                </div>
-
-                <div className="p-6 bg-white shadow-lg rounded-lg">
-                  <h3 className="text-4xl font-bold text-purple-500 mb-2">04</h3>
-                  <h4 className="text-xl font-semibold text-gray-900 mb-4">Recevez des notifications</h4>
-                  <p className="text-gray-600">
-                    Soyez informé en temps réel des mises à jour importantes par notification, pour ne rien manquer et être toujours prêt à agir.
-                  </p>
+                  {/* Carte 04 */}
+                  <div
+                    ref={card4Ref}
+                    className="w-1/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
+                  >
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">04</h3>
+                    <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Recevez des notifications</h4>
+                    <p className="text-gray-600 text-left">
+                      Soyez informé en temps réel des mises à jour importantes par notification, pour ne rien manquer et être toujours prêt à agir.
+                    </p>
+                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                      <img
+                        src={Notification}
+                        alt="Notification"
+                        className="rounded-lg shadow-xl mx-auto"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
-
 
           {/* fonctionnalités */}
           <section></section>
@@ -160,7 +253,6 @@ const Accueil = () => {
       </main>
 
       <footer></footer>
-
     </>
   );
 };
