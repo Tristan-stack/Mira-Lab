@@ -75,7 +75,7 @@ const ChatWindow = ({ projectId, currentUser, onClose }) => {
                 </div>
                 <div className="p-4 h-64 overflow-y-auto custom-scrollbar">
                     {messages.map((message, index) => (
-                        <div key={index} className={`mb-2 p-2 rounded-md max-w-max ${message.user_id === currentUser.id ? 'bg-blue-500 text-white self-end ml-auto' : 'bg-gray-200 text-black self-start mr-auto'}`}>
+                        <div key={index} className={`mb-2 p-2 rounded-md max-w-max ${message.user_id === currentUser.id ? 'bg-purple-500 text-white self-end ml-auto' : 'bg-gray-200 text-black self-start mr-auto'}`}>
                             <strong>{message.user ? message.user.name : 'Utilisateur inconnu'}:</strong> {message.message}
                         </div>
                     ))}
@@ -90,7 +90,7 @@ const ChatWindow = ({ projectId, currentUser, onClose }) => {
                         placeholder="Message"
                         className="flex-grow p-2 border border-gray-300 rounded-md"
                     />
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-800 duration-150">
+                    <button type="submit" className="bg-purple-500 text-white p-2 rounded-md hover:bg-purple-800 duration-150">
                         <FiSend size={20} />
                     </button>
                 </form>

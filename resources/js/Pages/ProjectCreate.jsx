@@ -61,6 +61,9 @@ const CreateProjectForm = ({ onCreate, onCancel }) => {
         }
     };
 
+    // Obtenir la date actuelle au format YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -114,6 +117,7 @@ const CreateProjectForm = ({ onCreate, onCancel }) => {
                         name="start_date"
                         value={formData.start_date}
                         onChange={handleChange}
+                        min={today} // Définir la date minimale à aujourd'hui
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>
@@ -127,6 +131,7 @@ const CreateProjectForm = ({ onCreate, onCancel }) => {
                         name="end_date"
                         value={formData.end_date}
                         onChange={handleChange}
+                        min={formData.start_date || today} // Définir la date minimale à la date de début ou aujourd'hui
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>

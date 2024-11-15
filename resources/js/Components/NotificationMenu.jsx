@@ -142,7 +142,7 @@ const NotificationMenu = ({ currentUser, variant = 'mininav' }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className={`absolute ${
-              variant === 'sidebar' ? 'top-0 left-full ml-2' : 'top-14 left-0'
+              variant === 'sidebar' ? 'top-0 left-full ml-2' : 'top-10 left-0'
             } bg-white shadow-lg rounded p-4 z-50 w-72`}
           >
             <div className="flex justify-between items-center mb-2">

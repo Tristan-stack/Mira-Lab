@@ -351,7 +351,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
 
             {/* Bouton de chat et autres composants */}
             <button
-                className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none duration-200"
+                className="fixed bottom-4 right-4 bg-purple-500 text-white p-4 rounded-full shadow-lg hover:bg-purple-600 focus:outline-none duration-200"
                 onClick={() => setIsChatOpen(!isChatOpen)}
             >
                 <FiMessageCircle size={24} />

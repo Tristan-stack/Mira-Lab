@@ -24,7 +24,7 @@ const Accueil = () => {
         <div className='w-10/12 bg-white flex justify-between items-center h-16 p-4 drop-shadow-xl'>
           <img src={Logo} alt="" className='w-12' />
         </div>
-        <div onClick={handleButtonClick} className="bg-white w-1/6 h-16 border-l-2 border-black cursor-pointer flex justify-center items-center font-semibold hover:bg-black text-black hover:text-white transition duration-300 drop-shadow-xl">
+        <div onClick={handleButtonClick} className="bg-white w-1/6 h-16 border-l-2 border-purple-500 cursor-pointer flex justify-center items-center font-semibold hover:bg-purple-500 text-purple-700 hover:text-white transition duration-300 drop-shadow-xl">
           Se connecter
         </div>
       </div>
@@ -143,7 +143,7 @@ const Accueil = () => {
                   <h3 className="text-4xl font-bold text-purple-500 mb-2">04</h3>
                   <h4 className="text-xl font-semibold text-gray-900 mb-4">Recevez des notifications</h4>
                   <p className="text-gray-600">
-                    Soyez informé en temps réel des mises à jour importantes par mail ou notification, pour ne rien manquer et être toujours prêt à agir.
+                    Soyez informé en temps réel des mises à jour importantes par notification, pour ne rien manquer et être toujours prêt à agir.
                   </p>
                 </div>
               </div>
