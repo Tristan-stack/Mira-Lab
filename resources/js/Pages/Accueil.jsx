@@ -8,12 +8,12 @@ import Stat from '../../img/statistique.png';
 import DashView from '../../img/dashview1.png';
 import Board from '../../img/board.png';
 import BackgroundGradient from '../../img/Freebie-GradientTextures-01.jpg';
-import { Cover } from "@/components/ui/cover";
-import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt } from 'react-icons/fa';
-import { throttle } from 'lodash';
+import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const Accueil = () => {
+
+  const [activeIndex, setActiveIndex] = useState(null); 
 
   const card1Ref = useRef(null);
   const card2Ref = useRef(null);
@@ -56,6 +56,13 @@ const Accueil = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  
+
+  // Fonction pour ouvrir/fermer un onglet
+  const toggleAccordion = (index) => {
+    setActiveIndex((prevIndex) => (prevIndex === index ? null : index)); // Si l'onglet est déjà ouvert, on le ferme
   };
 
   return (
@@ -163,12 +170,12 @@ const Accueil = () => {
                     className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
-                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">01</h3>
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>01</h3>
                     <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Créez et organisez vos projets</h4>
                     <p className="text-gray-600 text-left">
                       Connectez-vous à Mira Lab et commencez par organiser vos projets sous forme de tableaux intuitifs. Ajoutez des équipes et répartissez les tâches facilement.
                     </p>
-                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                    <div className="parallax-image" style={{ transform: 'translateZ(70px)' }}>
                       <img
                         src={Board}
                         alt="Board"
@@ -183,12 +190,12 @@ const Accueil = () => {
                     className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
-                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">02</h3>
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>02</h3>
                     <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Collaborez en temps réel</h4>
                     <p className="text-gray-600 text-left">
                       Travaillez avec votre équipe de manière synchronisée. Les messages et mises à jour sont visibles en temps réel, permettant une collaboration fluide et efficace.
                     </p>
-                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                    <div className="parallax-image" style={{ transform: 'translateZ(70px)' }}>
                       <img
                         src={Chat}
                         alt="Chat"
@@ -206,12 +213,12 @@ const Accueil = () => {
                     className="w-2/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
-                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">03</h3>
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>03</h3>
                     <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Suivez vos performances</h4>
                     <p className="text-gray-600 text-left">
                       Accédez à des statistiques avancées pour mesurer vos progrès, analyser la productivité de votre équipe et ajuster vos stratégies en fonction des résultats.
                     </p>
-                    <div className="parallax-image" style={{ transform: 'translateZ(20px)' }}>
+                    <div className="parallax-image" style={{ transform: 'translateZ(70px)' }}>
                       <img
                         src={Stat}
                         alt="Stat"
@@ -226,7 +233,7 @@ const Accueil = () => {
                     className="w-1/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
-                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2">04</h3>
+                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>04</h3>
                     <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Recevez des notifications</h4>
                     <p className="text-gray-600 text-left">
                       Soyez informé en temps réel des mises à jour importantes par notification, pour ne rien manquer et être toujours prêt à agir.
@@ -244,15 +251,269 @@ const Accueil = () => {
             </div>
           </section>
 
-          {/* fonctionnalités */}
-          <section></section>
+          
+          <section className='bg-purple-200/60 text-center p-60'>
+            <h1 className='text-7xl w-1/2 leading-relaxed	mx-auto '>L'outil de gestion que vous 
+              <span className="bg-white/20 backdrop-blur-xl border border-gray-300/30 hover:bg-white p-2 rounded-md shadow-xl duration-200 cursor-default ml-2">
+                <span className='text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-purple-600'>attendiez</span></span>.</h1>
+          </section>
 
           {/* FAQ */}
-          <section></section>
+          <section className="h-dvh bg-indigo-600 flex items-center justify-center text-white">
+            <div className="w-2/3 bg-indigo-600 rounded-lg p-8 space-y-4">
+              <h2 className="text-4xl font-bold text-center mb-8">FAQ</h2>
+              {/* Onglet 1 */}
+              <div className="border-b border-gray-200/30">
+                <button
+                  onClick={() => toggleAccordion(1)}
+                  className="w-full text-left flex justify-between items-center py-4 px-6 text-lg font-medium text-white"
+                >
+                  <span className="font-bold">Qu'est-ce que Mira Lab ?</span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${activeIndex === 1 ? 'rotate-180' : ''
+                      }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+                {activeIndex === 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <motion.div
+                      className="p-6 text-white"
+                      initial={{ y: -20 }}
+                      animate={{ y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      Mira Lab est une plateforme innovante qui facilite la gestion de
+                      projets en équipe, avec des outils intuitifs pour organiser,
+                      collaborer et analyser vos tâches.
+                    </motion.div>
+                  </motion.div>
+                )}
+              </div>
+              {/* Onglet 2 */}
+              <div className="border-b border-gray-200/30">
+                <button
+                  onClick={() => toggleAccordion(2)}
+                  className="w-full text-left flex justify-between items-center py-4 px-6 text-lg font-medium text-white"
+                >
+                  <span className="font-bold">Comment collaborer avec mon équipe ?</span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${activeIndex === 2 ? 'rotate-180' : ''
+                      }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+                {activeIndex === 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <motion.div
+                      className="p-6 text-white"
+                      initial={{ y: -20 }}
+                      animate={{ y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      Vous pouvez utiliser nos fonctionnalités de tableau et de chat en
+                      temps réel pour collaborer efficacement avec votre équipe.
+                    </motion.div>
+                  </motion.div>
+                )}
+              </div>
+              {/* Onglet 3 */}
+              <div className="border-b border-gray-200/30">
+                <button
+                  onClick={() => toggleAccordion(3)}
+                  className="w-full text-left flex justify-between items-center py-4 px-6 text-lg font-medium text-white"
+                >
+                  <span className="font-bold">Quelles sont les fonctionnalités principales ?</span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${activeIndex === 3 ? 'rotate-180' : ''
+                      }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+                {activeIndex === 3 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <motion.div
+                      className="p-6 text-white"
+                      initial={{ y: -20 }}
+                      animate={{ y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      Mira Lab propose la gestion de tableaux, un chat en temps réel,
+                      des statistiques avancées, des notifications et bien plus.
+                    </motion.div>
+                  </motion.div>
+                )}
+              </div>
+              {/* Onglet 4 */}
+              <div className="border-b border-gray-200/30">
+                <button
+                  onClick={() => toggleAccordion(4)}
+                  className="w-full text-left flex justify-between items-center py-4 px-6 text-lg font-medium text-white"
+                >
+                  <span className="font-bold">Quels sont les avantages ?</span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${activeIndex === 4 ? 'rotate-180' : ''
+                      }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+                {activeIndex === 4 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <motion.div
+                      className="p-6 text-white"
+                      initial={{ y: -20 }}
+                      animate={{ y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      Gagnez du temps, améliorez la communication dans votre équipe et
+                      augmentez votre productivité grâce à des outils intuitifs et
+                      modernes.
+                    </motion.div>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
       </main>
 
-      <footer></footer>
+      <footer className="bg-neutral-800 text-white  px-8">
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 py-16">
+          {/* Section 1: Logo et description */}
+          <div>
+            <h3 className="text-2xl font-bold mb-4">Mira Lab</h3>
+            <p className="text-gray-300">
+              Mira Lab est votre plateforme collaborative pour organiser vos projets
+              avec efficacité et style.
+            </p>
+          </div>
+
+          {/* Section 2: Liens rapides */}
+          <div>
+            <h4 className="text-xl font-semibold mb-4">Liens rapides</h4>
+            <ul className="space-y-2">
+              <li>
+                <a href="#about" className="hover:text-indigo-400 transition">À propos</a>
+              </li>
+              <li>
+                <a href="#features" className="hover:text-indigo-400 transition">Fonctionnalités</a>
+              </li>
+              <li>
+                <a href="#faq" className="hover:text-indigo-400 transition">FAQ</a>
+              </li>
+              <li>
+                <a href="#contact" className="hover:text-indigo-400 transition">Contact</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Section 3: Contact */}
+          <div>
+            <h4 className="text-xl font-semibold mb-4">Contact</h4>
+            <form className="space-y-4">
+              <div>
+                <label htmlFor="email" className="sr-only">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Votre email"
+                  className="w-full px-4 py-2 rounded bg-neutral-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="sr-only">Message</label>
+                <textarea
+                  id="message"
+                  rows="3"
+                  placeholder="Votre message"
+                  className="w-full px-4 py-2 rounded bg-neutral-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="bg-neutral-600 hover:bg-indigo-700 transition px-4 py-2 rounded text-white font-medium"
+              >
+                Envoyer
+              </button>
+            </form>
+          </div>
+
+          {/* Section 4: Réseaux sociaux */}
+          <div>
+            <h4 className="text-xl font-semibold mb-4">Suivez-nous</h4>
+            <div className="flex space-x-4">
+              <a href="#" className="text-white hover:text-indigo-400 transition">
+                <FaTwitter className="w-6 h-6" />
+              </a>
+              <a href="#" className="text-white hover:text-indigo-400 transition">
+                <FaLinkedin className="w-6 h-6" />
+              </a>
+              <a href="#" className="text-white hover:text-indigo-400 transition">
+                <FaGithub className="w-6 h-6" />
+              </a>
+                
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-neutral-700 h-20 flex justify-center items-center  text-center text-gray-400">
+          <p>
+            © {new Date().getFullYear()} Mira Lab. Tous droits réservés.
+          </p>
+        </div>
+      </footer>
+
     </>
   );
 };
