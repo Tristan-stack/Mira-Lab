@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Assurez-vous d'importer axios
 import { toast } from 'react-toastify';
 import { BackgroundGradientAnimation } from "../Components/ui/background-gradient-animation.jsx";
 
@@ -13,10 +14,14 @@ export default function UserProfile({ user }) {
         setIsEditing(true);
     };
 
-    const handleSaveClick = () => {
-        // Add logic to save changes
-        setIsEditing(false);
-        toast.success('Profil mis à jour avec succès');
+    const handleSaveClick = async () => {
+        try {
+            await axios.put('/profile', formData);
+            setIsEditing(false);
+            toast.success('Profil mis à jour avec succès');
+        } catch (error) {
+            toast.error("Erreur lors de la mise à jour du profil");
+        }
     };
 
     const handleChange = (e) => {

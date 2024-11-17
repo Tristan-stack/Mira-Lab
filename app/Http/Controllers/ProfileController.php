@@ -88,8 +88,8 @@ class ProfileController extends Controller
 
         // Valider les données du formulaire
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
         ]);
 
         // Mettre à jour les informations de l'utilisateur
