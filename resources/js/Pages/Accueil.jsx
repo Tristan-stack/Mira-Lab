@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 
 const Accueil = () => {
 
-  const [activeIndex, setActiveIndex] = useState(null); 
+  const [activeIndex, setActiveIndex] = useState(null);
 
   const card1Ref = useRef(null);
   const card2Ref = useRef(null);
@@ -58,7 +58,7 @@ const Accueil = () => {
     }
   };
 
-  
+
 
   // Fonction pour ouvrir/fermer un onglet
   const toggleAccordion = (index) => {
@@ -167,7 +167,7 @@ const Accueil = () => {
                   {/* Carte 01 */}
                   <div
                     ref={card1Ref}
-                    className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative group"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
                     <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>01</h3>
@@ -179,7 +179,7 @@ const Accueil = () => {
                       <img
                         src={Board}
                         alt="Board"
-                        className="rounded-lg shadow-xl mx-auto"
+                        className="rounded-lg shadow-xl mx-auto transition-transform duration-300  group-hover:scale-105"
                       />
                     </div>
                   </div>
@@ -187,7 +187,7 @@ const Accueil = () => {
                   {/* Carte 02 */}
                   <div
                     ref={card2Ref}
-                    className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    className="w-1/2 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative group"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
                     <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>02</h3>
@@ -199,18 +199,18 @@ const Accueil = () => {
                       <img
                         src={Chat}
                         alt="Chat"
-                        className="w-1/2 rounded-lg shadow-xl mx-auto"
+                        className="w-1/2 rounded-lg shadow-xl mx-auto transition-transform duration-300  group-hover:scale-105"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Deuxième Ligne de Cartes */}
-                <div className='flex space-x-16 justify-center'>
+                <div className='flex space-x-16 justify-center '>
                   {/* Carte 03 */}
                   <div
                     ref={card3Ref}
-                    className="w-2/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    className="w-2/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative group"
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
                     <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>03</h3>
@@ -222,7 +222,7 @@ const Accueil = () => {
                       <img
                         src={Stat}
                         alt="Stat"
-                        className="w-1/2 rounded-lg shadow-xl mx-auto"
+                        className="w-1/2 rounded-lg shadow-xl mx-auto transition-transform duration-300  group-hover:scale-105"
                       />
                     </div>
                   </div>
@@ -230,11 +230,18 @@ const Accueil = () => {
                   {/* Carte 04 */}
                   <div
                     ref={card4Ref}
-                    className="w-1/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative"
+                    className="w-1/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative group" // Ajout de `group`
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
-                    <h3 className="text-4xl text-left font-bold text-purple-500 mb-2" style={{ transform: 'translateZ(20px)' }}>04</h3>
-                    <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">Recevez des notifications</h4>
+                    <h3
+                      className="text-4xl text-left font-bold text-purple-500 mb-2"
+                      style={{ transform: 'translateZ(20px)' }}
+                    >
+                      04
+                    </h3>
+                    <h4 className="text-xl text-left font-semibold text-gray-900 mb-4">
+                      Recevez des notifications
+                    </h4>
                     <p className="text-gray-600 text-left">
                       Soyez informé en temps réel des mises à jour importantes par notification, pour ne rien manquer et être toujours prêt à agir.
                     </p>
@@ -242,18 +249,20 @@ const Accueil = () => {
                       <img
                         src={Notification}
                         alt="Notification"
-                        className="rounded-lg shadow-xl mx-auto"
+                        className="rounded-lg shadow-xl mx-auto transform transition-transform duration-300 group-hover:scale-105" // Ajout de scale up au hover
                       />
                     </div>
                   </div>
+
+
                 </div>
               </div>
             </div>
           </section>
 
-          
+
           <section className='bg-purple-200/60 text-center p-60'>
-            <h1 className='text-7xl w-1/2 leading-relaxed	mx-auto '>L'outil de gestion que vous 
+            <h1 className='text-7xl w-1/2 leading-relaxed	mx-auto '>L'outil de gestion que vous
               <span className="bg-white/20 backdrop-blur-xl border border-gray-300/30 hover:bg-white p-2 rounded-md shadow-xl duration-200 cursor-default ml-2">
                 <span className='text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-purple-600'>attendiez</span></span>.</h1>
           </section>
@@ -503,7 +512,7 @@ const Accueil = () => {
               <a href="#" className="text-white hover:text-indigo-400 transition">
                 <FaGithub className="w-6 h-6" />
               </a>
-                
+
             </div>
           </div>
         </div>

@@ -18,9 +18,9 @@ const JoinTeamModal = ({ onClose, onJoinTeam }) => {
                 exit={{ opacity: 0 }}
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
-                <div className="fixed inset-0  bg-gray-300 bg-opacity-50 backdrop-filter backdrop-blur-sm"></div>
+                <div className="fixed inset-0  bg-black bg-opacity-50 backdrop-blur-sm"  onClick={onClose}></div>
                 <motion.div
-                    className="relative bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full"
+                    className="relative bg-white p-6 rounded-md shadow-lg z-10 max-w-md w-full"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.8, opacity: 0 }}
@@ -34,21 +34,21 @@ const JoinTeamModal = ({ onClose, onJoinTeam }) => {
                                 id="teamCode"
                                 value={teamCode}
                                 onChange={(e) => setTeamCode(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 required
                             />
                         </div>
                         <div className="flex justify-end space-x-2">
                             <button
                                 type="button"
-                                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
                                 onClick={onClose}
                             >
                                 Annuler
                             </button>
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
                             >
                                 Rejoindre
                             </button>

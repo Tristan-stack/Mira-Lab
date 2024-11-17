@@ -4,8 +4,17 @@ import Base from '../../Layouts/Base';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importer les styles de react-toastify
 import JoinProjectModal from '../../Components/JoinProjectPopUp'; // Assurez-vous que le chemin est correct
-import { FaLock, FaPen, FaCrown } from 'react-icons/fa'; // Importer l'icône de cadenas, de stylo et de couronne
+import { FaLock, FaPen, FaCrown, FaArrowLeft, FaArrowRight  } from 'react-icons/fa'; // Importer l'icône de cadenas, de stylo et de couronne
 import axios from 'axios'; // Importer axios
+import TeamOverview from './TeamOverview';
+
+const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size));
+    }
+    return result;
+};
 
 const Show = ({ team, removeUserUrl, currentUser }) => {
     const [isJoiningProject, setIsJoiningProject] = useState(false); // État pour le pop-up de rejoindre un projet
@@ -14,6 +23,10 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
     const [searchTerm, setSearchTerm] = useState(''); // État pour la recherche
     const [isEditingTitle, setIsEditingTitle] = useState(false); // État pour l'édition du titre de l'équipe
     const [teamTitle, setTeamTitle] = useState(team.name); // État pour le titre de l'équipe
+
+    const [currentTab, setCurrentTab] = useState(0);
+    const usersPerPage = 4;
+    const userChunks = chunkArray(team?.users || [], usersPerPage);
 
     const handleRemoveUser = (userId) => {
         Inertia.delete(removeUserUrl, { data: { user_id: userId } });
@@ -246,82 +259,27 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
         project.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleNextTab = () => {
+        setCurrentTab((prevTab) => (prevTab + 1) % userChunks.length);
+    };
+
+    const handlePrevTab = () => {
+        setCurrentTab((prevTab) => (prevTab - 1 + userChunks.length) % userChunks.length);
+    };
+
     return (
         <Base user={currentUser}>
-            <div className="team-view">
-                <div className="flex flex-col items-center space-y-4">
-                    <div className='flex items-center'>
-                        <div className="team-icon" style={{ background: 'linear-gradient(to right, #6a11cb, #2575fc)', width: '50px', height: '50px', borderRadius: '8px', marginRight: '16px' }}></div>
-                        {isEditingTitle ? (
-                            <div className="flex items-center">
-                                <input
-                                    type="text"
-                                    value={teamTitle}
-                                    onChange={(e) => setTeamTitle(e.target.value)}
-                                    className="text-xl font-semibold border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
-                                />
-                                <button
-                                    className="ml-2 text-blue-500"
-                                    onClick={handleUpdateTeamTitle}
-                                >
-                                    Enregistrer
-                                </button>
-                            </div>
-                        ) : (
-                            <h2 className="text-xl font-semibold flex items-center">
-                                {teamTitle}
-                                {currentUserRoleInTeam === 'admin' && (
-                                    <FaPen
-                                        className="ml-2 text-gray-500 cursor-pointer"
-                                        onClick={() => setIsEditingTitle(true)}
-                                    />
-                                )}
-                            </h2>
-                        )}
-                    </div>
-                    <h3 className="text-lg text-gray-600">Votre espace membre !</h3>
-                    <p className="text-gray-500 text-center">
-                        Les membres d'espaces de travail peuvent consulter et rejoindre tous les tableaux visibles par les membres d'un espace de travail et peuvent créer de nouveaux tableaux au sein de l'espace de travail.
-                    </p>
-                    <div className='space-x-2'>
-                        {currentUserRoleInTeam === 'admin' && (
-                            <button
-                                className="delete-team-btn bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition mt-4"
-                                onClick={handleDeleteTeam}
-                            >
-                                Supprimer l'équipe
-                            </button>
-                        )}
-                        <button className="invite-btn bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition" onClick={handleCopyInviteCode}>Copier le code d'invitation</button>
-                        <button className='invite-btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition' onClick={() => {
-                            setSelectedProject(null); // Réinitialiser le projet sélectionné
-                            setIsJoiningProject(true);
-                        }}>Rejoindre un projet privé</button>
-                    </div>
-                </div>
-            </div>
-
-            <div className="team-members mt-6">
-                {team?.users?.length > 0 ? (
-                    team.users.map((user) => (
-                        <div key={user.id} className="bg-white team-member-card border p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center">
-                            <div className="member-info">
-                                <h4 className="text-lg font-medium">{user.name}</h4>
-                                <p className="text-gray-600">{user.pivot.role}</p>
-                                <p className="text-gray-500">Dernière activité : {user.created_at}</p>
-                            </div>
-                            {currentUserRoleInTeam === 'admin' && user.pivot.role !== 'admin' && (
-                                <button className="remove-btn bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700 transition" onClick={() => handleRemoveUser(user.id)}>Retirer</button>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <p>Aucun membre dans l'équipe pour le moment.</p>
-                )}
-            </div>
+            <TeamOverview
+                team={team}
+                currentUser={currentUser}
+                handleDeleteTeam={handleDeleteTeam}
+                handleCopyInviteCode={handleCopyInviteCode}
+                handleRemoveUser={handleRemoveUser}
+                handleUpdateTeamTitle={handleUpdateTeamTitle}
+            />
 
             {/* Affichage des projets de l'équipe */}
-            <div className="team-projects mt-8">
+            <div className=" mt-8">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">Projets de l'équipe</h3>
                     <input
@@ -329,7 +287,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                         placeholder="Rechercher un projet..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="p-2 border rounded-lg"
+                        className="p-2 border focus:border-purple-500 rounded-lg"
                     />
                 </div>
                 {filteredProjects?.length > 0 ? (
@@ -340,16 +298,16 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
 
                         return (
                             <div key={project.id} className="bg-white project-card border p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center">
-                                <div>
-                                    <h4 className="text-md font-medium flex items-center">
+                                <div className='space-y-2 w-2/3'>
+                                    <h4 className="text-md flex items-center font-semibold">
                                         {project.name}
                                         {isBoardLeader && <FaCrown className="ml-2 text-yellow-500" />}
                                     </h4>
-                                    <p className="text-gray-600">{project.description}</p>
-                                    <p className="text-gray-500">Statut : {project.status}</p>
-                                    <p className="text-gray-500">Dates : {project.start_date} - {project.end_date}</p>
+                                    <p className="text-gray-600 ">{project.description}</p>
+                                    <p className="text-gray-500">Statut : <strong>{project.status}</strong> </p>
+                                    <p className="text-gray-500">Du {project.start_date} au {project.end_date}</p>
                                 </div>
-                                <div className='space-x-2'>
+                                <div className='w-1/4'>
                                     {project.status === 'Privé' && !isUserInProject && (
                                         <>
                                             <FaLock className="text-gray-400 text-xl" />
@@ -357,37 +315,37 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                     )}
                                     {project.status === 'Public' && !isUserInProject && (
                                         <button
-                                            className="join-project-btn bg-green-600 text-white py-1 px-2 rounded hover:bg-green-700 transition"
+                                            className="join-project-btn bg-green-600 text-white p-2 rounded hover:bg-green-700 transition"
                                             onClick={() => handleJoinProject(project)}
                                         >
                                             Rejoindre le projet
                                         </button>
                                     )}
                                     {isUserInProject && (
-                                        <>
+                                        <div className='flex justify-around items-center'>
                                             <button
-                                                className="view-project-btn bg-blue-600 text-white py-1 px-2 rounded hover:bg-blue-700 transition"
-                                                onClick={() => Inertia.visit(`/project/${project.id}`)} // Redirection vers la vue du projet
+                                                className="view-project-btn bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+                                                onClick={() => Inertia.visit(`/project/${project.id}`)}
                                             >
                                                 Voir le projet
                                             </button>
                                             <button
-                                                className="leave-project-btn bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700 transition"
+                                                className="leave-project-btn bg-red-600 text-white p-2 rounded hover:bg-red-700 transition"
                                                 onClick={() => handleLeaveProject(project.id)}
                                             >
                                                 Se retirer du projet
                                             </button>
-                                        </>
+                                            {isBoardLeader && (
+                                                <button
+                                                    className="delete-project-btn bg-red-600 text-white p-2 rounded hover:bg-red-700 transition"
+                                                    onClick={() => handleDeleteProject(project.id)}
+                                                >
+                                                    Supprimer
+                                                </button>
+                                            )}
+                                        </div>
                                     )}
-                                    {/* Bouton pour supprimer un projet */}
-                                    {isBoardLeader && (
-                                        <button
-                                            className="delete-project-btn bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700 transition"
-                                            onClick={() => handleDeleteProject(project.id)}
-                                        >
-                                            Supprimer
-                                        </button>
-                                    )}
+                                    
                                 </div>
                             </div>
                         );
