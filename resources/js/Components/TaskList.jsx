@@ -1,6 +1,8 @@
+// TaskList.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskModal from './TaskModal';
+import ConfirmationModal from '../Components/ConfirmationModal'; // Importer le composant ConfirmationModal
 
 const Task = ({
     task,
@@ -13,10 +15,13 @@ const Task = ({
     handleDeleteTask,
     availableTasks,
     lists
-    
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
+
+    // États pour la modal de confirmation
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
 
     const openModal = () => {
         startEditingTask(task);
@@ -29,10 +34,22 @@ const Task = ({
     };
 
     const deleteTask = () => {
-        if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
-            setIsVisible(false);
-            setTimeout(() => handleDeleteTask(task.id), 300); // Delay to allow animation to complete
-        }
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDeleteTask = () => {
+        if (!taskToDelete) return;
+
+        setIsVisible(false);
+        setTimeout(() => handleDeleteTask(taskToDelete), 300); // Delay pour permettre l'animation
+
+        setIsDeleteModalOpen(false);
+        setTaskToDelete(null);
+    };
+
+    const cancelDeleteTask = () => {
+        setIsDeleteModalOpen(false);
+        setTaskToDelete(null);
     };
 
     return (
@@ -57,6 +74,7 @@ const Task = ({
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
+                                        setTaskToDelete(task.id);
                                         deleteTask();
                                     }}
                                     className="text-red-500 hover:text-red-700 text-2xl"
@@ -81,6 +99,15 @@ const Task = ({
                     lists={lists}
                 />
             )}
+
+            {/* Modal de Confirmation */}
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                title="Confirmer la suppression"
+                message="Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible."
+                onConfirm={confirmDeleteTask}
+                onCancel={cancelDeleteTask}
+            />
         </>
     );
 };

@@ -7,7 +7,8 @@ import MiniNav from '../../Components/MiniNav';
 import ListDisplay from '../../Components/ListDisplay';
 import ModelSelection from '../../Components/ModelSelection';
 import ChatWindow from '../../Components/ChatWindow'; // Importer le composant ChatWindow
-import { FiMessageCircle } from 'react-icons/fi'; // Importer l'icône de dialogue
+import { FiMessageCircle } from 'react-icons/fi';
+import ConfirmationModal from '../../Components/ConfirmationModal'; 
 
 
 const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
@@ -24,6 +25,9 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [updatedTask, setUpdatedTask] = useState({ name: '', description: '' });
     const [editingListId, setEditingListId] = useState(null);
     const [updatedListName, setUpdatedListName] = useState('');
+
+    const [isListDeleteModalOpen, setIsListDeleteModalOpen] = useState(false);
+    const [listToDelete, setListToDelete] = useState(null);
 
     useEffect(() => {
         setProjectUsers(project.users);
@@ -151,7 +155,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     };
 
     const handleUpdateTask = (taskId, updatedData) => {
-        axios.put(`/project/${projectId}/tasks/${taskId}`, updatedData)
+        axios.put(`/projects/${projectId}/tasks/${taskId}`, updatedData)
             .then(response => {
                 const updatedTask = response.data;
                 setTasks((prevTasks) =>
@@ -239,16 +243,31 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             });
     };
 
+    const confirmDeleteList = () => {
+        if (!listToDelete) return;
+
+        axios.delete(`/project/${projectId}/lists/${listToDelete}`)
+            .then(() => {
+                setLists(lists.filter(list => list.id !== listToDelete));
+                setIsListDeleteModalOpen(false);
+                setListToDelete(null);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression de la liste:', error);
+                // Vous pouvez ajouter une notification d'erreur ici si nécessaire
+                setIsListDeleteModalOpen(false);
+                setListToDelete(null);
+            });
+    };
+
     const handleDeleteList = (listId) => {
-        if (confirm("Êtes-vous sûr de vouloir supprimer cette liste ?")) {
-            axios.delete(`/project/${projectId}/lists/${listId}`)
-                .then(() => {
-                    setLists(lists.filter(list => list.id !== listId));
-                })
-                .catch(error => {
-                    console.error('Error deleting list:', error);
-                });
-        }
+        setListToDelete(listId);
+        setIsListDeleteModalOpen(true);
+    };
+
+    const cancelDeleteList = () => {
+        setIsListDeleteModalOpen(false);
+        setListToDelete(null);
     };
 
     const startEditingTask = (task) => {
@@ -364,6 +383,14 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                     onClose={() => setIsChatOpen(false)}
                 />
             )}
+
+            <ConfirmationModal
+                isOpen={isListDeleteModalOpen}
+                title="Confirmer la suppression"
+                message="Êtes-vous sûr de vouloir supprimer cette liste ? Cette action est irréversible."
+                onConfirm={confirmDeleteList}
+                onCancel={cancelDeleteList}
+            />
         </Base>
     );
 };

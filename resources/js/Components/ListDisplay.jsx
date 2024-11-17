@@ -1,3 +1,4 @@
+// ListDisplay.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
@@ -15,7 +16,7 @@ const ListDisplay = ({
     handleUpdateList,
     setEditingListId,
     setUpdatedListName,
-    handleDeleteList,
+    handleDeleteList, // Assurez-vous que cette prop est passée depuis Show.jsx
     handleCreateTask,
     startEditingTask,
     editingTaskId,
@@ -79,9 +80,12 @@ const ListDisplay = ({
 
         if (!isMoveAllowed(draggableId, destination.droppableId)) {
             console.log('Move not allowed');
-            toast.warning('Impossible de déplacer cette tâche ici, fait avancer la dépendence.',
-                { autoClose: 5000, theme: "light", closeOnClick: true, pauseOnHover: true, }
-            );  
+            toast.warning('Impossible de déplacer cette tâche ici, fait avancer la dépendence.', {
+                autoClose: 5000,
+                theme: "light",
+                closeOnClick: true,
+                pauseOnHover: true,
+            });  
             return;
         }
 
@@ -162,8 +166,9 @@ const ListDisplay = ({
                                 >
                                     {list.name}
                                 </span>
+                                {/* Bouton de suppression */}
                                 <button
-                                    onClick={() => handleDeleteList(list.id)}
+                                    onClick={() => handleDeleteList(list.id)} // Appelle handleDeleteList avec list.id
                                     className="text-red-500 hover:text-red-700 text-3xl"
                                 >
                                     &times;
@@ -225,7 +230,14 @@ const ListDisplay = ({
                                         placeholder="Nom de la tâche"
                                         value={newTaskNames[list.id] || ''}
                                         onChange={(e) => handleTaskNameChange(list.id, e.target.value)}
-                                        className="border-none drop-shadow  rounded p-2 w-full mb-2"
+                                        className="border-none drop-shadow rounded p-2 w-full mb-2"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description de la tâche" // Ajout de l'input pour la description
+                                        value={newTaskDescriptions[list.id] || ''}
+                                        onChange={(e) => setNewTaskDescriptions((prev) => ({ ...prev, [list.id]: e.target.value }))}
+                                        className="border-none drop-shadow rounded p-2 w-full mb-2"
                                     />
                                 </div>
                             )}
@@ -255,9 +267,10 @@ const ListDisplay = ({
                     </div>
                 ))}
             </div>
-
+            <ToastContainer /> {/* Ajout du conteneur pour les toasts */}
         </DragDropContext>
     );
+
 };
 
 export default ListDisplay;

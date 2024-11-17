@@ -7,6 +7,7 @@ import JoinProjectModal from '../../Components/JoinProjectPopUp'; // Assurez-vou
 import { FaLock, FaPen, FaCrown, FaArrowLeft, FaArrowRight  } from 'react-icons/fa'; // Importer l'icône de cadenas, de stylo et de couronne
 import axios from 'axios'; // Importer axios
 import TeamOverview from './TeamOverview';
+import { motion } from 'framer-motion';
 
 const chunkArray = (array, size) => {
     const result = [];
@@ -267,6 +268,21 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
         setCurrentTab((prevTab) => (prevTab - 1 + userChunks.length) % userChunks.length);
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2,
+            },
+        },
+    };
+
+    const projectVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
+    };
+
     return (
         <Base user={currentUser}>
             <TeamOverview
@@ -279,7 +295,12 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
             />
 
             {/* Affichage des projets de l'équipe */}
-            <div className=" mt-8">
+            <motion.div
+                className="mt-8"
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+            >
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">Projets de l'équipe</h3>
                     <input
@@ -297,7 +318,13 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                         const isBoardLeader = currentUserInProject?.pivot?.role === 'Board Leader';
 
                         return (
-                            <div key={project.id} className="bg-white project-card border p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center">
+                            <motion.div
+                                key={project.id}
+                                className="bg-white project-card border p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center"
+                                variants={projectVariants}
+                                whileHover={{ scale: 1.007 }}
+                                transition={{ duration: 0.3 }}
+                            >
                                 <div className='space-y-2 w-2/3'>
                                     <h4 className="text-md flex items-center font-semibold">
                                         {project.name}
@@ -309,9 +336,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                 </div>
                                 <div className='w-1/4'>
                                     {project.status === 'Privé' && !isUserInProject && (
-                                        <>
-                                            <FaLock className="text-gray-400 text-xl" />
-                                        </>
+                                        <FaLock className="text-gray-400 text-xl" />
                                     )}
                                     {project.status === 'Public' && !isUserInProject && (
                                         <button
@@ -345,15 +370,22 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                             )}
                                         </div>
                                     )}
-                                    
+
                                 </div>
-                            </div>
+                            </motion.div>
                         );
                     })
                 ) : (
-                    <p>Aucun projet associé à cette équipe.</p>
+                    <motion.p
+                        className="text-center text-gray-500"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        Aucun projet associé à cette équipe.
+                    </motion.p>
                 )}
-            </div>
+            </motion.div>
 
             {isJoiningProject && (
                 <JoinProjectModal

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaPen, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const chunkArray = (array, size) => {
     const result = [];
@@ -20,7 +21,6 @@ const TeamOverview = ({
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [teamTitle, setTeamTitle] = useState(team.name);
     const [currentTab, setCurrentTab] = useState(0);
-    const [isForward, setIsForward] = useState(true);
 
     const usersPerPage = 4;
     const userChunks = chunkArray(team?.users || [], usersPerPage);
@@ -28,20 +28,16 @@ const TeamOverview = ({
     const currentUserRoleInTeam = team?.users?.find(user => user.id === currentUser.id)?.pivot?.role;
 
     const handleTabChange = () => {
-        if (isForward) {
-            if (currentTab < userChunks.length - 1) {
-                setCurrentTab(currentTab + 1);
-            } else {
-                setIsForward(false);
-            }
-        } else {
-            if (currentTab > 0) {
-                setCurrentTab(currentTab - 1);
-            } else {
-                setIsForward(true);
-            }
+        if (currentTab < userChunks.length - 1) {
+            setCurrentTab(currentTab + 1);
+        } else if (currentTab > 0) {
+            setCurrentTab(currentTab - 1);
         }
     };
+
+    // Determine arrow direction based on users in current tab
+    const isFullPage = userChunks[currentTab]?.length === usersPerPage;
+    const arrowIcon = isFullPage ? <FaArrowRight /> : <FaArrowLeft />;
 
     // Tableau des dégradés
     const gradientColors = [
@@ -53,10 +49,31 @@ const TeamOverview = ({
         "linear-gradient(to right, #f7971e, #ffd200)", // jaune
     ];
 
+    // Animation variants
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
+    };
+
     return (
-        <div className="flex justify-center items-center space-x-16 p-6 h-2/3">
+        <motion.div
+            className="flex justify-center items-center space-x-16 p-6 h-2/3"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+        >
             {/* Carte de l'équipe */}
-            <div className="team-view bg-white border p-8 rounded-lg shadow-xl w-1/3 h-5/6">
+            <motion.div
+                className="team-view bg-white border p-8 rounded-lg shadow-xl w-1/3 h-5/6"
+                variants={cardVariants}
+                whileHover={{ scale: 1.007 }}
+                transition={{ duration: 0.3 }}
+            >
                 <div className="flex flex-col items-center space-y-8">
                     {/* Icône et Titre de l'équipe */}
                     <div className="flex items-center space-x-4">
@@ -138,10 +155,13 @@ const TeamOverview = ({
                         )}
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Grille des utilisateurs */}
-            <div className="bg-red-50 space-x-4 flex flex-row items-center">
+            <motion.div
+                className=" space-x-8 flex flex-row items-center"
+                variants={containerVariants}
+            >
                 {/* Cartes des utilisateurs */}
                 <div className="grid grid-cols-2 gap-6">
                     {userChunks[currentTab]?.map((user) => {
@@ -150,9 +170,11 @@ const TeamOverview = ({
                         const gradientStyle = gradientColors[gradientIndex];
 
                         return (
-                            <div
+                            <motion.div
                                 key={user.id}
                                 className="relative bg-white border p-6 rounded-md shadow-sm flex flex-col items-center space-y-4 w-48 h-48"
+                                variants={cardVariants}
+                                whileHover={{ scale: 1.05 }}
                             >
                                 {/* Bouton pour supprimer (admin seulement) */}
                                 {currentUserRoleInTeam === "admin" && user.pivot.role !== "admin" && (
@@ -177,7 +199,7 @@ const TeamOverview = ({
                                     <h4 className="text-md font-medium truncate">{user.name}</h4>
                                     <p className="text-sm text-gray-600">{user.pivot.role}</p>
                                 </div>
-                            </div>
+                            </motion.div>
                         );
                     })}
                 </div>
@@ -187,10 +209,10 @@ const TeamOverview = ({
                     className="bg-purple-600/10 border border-purple-600 text-purple-800 p-3 rounded-full hover:bg-purple-600 hover:text-white transition"
                     onClick={handleTabChange}
                 >
-                    {isForward ? <FaArrowRight /> : <FaArrowLeft />}
+                    {arrowIcon}
                 </button>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };
 
