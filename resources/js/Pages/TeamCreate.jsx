@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; // Assurez-vous d'importer ces composants
-import { motion } from 'framer-motion'; // Importer Framer Motion
-import { IoMdClose } from 'react-icons/io'; // Importer l'icône de fermeture
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; 
+import { motion } from 'framer-motion'; 
+import { IoMdClose } from 'react-icons/io'; 
 
 export default function TeamCreate({ user, onAddTeam, users, onCancel }) {
     const [data, setData] = useState({
@@ -13,13 +13,11 @@ export default function TeamCreate({ user, onAddTeam, users, onCancel }) {
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // Exclure l'utilisateur connecté de la liste des utilisateurs disponibles
     const [availableUsers, setAvailableUsers] = useState(users.filter(u => u.id !== user.id));
     const [teamMembers, setTeamMembers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        // Met à jour les données du formulaire avec les membres de l'équipe sélectionnés
         setData(prevData => ({ ...prevData, users: teamMembers.map(member => member.id) }));
     }, [teamMembers]);
 
@@ -60,18 +58,18 @@ export default function TeamCreate({ user, onAddTeam, users, onCancel }) {
         try {
             const response = await axios.post('/teams-with-users', data);
             const newTeam = response.data.team;
-            newTeam.pivot = { role: 'admin' }; // Ajouter le rôle admin à l'utilisateur qui crée l'équipe
-            toast.success('Équipe créée avec succès !'); // Notification de succès
-            setData({ name: '', users: [] }); // Réinitialisation des données du formulaire
-            setTeamMembers([]); // Réinitialisation des membres de l'équipe
+            newTeam.pivot = { role: 'admin' }; 
+            toast.success('Équipe créée avec succès !'); 
+            setData({ name: '', users: [] });
+            setTeamMembers([]); 
             if (onAddTeam) {
-                onAddTeam(newTeam); // Appel de la fonction de rappel pour mettre à jour la liste des équipes
+                onAddTeam(newTeam); 
             }
         } catch (error) {
             if (error.response && error.response.data.errors) {
                 setErrors(error.response.data.errors);
             } else {
-                toast.error('Erreur lors de la création de l\'équipe.'); // Notification d'erreur
+                toast.error('Erreur lors de la création de l\'équipe.');
             }
         } finally {
             setProcessing(false);

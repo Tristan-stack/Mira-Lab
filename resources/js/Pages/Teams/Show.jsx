@@ -292,6 +292,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 handleCopyInviteCode={handleCopyInviteCode}
                 handleRemoveUser={handleRemoveUser}
                 handleUpdateTeamTitle={handleUpdateTeamTitle}
+                handleJoinPrivateProject={handleJoinPrivateProject} // Aligné avec TeamOverview.jsx
             />
 
             {/* Affichage des projets de l'équipe */}

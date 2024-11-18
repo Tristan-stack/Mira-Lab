@@ -25,26 +25,24 @@ const Accueil = () => {
   // Initialiser Vanilla Tilt
   useEffect(() => {
     const options = {
-      max: 5,           // Angle maximal de basculement
-      speed: 2000,        // Vitesse de réaction
-      glare: false,      // Désactiver l'effet de glare
-      "max-glare": 0.5,  // Niveau de glare maximum
-      perspective: 1000, // Perspective pour l'effet de parallaxe
+      max: 5,          
+      speed: 2000,        
+      glare: false,     
+      "max-glare": 0.5,  
+      perspective: 1000, 
     };
 
     AOS.init({
-      duration: 1000, // Durée de l'animation en millisecondes
-      once: true,     // Réaliser l'animation une seule fois
+      duration: 1000,
+      once: true,    
     });
 
-    // Initialiser les cartes
     [card1Ref, card2Ref, card3Ref, card4Ref].forEach((ref) => {
       if (ref.current) {
         VanillaTilt.init(ref.current, options);
       }
     });
 
-    // Nettoyage lors du démontage du composant
     return () => {
       [card1Ref, card2Ref, card3Ref, card4Ref].forEach((ref) => {
         if (ref.current?.vanillaTilt) {
@@ -67,9 +65,9 @@ const Accueil = () => {
 
 
 
-  // Fonction pour ouvrir/fermer un onglet
+  
   const toggleAccordion = (index) => {
-    setActiveIndex((prevIndex) => (prevIndex === index ? null : index)); // Si l'onglet est déjà ouvert, on le ferme
+    setActiveIndex((prevIndex) => (prevIndex === index ? null : index)); 
   };
 
   return (
@@ -237,7 +235,7 @@ const Accueil = () => {
                   {/* Carte 04 */}
                   <div
                     ref={card4Ref}
-                    className="w-1/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative group" // Ajout de `group`
+                    className="w-1/3 p-6 bg-white shadow-lg rounded-3xl space-y-4 relative group" 
                     style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px)' }}
                   >
                     <h3
@@ -256,7 +254,7 @@ const Accueil = () => {
                       <img
                         src={Notification}
                         alt="Notification"
-                        className="rounded-lg shadow-xl mx-auto transform transition-transform duration-300 group-hover:scale-105" // Ajout de scale up au hover
+                        className="rounded-lg shadow-xl mx-auto transform transition-transform duration-300 group-hover:scale-105" 
                       />
                     </div>
                   </div>

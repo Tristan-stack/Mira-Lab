@@ -1,6 +1,10 @@
+// TeamOverview.jsx
 import React, { useState } from 'react';
 import { FaPen, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import JoinProjectPopUp from '../../Components/JoinProjectPopUp';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const chunkArray = (array, size) => {
     const result = [];
@@ -17,10 +21,12 @@ const TeamOverview = ({
     handleCopyInviteCode,
     handleRemoveUser,
     handleUpdateTeamTitle,
+    handleJoinPrivateProject, // Recevoir la fonction depuis le parent
 }) => {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [teamTitle, setTeamTitle] = useState(team.name);
     const [currentTab, setCurrentTab] = useState(0);
+    const [isJoinProjectPopUpOpen, setIsJoinProjectPopUpOpen] = useState(false); 
 
     const usersPerPage = 4;
     const userChunks = chunkArray(team?.users || [], usersPerPage);
@@ -34,10 +40,6 @@ const TeamOverview = ({
             setCurrentTab(currentTab - 1);
         }
     };
-
-    // Determine arrow direction based on users in current tab
-    const isFullPage = userChunks[currentTab]?.length === usersPerPage;
-    const arrowIcon = isFullPage ? <FaArrowRight /> : <FaArrowLeft />;
 
     // Tableau des dégradés
     const gradientColors = [
@@ -138,9 +140,7 @@ const TeamOverview = ({
                             </button>
                             <button
                                 className="invite-btn bg-green-500 text-white py-2 px-4 rounded-lg shadow hover:bg-green-600 transition"
-                                onClick={() => {
-                                    // Logique pour rejoindre un projet privé
-                                }}
+                                onClick={() => setIsJoinProjectPopUpOpen(true)} // Ouvrir la pop-up
                             >
                                 Rejoindre un projet privé
                             </button>
@@ -209,11 +209,21 @@ const TeamOverview = ({
                     className="bg-purple-600/10 border border-purple-600 text-purple-800 p-3 rounded-full hover:bg-purple-600 hover:text-white transition"
                     onClick={handleTabChange}
                 >
-                    {arrowIcon}
+                    {currentTab < userChunks.length - 1 ? <FaArrowRight /> : <FaArrowLeft />}
                 </button>
             </motion.div>
+
+            {/* Intégrer la Pop-up pour Rejoindre un Projet Privé */}
+            {isJoinProjectPopUpOpen && (
+                <JoinProjectPopUp
+                    onClose={() => setIsJoinProjectPopUpOpen(false)}
+                    onJoinProject={handleJoinPrivateProject} // Utiliser la fonction venant du parent
+                    projectCode={''} // Passer un code si nécessaire
+                />
+            )}
         </motion.div>
     );
+
 };
 
 export default TeamOverview;

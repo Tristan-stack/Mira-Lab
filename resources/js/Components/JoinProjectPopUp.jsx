@@ -1,21 +1,23 @@
+// JoinProjectPopUp.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
+const JoinProjectPopUp = ({ onClose, onJoinProject, projectCode }) => {
     const [inputCode, setInputCode] = useState('');
     const [error, setError] = useState('');
 
     useEffect(() => {
-        setInputCode(projectCode); // Initialiser le champ avec le code du projet si sélectionné
+        setInputCode(projectCode); 
     }, [projectCode]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             await onJoinProject(inputCode);
-            setError(''); // Réinitialiser l'erreur si la requête réussit
+            setError(''); 
+            onClose(); // Fermer la pop-up après succès
         } catch (err) {
-            setError(err.message); // Afficher le message d'erreur
+            setError(err.message); 
         }
     };
 
@@ -28,7 +30,7 @@ const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
                 exit={{ opacity: 0 }}
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
-                <div className="absolute inset-0  bg-black bg-opacity-50 backdrop-blur-sm" onClick={onClose}></div>
+                <div className="absolute inset-0 -left-16 bg-black/20 backdrop-blur-sm" onClick={onClose}></div>
                 <motion.div
                     className="relative bg-white p-6 rounded-md shadow-lg z-10 max-w-md w-full"
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -42,7 +44,7 @@ const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
                             <input
                                 type="text"
                                 id="projectCode"
-                                
+                                value={inputCode}
                                 onChange={(e) => setInputCode(e.target.value)}
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 required
@@ -52,7 +54,7 @@ const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
                         <div className="flex justify-end space-x-2">
                             <button
                                 type="button"
-                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
                                 onClick={onClose}
                             >
                                 Annuler
@@ -71,4 +73,4 @@ const JoinProjectModal = ({ onClose, onJoinProject, projectCode }) => {
     );
 };
 
-export default JoinProjectModal;
+export default JoinProjectPopUp;
