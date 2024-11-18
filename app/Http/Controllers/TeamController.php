@@ -23,6 +23,15 @@ class TeamController extends Controller
         return inertia('Teams/Index', compact('teams'));
     }
 
+    public function getUserTeams()
+    {
+        $user = Auth::user();
+        // Supposant que la relation 'teams' est définie dans le modèle User
+        $teams = $user->teams()->get();
+
+        return response()->json($teams);
+    }
+
     /**
      * Show the form for creating a new team.
      */

@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
     // Routes des équipes
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+    Route::get('/user/teams', [TeamController::class, 'getUserTeams'])->name('teams.user');
     Route::delete('/teams/{team_id}/remove-user/{user_id}', [TeamController::class, 'removeUser'])->name('teams.removeUser');
     Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
     Route::post('/teams/{teamId}/withdraw', [TeamController::class, 'withdraw'])->name('teams.withdraw');

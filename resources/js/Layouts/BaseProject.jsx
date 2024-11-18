@@ -39,10 +39,10 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                     onOpenModal={() => setIsModalOpen(true)}
                     tasks={tasks}
                 />
-                <div className="flex-1 flex flex-col relative">
+                <div className="flex flex-col flex-1">
                     <Navbar />
-                    <main className="flex-1 bg-gradient-to-r from-fuchsia-700 to-indigo-900 flex flex-col overflow-hidden">
-                        <div className="flex-1 overflow-auto custom-scrollbar">
+                    <main className="flex-1 overflow-auto w-full bg-blue-900">
+                        <div className="h-full ">
                             {children}
                         </div>
                     </main>
@@ -53,25 +53,6 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                     />
                 </div>
                 <ToastContainer />
-                <style>{`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        width: 8px;
-                        height: 8px;
-                    }
-
-                    .custom-scrollbar::-webkit-scrollbar-track {
-                        background: #f1f1f1;
-                    }
-
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background: #888;
-                        border-radius: 10px;
-                    }
-
-                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                        background: #555;
-                    }
-                `}</style>
             </div>
         </GradientProvider>
     );

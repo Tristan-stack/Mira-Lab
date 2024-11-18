@@ -61,7 +61,7 @@ const Task = ({
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="mb-2 p-2 bg-white rounded shadow relative cursor-pointer"
+                        className=" p-2 bg-white rounded shadow relative cursor-pointer"
                         style={{ border: '1px solid transparent', transition: 'border-color 0.05s ease-in-out' }} // Bordure transparente par défaut
                         whileHover={{ borderColor: '#3b82f6' }} // Changer uniquement la couleur de la bordure lors du survol
                     >

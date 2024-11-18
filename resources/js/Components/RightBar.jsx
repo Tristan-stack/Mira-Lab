@@ -102,17 +102,14 @@ const RightBar = ({ isOpen, onClose, isBoardLeader, projectId, currentUser }) =>
                     </button>
                 </div>
                 <div className="p-4 space-y-4">
-                    <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'>Changer le fond d'ecran</p>
-                    <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'>Partager le projet</p>
-                    <p className='rounded p-2 hover:bg-gray-300/30 duration-200 cursor-pointer'> Model prédéfini</p>
 
                     {isBoardLeader ? (
                         <>
-                            <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleLeaveProject}>Se retirer du tableau</p>
-                            <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={openDeleteModal}>Supprimer le tableau</p>
+                            <p className='text-red-600 text-center rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleLeaveProject}>Se retirer du tableau</p>
+                            <p className='text-red-600 text-center rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={openDeleteModal}>Supprimer le tableau</p>
                         </>
                     ) : (
-                        <p className='text-red-600 rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleLeaveProject}>Se retirer du tableau</p>
+                            <p className='text-red-600 text-center rounded p-2 border border-red-600 hover:bg-red-600 hover:text-white duration-200 cursor-pointer' onClick={handleLeaveProject}>Se retirer du tableau</p>
                     )}
                 </div>
             </motion.div>

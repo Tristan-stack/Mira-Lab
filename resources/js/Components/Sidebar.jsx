@@ -1,6 +1,12 @@
 // Sidebar.jsx
 import React, { useEffect, useState } from 'react';
-import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut } from 'react-icons/fi';
+import {
+  FiGrid,
+  FiUsers,
+  FiChevronDown,
+  FiChevronUp,
+  FiLogOut
+} from 'react-icons/fi';
 import axios from 'axios';
 import NotificationMenu from './NotificationMenu'; // Import du composant NotificationMenu
 
@@ -25,6 +31,10 @@ const getRandomGradient = () => {
 
 export default function Sidebar({ user }) {
   const [gradientStyle, setGradientStyle] = useState({});
+  const [teams, setTeams] = useState([]);
+  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
+  const [loadingTeams, setLoadingTeams] = useState(false);
+  const [errorTeams, setErrorTeams] = useState(null);
 
   useEffect(() => {
     setGradientStyle({
@@ -40,7 +50,29 @@ export default function Sidebar({ user }) {
       fontSize: '1rem',
       marginRight: '1rem',
     });
-  }, []);
+
+    // Fetch des équipes de l'utilisateur
+    const fetchTeams = async () => {
+      setLoadingTeams(true);
+      try {
+        const response = await axios.get('/user/teams', {
+          headers: {
+            'Content-Type': 'application/json',
+            // Ajoutez d'autres en-têtes si nécessaire, comme le token CSRF
+          },
+          withCredentials: true, // Si nécessaire
+        });
+        setTeams(response.data);
+        setLoadingTeams(false);
+      } catch (error) {
+        console.error('Erreur lors du chargement des équipes:', error);
+        setErrorTeams('Impossible de charger les équipes.');
+        setLoadingTeams(false);
+      }
+    };
+
+    fetchTeams();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -51,8 +83,16 @@ export default function Sidebar({ user }) {
     }
   };
 
+  const handleDashboardClick = () => {
+    window.location.href = '/profile';
+  };
+
   const handleUserClick = () => {
     window.location.href = '/profile';
+  };
+
+  const toggleTeams = () => {
+    setIsTeamsOpen(!isTeamsOpen);
   };
 
   return (
@@ -60,14 +100,47 @@ export default function Sidebar({ user }) {
       <div>
         <div className="text-2xl font-bold text-purple-600 mb-8">Mira Labs</div>
         <nav className="space-y-4 w-full">
-          <div className="w-full flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
+          <div
+            className="w-full flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+            onClick={handleDashboardClick}
+          >
             <FiGrid className="mr-3 text-gray-600" />
-            <span>Tableau</span>
+            <span>Dashboard</span>
           </div>
-          <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">
-            <FiUsers className="mr-3 text-gray-600" />
-            <span>Teams</span>
+          
+          {/* Section Teams avec sous-menu */}
+          <div className="w-full">
+            <div
+              className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+              onClick={toggleTeams}
+            >
+              <FiUsers className="mr-3 text-gray-600" />
+              <span className="flex-1">Teams</span>
+              {isTeamsOpen ? <FiChevronUp /> : <FiChevronDown />}
+            </div>
+            {isTeamsOpen && (
+              <div className="ml-6 mt-2 space-y-2">
+                {loadingTeams ? (
+                  <div className="text-gray-500 p-2">Chargement...</div>
+                ) : errorTeams ? (
+                  <div className="text-red-500 p-2">{errorTeams}</div>
+                ) : teams.length > 0 ? (
+                  teams.map(team => (
+                    <div
+                      key={team.id}
+                      className="flex items-center p-2 hover:bg-gray-200 rounded-md cursor-pointer"
+                      onClick={() => window.location.href = `/teams/${team.id}`}
+                    >
+                      {team.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 p-2">Vous n'appartenez à aucune équipe.</div>
+                )}
+              </div>
+            )}
           </div>
+
           {/* Intégration du menu des notifications */}
           <div className="relative">
             <NotificationMenu currentUser={user} variant="sidebar" />

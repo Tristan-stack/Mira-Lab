@@ -16,7 +16,7 @@ const ListDisplay = ({
     handleUpdateList,
     setEditingListId,
     setUpdatedListName,
-    handleDeleteList, // Assurez-vous que cette prop est passée depuis Show.jsx
+    handleDeleteList,
     handleCreateTask,
     startEditingTask,
     editingTaskId,
@@ -80,7 +80,7 @@ const ListDisplay = ({
 
         if (!isMoveAllowed(draggableId, destination.droppableId)) {
             console.log('Move not allowed');
-            toast.warning('Impossible de déplacer cette tâche ici, fait avancer la dépendence.', {
+            toast.warning('Impossible de déplacer cette tâche ici, faites avancer la dépendance.', {
                 autoClose: 5000,
                 theme: "light",
                 closeOnClick: true,
@@ -142,131 +142,161 @@ const ListDisplay = ({
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex space-x-3 ml-3 ">
-                {lists.map((list) => (
-                    <div
-                        key={list.id}
-                        className="min-w-64 p-4 bg-gray-100 rounded shadow-md flex-shrink-0"
-                    >
-                        {editingListId === list.id ? (
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={updatedListName}
-                                onChange={(e) => setUpdatedListName(e.target.value)}
-                                onBlur={() => handleListNameBlur(list.id)}
-                                onKeyPress={(e) => handleListNameKeyPress(e, list.id)}
-                                className="border rounded p-1 w-full"
-                            />
-                        ) : (
-                            <div className="flex justify-between items-center">
-                                <span
-                                    className="font-bold cursor-pointer hover:bg-gray-200 pr-6 pl-2 py-2 rounded duration-300"
-                                    onClick={() => handleListNameClick(list)}
-                                >
-                                    {list.name}
-                                </span>
-                                {/* Bouton de suppression */}
-                                <button
-                                    onClick={() => handleDeleteList(list.id)} // Appelle handleDeleteList avec list.id
-                                    className="text-red-500 hover:text-red-700 text-3xl"
-                                >
-                                    &times;
-                                </button>
-                            </div>
-                        )}
-                        <Droppable droppableId={list.id.toString()}>
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    className="mt-4"
-                                >
-                                    {tasks.filter(task => task.lists_id === list.id).length > 0 ? (
-                                        tasks.filter(task => task.lists_id === list.id).map((task, index) => (
-                                            <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                                                {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                        className={`${
-                                                            snapshot.isDragging ? 'bg-blue-100' : ''
-                                                        }`}
-                                                        style={{
-                                                            ...provided.draggableProps.style,
-                                                            position: snapshot.isDragging ? 'fixed' : 'relative',
-                                                            top: snapshot.isDragging ? provided.draggableProps.style.top : 'auto',
-                                                            left: snapshot.isDragging ? provided.draggableProps.style.left : 'auto',
-                                                            zIndex: snapshot.isDragging ? 50 : 'auto',
-                                                        }}
-                                                    >
-                                                        <Task
-                                                            task={task}
-                                                            editingTaskId={editingTaskId}
-                                                            updatedTask={updatedTask}
-                                                            startEditingTask={startEditingTask}
-                                                            handleTaskChange={handleTaskChange}
-                                                            handleSaveTask={handleSaveTask}
-                                                            setEditingTaskId={setEditingTaskId}
-                                                            handleDeleteTask={handleDeleteTask}
-                                                            availableTasks={availableTasks}
-                                                            lists={lists}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))
-                                    ) : null}
-                                    {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                        <div className="mt-4">
-                            {showAddTaskInput[list.id] && (
-                                <div className="mb-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Nom de la tâche"
-                                        value={newTaskNames[list.id] || ''}
-                                        onChange={(e) => handleTaskNameChange(list.id, e.target.value)}
-                                        className="border-none drop-shadow rounded p-2 w-full mb-2"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Description de la tâche" // Ajout de l'input pour la description
-                                        value={newTaskDescriptions[list.id] || ''}
-                                        onChange={(e) => setNewTaskDescriptions((prev) => ({ ...prev, [list.id]: e.target.value }))}
-                                        className="border-none drop-shadow rounded p-2 w-full mb-2"
-                                    />
-                                </div>
-                            )}
-                            <div className="flex items-center justify-between">
-                                <button
-                                    onClick={() => {
-                                        if (showAddTaskInput[list.id]) {
-                                            handleAddTask(list.id);
-                                        } else {
-                                            toggleAddTaskInput(list.id);
-                                        }
-                                    }}
-                                    className={`p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300 ${showAddTaskInput[list.id] ? 'w-1/2' : 'w-full'}`}
-                                >
-                                    {showAddTaskInput[list.id] ? 'Ajouter' : 'Ajouter une tâche'}
-                                </button>
-                                {showAddTaskInput[list.id] && (
+            <div className="flex space-x-3 ml-3">
+                {lists.map((list) => {
+                    const listTasks = tasks.filter(task => task.lists_id === list.id);
+                    const shouldScroll = listTasks.length > 3;
+
+                    return (
+                        <div
+                            key={list.id}
+                            className="min-w-64 p-4 bg-gray-100 rounded shadow-md flex-shrink-0"
+                        >
+                            {editingListId === list.id ? (
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={updatedListName}
+                                    onChange={(e) => setUpdatedListName(e.target.value)}
+                                    onBlur={() => handleListNameBlur(list.id)}
+                                    onKeyPress={(e) => handleListNameKeyPress(e, list.id)}
+                                    className="border rounded p-1 w-full"
+                                />
+                            ) : (
+                                <div className="flex justify-between items-center">
+                                    <span
+                                        className="font-bold cursor-pointer hover:bg-gray-200 pr-6 pl-2 py-2 rounded duration-300"
+                                        onClick={() => handleListNameClick(list)}
+                                    >
+                                        {list.name}
+                                    </span>
+                                    {/* Bouton de suppression */}
                                     <button
-                                        onClick={() => toggleAddTaskInput(list.id)}
-                                        className="text-red-500 hover:text-red-700 ml-2 text-2xl"
+                                        onClick={() => handleDeleteList(list.id)}
+                                        className="text-red-500 hover:text-red-700 text-3xl"
                                     >
                                         &times;
                                     </button>
+                                </div>
+                            )}
+                            <Droppable droppableId={list.id.toString()}>
+                                {(provided) => (
+                                    <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        className={`mt-4 ${shouldScroll ? 'max-h-80 overflow-y-auto custom-scrollbar' : ''}`}
+                                    >
+                                        {listTasks.length > 0 ? (
+                                            listTasks.map((task, index) => (
+                                                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                                                    {(provided, snapshot) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className={` bg-transparent p-1 ${
+                                                                snapshot.isDragging ? 'bg-blue-100' : ''
+                                                            }`}
+                                                            style={{
+                                                                ...provided.draggableProps.style,
+                                                                position: snapshot.isDragging ? 'fixed' : 'relative',
+                                                                top: snapshot.isDragging ? provided.draggableProps.style.top : 'auto',
+                                                                left: snapshot.isDragging ? provided.draggableProps.style.left : 'auto',
+                                                                zIndex: snapshot.isDragging ? 50 : 'auto',
+                                                            }}
+                                                        >
+                                                            <Task
+                                                                task={task}
+                                                                editingTaskId={editingTaskId}
+                                                                updatedTask={updatedTask}
+                                                                startEditingTask={startEditingTask}
+                                                                handleTaskChange={handleTaskChange}
+                                                                handleSaveTask={handleSaveTask}
+                                                                setEditingTaskId={setEditingTaskId}
+                                                                handleDeleteTask={handleDeleteTask}
+                                                                availableTasks={availableTasks}
+                                                                lists={lists}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500">Aucune tâche</p>
+                                        )}
+                                        {provided.placeholder}
+                                    </div>
                                 )}
+                            </Droppable>
+                            <div className="mt-4">
+                                {showAddTaskInput[list.id] && (
+                                    <div className="mb-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Nom de la tâche"
+                                            value={newTaskNames[list.id] || ''}
+                                            onChange={(e) => handleTaskNameChange(list.id, e.target.value)}
+                                            className="border-none drop-shadow rounded p-2 w-full mb-2"
+                                        />
+                                    </div>
+                                )}
+                                <div className="flex items-center justify-between">
+                                    <button
+                                        onClick={() => {
+                                            if (showAddTaskInput[list.id]) {
+                                                handleAddTask(list.id);
+                                            } else {
+                                                toggleAddTaskInput(list.id);
+                                            }
+                                        }}
+                                        className={`p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300 ${showAddTaskInput[list.id] ? 'w-1/2' : 'w-full'}`}
+                                    >
+                                        {showAddTaskInput[list.id] ? 'Ajouter' : 'Ajouter une tâche'}
+                                    </button>
+                                    {showAddTaskInput[list.id] && (
+                                        <button
+                                            onClick={() => toggleAddTaskInput(list.id)}
+                                            className="text-red-500 hover:text-red-700 ml-2 text-2xl"
+                                        >
+                                            &times;
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
+
+                <style>
+                    {`
+                    .custom-scrollbar::-webkit-scrollbar {
+                        width: 6px; /* Largeur de la barre de défilement verticale */
+                    }
+
+                    .custom-scrollbar::-webkit-scrollbar-track {
+                        background: transparent; /* Couleur du fond de la piste de défilement */
+                    }
+
+                    .custom-scrollbar::-webkit-scrollbar-thumb {
+                        background-color: #a0aec0; /* Couleur du pouce de défilement (Tailwind gray-400) */
+                        border-radius: 3px; /* Coins arrondis */
+                        border: 2px solid transparent; /* Espace autour du pouce */
+                        background-clip: padding-box; /* Assure que le bord ne déborde pas */
+                    }
+
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                        background-color: #718096; /* Couleur du pouce au survol (Tailwind gray-500) */
+                    }
+
+                    .custom-scrollbar {
+                        scrollbar-width: thin;
+                        scrollbar-color: #a0aec0 transparent;
+                    }
+                    `}
+
+                </style>
             </div>
+            <ToastContainer />
         </DragDropContext>
     );
 

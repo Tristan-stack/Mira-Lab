@@ -223,7 +223,7 @@ const MiniNav = ({ project: initialProject, currentUser, isBoardLeader, projectI
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-14 left-56 bg-white shadow-lg rounded p-4 z-50"
+                        className="absolute top-14 left-40 bg-white shadow-lg rounded p-4 z-50"
                     >
                         <h3 className="text-lg font-semibold mb-2">
                             Utilisateurs connectés : {onlineUsers.length}

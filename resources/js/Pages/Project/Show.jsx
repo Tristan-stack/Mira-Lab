@@ -307,7 +307,6 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
 
     // Afficher la liste des tâches disponibles
     console.log("Tâches disponibles", availableTasks);
-
     return (
         <Base
             user={currentUser}
@@ -325,49 +324,46 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 projectId={projectId}
                 onlineUsers={onlineUsers}
             />
-
-            {/* Conteneur pour le défilement horizontal des listes */}
-            <div className="flex-1">
-                <div className="mt-4 overflow-x-auto">
-                    <div className="flex space-x-3 justify-start items-start">
-                        {lists.length > 0 ? (
-                            <>
-                                <ListDisplay
-                                    lists={lists}
-                                    tasks={tasks}
-                                    setTasks={setTasks}
-                                    projectId={projectId}
-                                    editingListId={editingListId}
-                                    updatedListName={updatedListName}
-                                    startEditingList={startEditingList}
-                                    handleUpdateList={handleUpdateList}
-                                    setEditingListId={setEditingListId}
-                                    setUpdatedListName={setUpdatedListName}
-                                    handleDeleteList={handleDeleteList}
-                                    handleCreateTask={handleCreateTask}
-                                    startEditingTask={startEditingTask}
-                                    editingTaskId={editingTaskId}
-                                    updatedTask={updatedTask}
-                                    handleTaskChange={handleTaskChange}
-                                    handleSaveTask={handleSaveTask}
-                                    handleDeleteTask={handleDeleteTask}
-                                    setEditingTaskId={setEditingTaskId}
-                                    availableTasks={availableTasks}
-                                />
-                                <button
-                                    onClick={() => handleCreateList(`liste${lists.length + 1}`)}
-                                    className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300 min-w-[200px]"
-                                >
-                                    Ajouter une liste
-                                </button>
-                            </>
-                        ) : (
-                            <ModelSelection onSelectModel={handleSelectModel} />
-                        )}
-                    </div>
+    
+            <div className=" ">
+                <div className="flex mt-4 space-x-3 items-start">
+                    {lists.length > 0 ? (
+                        <>
+                            <ListDisplay
+                                lists={lists}
+                                tasks={tasks}
+                                setTasks={setTasks}
+                                projectId={projectId}
+                                editingListId={editingListId}
+                                updatedListName={updatedListName}
+                                startEditingList={startEditingList}
+                                handleUpdateList={handleUpdateList}
+                                setEditingListId={setEditingListId}
+                                setUpdatedListName={setUpdatedListName}
+                                handleDeleteList={handleDeleteList}
+                                handleCreateTask={handleCreateTask}
+                                startEditingTask={startEditingTask}
+                                editingTaskId={editingTaskId}
+                                updatedTask={updatedTask}
+                                handleTaskChange={handleTaskChange}
+                                handleSaveTask={handleSaveTask}
+                                handleDeleteTask={handleDeleteTask}
+                                setEditingTaskId={setEditingTaskId}
+                                availableTasks={availableTasks}
+                            />
+                            <button
+                                onClick={() => handleCreateList(`liste${lists.length + 1}`)}
+                                className="p-2 bg-green-500 text-white rounded hover:bg-green-600 duration-300 min-w-[200px]"
+                            >
+                                Ajouter une liste
+                            </button>
+                        </>
+                    ) : (
+                        <ModelSelection onSelectModel={handleSelectModel} />
+                    )}
                 </div>
             </div>
-
+    
             {/* Bouton de chat et autres composants */}
             <button
                 className="fixed bottom-4 right-4 bg-purple-500 text-white p-4 rounded-full shadow-lg hover:bg-purple-600 focus:outline-none duration-200"
@@ -375,7 +371,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             >
                 <FiMessageCircle size={24} />
             </button>
-
+    
             {isChatOpen && (
                 <ChatWindow
                     projectId={projectId}
@@ -383,7 +379,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                     onClose={() => setIsChatOpen(false)}
                 />
             )}
-
+    
             <ConfirmationModal
                 isOpen={isListDeleteModalOpen}
                 title="Confirmer la suppression"
@@ -393,6 +389,6 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             />
         </Base>
     );
-};
+}
 
 export default ShowProject;

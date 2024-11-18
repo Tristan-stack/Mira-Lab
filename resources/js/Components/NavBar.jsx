@@ -45,6 +45,10 @@ export default function Navbar({ user }) {
         window.location.href = `/projects/${projectId}`;
     };
 
+    const handleDashboardClick = () => {
+        window.location.href = '/profile';
+    };
+
     const filteredProjects = projects.filter(project =>
         project.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -92,9 +96,12 @@ export default function Navbar({ user }) {
                 )}
             </div>
             <div className="flex space-x-4 items-center">
-                <button className="text-gray-600 hover:text-purple-600 transition-colors duration-200">Espaces de travail</button>
-                <button className="text-gray-600 hover:text-purple-600 transition-colors duration-200">Récent</button>
-                <button className="text-gray-600 hover:text-purple-600 transition-colors duration-200">Favoris</button>
+                <button
+                    className="text-purple-800 px-4 py-2 rounded-md bg-purple-500/20 border border-purple-700 hover:text-white hover:bg-purple-700 transition-colors duration-200"
+                    onClick={handleDashboardClick}
+                >
+                    Dashboard
+                </button>
             </div>
         </nav>
     );
