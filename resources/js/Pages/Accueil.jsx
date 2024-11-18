@@ -10,6 +10,8 @@ import Board from '../../img/board.png';
 import BackgroundGradient from '../../img/Freebie-GradientTextures-01.jpg';
 import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const Accueil = () => {
 
@@ -29,6 +31,11 @@ const Accueil = () => {
       "max-glare": 0.5,  // Niveau de glare maximum
       perspective: 1000, // Perspective pour l'effet de parallaxe
     };
+
+    AOS.init({
+      duration: 1000, // Durée de l'animation en millisecondes
+      once: true,     // Réaliser l'animation une seule fois
+    });
 
     // Initialiser les cartes
     [card1Ref, card2Ref, card3Ref, card4Ref].forEach((ref) => {
@@ -87,37 +94,37 @@ const Accueil = () => {
       >
         <header className='flex flex-col'>
           <div className='w-2/3 space-y-8 mx-auto flex flex-col justify-center items-center'>
-            <h1 className="text-6xl font-bold text-white text-center leading-relaxed">
-              <span className="bg-white/20 backdrop-blur-xl border border-gray-300/30 hover:bg-white p-2 rounded-md shadow-xl duration-200 cursor-default">
+            <h1 className="text-6xl font-bold text-white text-center leading-relaxed" data-aos="fade-right">
+              <span className="bg-white/20  border border-gray-300/30 hover:bg-white p-2 rounded-md shadow-xl duration-200 cursor-default">
                 <span className='text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-purple-600'>Transformez</span>
               </span> vos projets en réussite grâce à la puissance de Mira Lab et de la collaboration intelligente.
             </h1>
 
-            <p className='text-white tracking-wide w-3/4 mx-auto text-center text-3xl leading-relaxed'>
+            <p className='text-white tracking-wide w-3/4 mx-auto text-center text-3xl leading-relaxed' data-aos="fade-left" data-aos-delay="400" >
               Mira Lab
-              <span className="bg-white/20 backdrop-blur-xl border border-gray-300/30 hover:bg-white p-1 mx-2 rounded-md shadow-xl duration-200 cursor-default">
+              <span className="bg-white/20  border border-gray-300/30 hover:bg-white p-1 mx-2 rounded-md shadow-xl duration-200 cursor-default">
                 <span className='text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-purple-600'>optimise la gestion</span>
               </span> de vos projets et transforme chaque étape en succès collaboratif,
-              <span className="bg-white/20 backdrop-blur-xl border border-gray-300/30 hover:bg-white p-1 mx-2 rounded-md shadow-xl duration-200 cursor-default">
+              <span className="bg-white/20  border border-gray-300/30 hover:bg-white p-1 mx-2 rounded-md shadow-xl duration-200 cursor-default">
                 <span className='text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-purple-300'>sans effort</span>
               </span> supplémentaire.
             </p>
 
-            <button className='p-4 bg-purple-600 text-white font-semibold rounded-xl hover:bg-white hover:text-purple-600 duration-200' onClick={() => handleScrollTo("first-ancre")}>
+            <button className='p-4 bg-purple-600 text-white font-semibold rounded-xl hover:bg-white hover:text-purple-600 duration-200' onClick={() => handleScrollTo("first-ancre")} data-aos="fade-up" data-aos-delay="1000" >
               Découvrir Mira Lab
             </button>
           </div>
         </header>
       </div>
 
-      <main className='w-full'>
+      <main className='w-full' data-aos="fade-up">
         <div className=''>
           <section className="p-16 w-3/4 mx-auto" id='first-ancre'>
             <h2 className="text-5xl w-1/3 mx-auto font-bold text-center text-gray-900 mb-10">
               Comment Mira Lab va <span className="text-purple-500">révolutionner</span> votre quotidien ?
             </h2>
             <div className="flex flex-wrap justify-center">
-              <div className="text-left w-full sm:w-80 m-4">
+              <div className="text-left w-full sm:w-80 m-4" data-aos="fade-up" data-aos-delay="100">
                 <div className="w-12 h-12 mb-4 flex items-center justify-center bg-purple-100 rounded-full">
                   <FaTasks className="w-6 h-6 text-purple-500" />
                 </div>
@@ -126,7 +133,7 @@ const Accueil = () => {
                   Mira Lab vous permet d'organiser vos projets sous forme de tableaux intuitifs, de suivre l'avancement des tâches et de collaborer avec des équipes sur des projets publics ou privés. Simplifiez la gestion et renforcez la productivité.
                 </p>
               </div>
-              <div className="text-left w-full sm:w-80 m-4">
+              <div className="text-left w-full sm:w-80 m-4" data-aos="fade-up" data-aos-delay="200">
                 <div className="w-12 h-12 mb-4 flex items-center justify-center bg-purple-100 rounded-full">
                   <FaComments className="w-6 h-6 text-purple-500" />
                 </div>
@@ -135,7 +142,7 @@ const Accueil = () => {
                   Échangez instantanément avec votre équipe grâce au chat intégré, partagez des idées et réagissez rapidement aux besoins des projets. Chaque modification ou message est immédiatement visible pour une synergie parfaite.
                 </p>
               </div>
-              <div className="text-left w-full sm:w-80 m-4">
+              <div className="text-left w-full sm:w-80 m-4" data-aos="fade-up" data-aos-delay="300">
                 <div className="w-12 h-12 mb-4 flex items-center justify-center bg-purple-100 rounded-full">
                   <FaChartLine className="w-6 h-6 text-purple-500" />
                 </div>
@@ -262,7 +269,7 @@ const Accueil = () => {
 
 
           <section className='bg-purple-200/60 text-center p-60'>
-            <h1 className='text-7xl w-1/2 leading-relaxed	mx-auto '>L'outil de gestion que vous
+            <h1 className='text-7xl w-1/2 leading-relaxed	mx-auto ' data-aos="zoom-in">L'outil de gestion que vous
               <span className="bg-white/20 backdrop-blur-xl border border-gray-300/30 hover:bg-white p-2 rounded-md shadow-xl duration-200 cursor-default ml-2">
                 <span className='text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-purple-600'>attendiez</span></span>.</h1>
           </section>

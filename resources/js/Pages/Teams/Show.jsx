@@ -296,7 +296,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
 
             {/* Affichage des projets de l'équipe */}
             <motion.div
-                className="mt-8"
+                className="mt-8 p-4"
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
@@ -334,7 +334,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                     <p className="text-gray-500">Statut : <strong>{project.status}</strong> </p>
                                     <p className="text-gray-500">Du {project.start_date} au {project.end_date}</p>
                                 </div>
-                                <div className='w-1/4'>
+                                <div className='w-1/4 flex justify-end'>
                                     {project.status === 'Privé' && !isUserInProject && (
                                         <FaLock className="text-gray-400 text-xl" />
                                     )}
@@ -347,7 +347,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                                         </button>
                                     )}
                                     {isUserInProject && (
-                                        <div className='flex justify-around items-center'>
+                                        <div className='flex justify-end items-center space-x-4'>
                                             <button
                                                 className="view-project-btn bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
                                                 onClick={() => Inertia.visit(`/project/${project.id}`)}

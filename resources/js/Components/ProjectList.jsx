@@ -6,7 +6,6 @@ import { IoIosAdd } from 'react-icons/io';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import Echo from 'laravel-echo';
 
 export default function ProjectList({
     projects,

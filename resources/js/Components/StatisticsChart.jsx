@@ -3,9 +3,13 @@ import {
     LineChart,
     Line,
     XAxis,
+    YAxis,
     CartesianGrid,
     Tooltip as RechartsTooltip,
     ResponsiveContainer,
+    Legend,
+    Text,
+    Label,
 } from 'recharts';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
@@ -72,7 +76,7 @@ export default function StatisticsChart({ projects, user }) {
     }, []);
 
     const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth() - 7, 1); // 8 mois
+    const startDate = new Date(today.getFullYear(), today.getMonth() - 9, 1); // 8 mois
 
     // Calculer le total des connexions sur les 8 derniers mois
     const totalConnections = useMemo(() => {
@@ -82,19 +86,25 @@ export default function StatisticsChart({ projects, user }) {
     return (
         <div className="w-full bg-gray-100">
             {/* LineChart actuel */}
-            <div className="w-full h-40 mb-8">
+            <div className="w-full h-40 mb-16">
+                <h2 className="text-lg font-medium mb-4 text-center">Nombre de projets créés par mois</h2>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={lineChartData}>
-                        <XAxis dataKey="month" />
+                        <XAxis dataKey="month">
+                            <Label value="Mois" offset={-5} position="insideBottom" />
+                        </XAxis>
+                        <YAxis>
+                            <Label value="Projets" angle={-90} position="insideLeft" />
+                        </YAxis>
                         <CartesianGrid strokeDasharray="0 3" />
                         <RechartsTooltip />
-                        <Line type="monotone" dataKey="count" stroke="#6D326D" />
+                        <Line type="monotone" dataKey="count" name="Projets" stroke="#6D326D"/>
                     </LineChart>
                 </ResponsiveContainer>
             </div>
 
             {/* Graphique d'activité GitHub */}
-            <div className="w-full h-64 mb-8 p-4 bg-white rounded-lg border border-gray-300"> {/* Added padding, background, rounded border */}
+            <div className="w-full h-auto mb-8 p-4 bg-white rounded-lg border border-gray-300">
                 <h2 className="text-lg font-medium mb-4">{totalConnections} connexions les 8 derniers mois: </h2>
                 <CalendarHeatmap
                     startDate={startDate}
@@ -123,8 +133,8 @@ export default function StatisticsChart({ projects, user }) {
                             : 'Aucune activité',
                     })}
                     showWeekdayLabels
-                    blockSize={10} // Augmentation de la taille des blocs
-                    gutterSize={4} // Espacement entre les blocs
+                    blockSize={8} // Réduction de la taille des blocs
+                    gutterSize={2} // Réduction de l'espacement entre les blocs
                 />
                 <Tooltip id="activity-tooltip" /> {/* Tooltip avec l'ID correspondant */}
             </div>

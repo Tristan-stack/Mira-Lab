@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Navbar() {
     return (
-        <nav className="flex items-center justify-around p-3 bg-white">
+        <nav className="flex items-center justify-between p-3 bg-red-100">
             <button className="bg-purple-600 text-white px-4 py-2 rounded-md">
                 Créer un tableau
             </button>

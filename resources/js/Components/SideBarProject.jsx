@@ -47,7 +47,7 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
     };
 
     return (
-        <div className="bg-white h-screen p-4 shadow-md w-64 flex flex-col">
+        <div className="bg-white h-screen p-4 shadow-md w-64 flex flex-col flex-shrink-0">
             <div className="text-2xl font-bold text-purple-600 mb-8">Board View</div>
             <nav className="space-y-4 w-full flex-grow overflow-y-auto">
                 <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer">

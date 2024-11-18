@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{id}/leave', [ProjectController::class, 'leaveProject'])->name('projects.leave');
     Route::post('/projects/{id}/promote' , [ProjectController::class, 'promoteUser'])->name('projects.promote');
     Route::post('/projects/{id}/downgrade' , [ProjectController::class, 'downgrade'])->name('projects.downgrade');
+    Route::get('/user/projects', [ProjectController::class, 'userProjects']);
 
     // Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 

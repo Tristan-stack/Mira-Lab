@@ -267,7 +267,6 @@ const ListDisplay = ({
                     </div>
                 ))}
             </div>
-            <ToastContainer /> {/* Ajout du conteneur pour les toasts */}
         </DragDropContext>
     );
 

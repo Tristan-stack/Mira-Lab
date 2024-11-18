@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Events\UserConnected;
 use App\Events\UserDisconnected;
 use App\Models\Chat;
+use App\Models\Team;
 
 
 class ProjectController extends Controller
@@ -17,6 +18,19 @@ class ProjectController extends Controller
     public function index()
     {
         $projects = Project::with('tasks')->get();
+        return response()->json($projects);
+    }
+
+    public function userProjects()
+    {
+        $user = Auth::user();
+
+        // Récupère les projets associés avec les relations nécessaires (optionnel)
+        $projects = $user->projects()->with(['team', 'tasks', 'chat'])->get();
+
+        // Optionnel : Utiliser une Resource pour formater la réponse
+        // return ProjectResource::collection($projects);
+
         return response()->json($projects);
     }
 
