@@ -1,4 +1,3 @@
-// Show.jsx
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
@@ -6,7 +5,7 @@ import Base from '../../Layouts/BaseProject';
 import MiniNav from '../../Components/MiniNav';
 import ListDisplay from '../../Components/ListDisplay';
 import ModelSelection from '../../Components/ModelSelection';
-import ChatWindow from '../../Components/ChatWindow'; // Importer le composant ChatWindow
+import ChatWindow from '../../Components/ChatWindow';
 import { FiMessageCircle } from 'react-icons/fi';
 import ConfirmationModal from '../../Components/ConfirmationModal'; 
 
@@ -18,8 +17,8 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
     const [lists, setLists] = useState([]);
     const [errors, setErrors] = useState({});
     const [isFormVisible, setIsFormVisible] = useState(false);
-    const [availableTasks, setAvailableTasks] = useState([]); // Nouvel état pour les tâches disponibles
-    const [isChatOpen, setIsChatOpen] = useState(false); // État pour gérer l'affichage de la fenêtre de chat
+    const [availableTasks, setAvailableTasks] = useState([]); 
+    const [isChatOpen, setIsChatOpen] = useState(false); 
 
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [updatedTask, setUpdatedTask] = useState({ name: '', description: '' });
@@ -43,7 +42,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 return prevTasks;
             });
 
-            // Mettre à jour availableTasks
+            
             setAvailableTasks((prevAvailableTasks) => {
                 if (!prevAvailableTasks.some(task => task.id === event.task.id)) {
                     return [...prevAvailableTasks, event.task];
@@ -69,7 +68,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
                 prevTasks.map(task => task.id === event.task.id ? event.task : task)
             );
 
-            // Mettre à jour availableTasks
+        
             setAvailableTasks((prevAvailableTasks) => {
                 const index = prevAvailableTasks.findIndex(t => t.id === event.task.id);
                 if (index !== -1) {
@@ -254,7 +253,7 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
             })
             .catch(error => {
                 console.error('Erreur lors de la suppression de la liste:', error);
-                // Vous pouvez ajouter une notification d'erreur ici si nécessaire
+                
                 setIsListDeleteModalOpen(false);
                 setListToDelete(null);
             });
@@ -305,7 +304,6 @@ const ShowProject = ({ project, currentUser, team, teamUsers, projectId }) => {
         listsToCreate.forEach(name => handleCreateList(name));
     };
 
-    // Afficher la liste des tâches disponibles
     console.log("Tâches disponibles", availableTasks);
     return (
         <Base

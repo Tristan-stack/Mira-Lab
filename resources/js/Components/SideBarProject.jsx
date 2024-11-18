@@ -3,15 +3,15 @@ import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut, FiChevr
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { createPortal } from 'react-dom';
-import { useGradient } from '../contexts/GradientContext.jsx'; // Importer le hook useGradient
-import ProjectMemberModal from './ProjectMemberModal'; // Importer la modal des membres du projet
-import CalendarView from './CalendarView.jsx'; // Importer le composant CalendarView
+import { useGradient } from '../contexts/GradientContext.jsx';
+import ProjectMemberModal from './ProjectMemberModal';
+import CalendarView from './CalendarView.jsx'; 
 
 export default function SidebarProject({ user, projectUsers, currentUser, setProjectUsers, onOpenModal, tasks }) {
-    const gradient = useGradient(); // Utiliser le hook pour obtenir le dégradé
-    const [openTab, setOpenTab] = useState(null); // État pour gérer l'onglet actuellement ouvert
-    const [isMemberModalOpen, setIsMemberModalOpen] = useState(false); // État pour gérer l'ouverture de la modal des membres
-    const [showCalendar, setShowCalendar] = useState(false); // État pour gérer l'affichage du calendrier
+    const gradient = useGradient(); 
+    const [openTab, setOpenTab] = useState(null); 
+    const [isMemberModalOpen, setIsMemberModalOpen] = useState(false); 
+    const [showCalendar, setShowCalendar] = useState(false); 
 
     const handleLogout = async () => {
         try {

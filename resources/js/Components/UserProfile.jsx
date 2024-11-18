@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Assurez-vous d'importer axios
+import axios from 'axios'; 
 import { toast } from 'react-toastify';
 import { BackgroundGradientAnimation } from "../Components/ui/background-gradient-animation.jsx";
 

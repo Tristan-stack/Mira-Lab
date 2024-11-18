@@ -1,4 +1,3 @@
-// Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -112,6 +111,5 @@ Navbar.propTypes = {
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         email: PropTypes.string.isRequired,
-        // Ajoutez d'autres propriétés utilisateur si nécessaire
     }).isRequired,
 };

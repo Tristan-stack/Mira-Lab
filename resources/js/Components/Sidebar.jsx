@@ -1,4 +1,3 @@
-// Sidebar.jsx
 import React, { useEffect, useState } from 'react';
 import {
   FiGrid,
@@ -8,7 +7,7 @@ import {
   FiLogOut
 } from 'react-icons/fi';
 import axios from 'axios';
-import NotificationMenu from './NotificationMenu'; // Import du composant NotificationMenu
+import NotificationMenu from './NotificationMenu'; 
 
 // Fonction pour générer un gradient aléatoire
 const getRandomGradient = () => {
@@ -51,16 +50,15 @@ export default function Sidebar({ user }) {
       marginRight: '1rem',
     });
 
-    // Fetch des équipes de l'utilisateur
+  
     const fetchTeams = async () => {
       setLoadingTeams(true);
       try {
         const response = await axios.get('/user/teams', {
           headers: {
             'Content-Type': 'application/json',
-            // Ajoutez d'autres en-têtes si nécessaire, comme le token CSRF
           },
-          withCredentials: true, // Si nécessaire
+          withCredentials: true, 
         });
         setTeams(response.data);
         setLoadingTeams(false);

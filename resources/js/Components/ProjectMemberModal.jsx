@@ -23,16 +23,8 @@ const ProjectMemberModal = ({ isOpen, onClose, projectUsers = [], currentUser, s
     const boardLeaders = users.filter(user => user.pivot?.role === 'Board Leader');
     const contributors = users.filter(user => user.pivot?.role === 'contributor' || user.pivot?.role === 'Contributor');
 
-    // Logs pour vérifier les utilisateurs filtrés
-    console.log('Board Leaders:', boardLeaders);
-    console.log('Contributors:', contributors);
-
-    // Vérifier si le user connecté est board leader
     const currentUserInProject = users.find(user => user.id === currentUser.id);
     const isBoardLeader = currentUserInProject?.pivot.role === 'Board Leader';
-
-    console.log('currentUserInProject:', currentUserInProject);
-    console.log('isBoardLeader:', isBoardLeader);
 
     // Fonction pour changer le rôle d'un utilisateur
     const changeUserRole = async (userId, newRole) => {

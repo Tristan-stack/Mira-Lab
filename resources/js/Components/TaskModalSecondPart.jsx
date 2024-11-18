@@ -1,5 +1,3 @@
-// TaskModalSecondPart.jsx
-
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -20,7 +18,7 @@ const TaskDetails = ({
         setStatus(task.status || 'Non commencer');
         setStartDate(task.start_date || '');
         setEndDate(task.end_date || '');
-    }, [task]); // Ce hook se déclenche dès que `task` change
+    }, [task]);
 
 
     useEffect(() => {
@@ -64,7 +62,6 @@ const TaskDetails = ({
         const today = new Date();
         const selectedDate = new Date(value);
 
-        // Format today's date as YYYY-MM-DD
         const formattedToday = today.toISOString().split('T')[0];
 
         if (selectedDate < today.setHours(0, 0, 0, 0)) {
@@ -102,7 +99,6 @@ const TaskDetails = ({
         setStatus(nextStatus);
         toast.success(`Statut mis à jour en "${nextStatus}" !`);
 
-        // Mise à jour du statut sur le serveur
         axios.put(`/projects/${task.project_id}/tasks/${task.id}/update-status`, {
             status: nextStatus
         })
@@ -112,10 +108,7 @@ const TaskDetails = ({
             });
     };
 
-    // Obtention de la date de création de la tâche actuelle
     const currentTaskCreatedAt = new Date(task.created_at);
-
-    // Filtrer les tâches disponibles en fonction de la date de création
     const filteredTasks = availableTasks.filter(t => {
         if (t.id === task.id) return false;
         const taskCreatedAt = new Date(t.created_at);
@@ -127,10 +120,7 @@ const TaskDetails = ({
         return depTask ? depTask.name : 'Tâche inconnue';
     };
 
-    // Format today's date for the min attribute
     const todayDate = new Date().toISOString().split('T')[0];
-
-    // Définir la couleur du bouton en fonction du statut
     const getStatusButtonColor = () => {
         switch (status) {
             case 'Non commencer':

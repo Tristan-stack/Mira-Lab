@@ -14,7 +14,7 @@ const CreateTaskForm = ({ projectId, onTaskCreated, setErrors }) => {
             project_id: projectId,
         })
             .then(response => {
-                onTaskCreated(response.data); // Appeler la fonction pour ajouter la tâche
+                onTaskCreated(response.data); 
                 setTaskName('');
                 setTaskDescription('');
                 setErrors({});

@@ -1,4 +1,3 @@
-// Tooltip.jsx
 
 import React from 'react';
 

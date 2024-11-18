@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus } from 'react-icons/fi'; // Importer l'icône +
+import { FiPlus } from 'react-icons/fi'; 
 
 const TeamMembersModal = ({ isOpen, onClose, teamUsers }) => {
     const handleBackdropClick = (e) => {

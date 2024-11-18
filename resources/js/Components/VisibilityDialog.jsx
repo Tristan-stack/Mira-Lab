@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { FaCheck } from 'react-icons/fa'; // Importer l'icône nécessaire
-import { motion } from 'framer-motion'; // Importer Framer Motion
+import { FaCheck } from 'react-icons/fa'; 
+import { motion } from 'framer-motion'; 
 
 const VisibilityDialog = ({ project, onClose, onVisibilityChange, isBoardLeader }) => {
     const modalRef = useRef(null);

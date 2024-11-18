@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FiSend } from 'react-icons/fi'; // Importer l'icône d'envoi
-import { motion, AnimatePresence } from 'framer-motion'; // Importer Framer Motion
+import { FiSend } from 'react-icons/fi'; 
+import { motion, AnimatePresence } from 'framer-motion'; 
 
 const ChatWindow = ({ projectId, currentUser, onClose }) => {
     const [messages, setMessages] = useState([]);
@@ -41,7 +41,7 @@ const ChatWindow = ({ projectId, currentUser, onClose }) => {
         axios.post(`/project/${projectId}/messages`, { message: newMessage })
             .then(response => {
                 const newMsg = response.data.message;
-                newMsg.user = { name: currentUser.name }; // Ajouter les informations de l'utilisateur
+                newMsg.user = { name: currentUser.name }; 
                 setMessages([...messages, newMsg]);
                 setNewMessage('');
             })

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import Base from '../../Layouts/Base';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Importer les styles de react-toastify
-import JoinProjectModal from '../../Components/JoinProjectPopUp'; // Assurez-vous que le chemin est correct
-import { FaLock, FaPen, FaCrown, FaArrowLeft, FaArrowRight  } from 'react-icons/fa'; // Importer l'icône de cadenas, de stylo et de couronne
-import axios from 'axios'; // Importer axios
+import 'react-toastify/dist/ReactToastify.css';
+import JoinProjectModal from '../../Components/JoinProjectPopUp';
+import { FaLock, FaPen, FaCrown, FaArrowLeft, FaArrowRight  } from 'react-icons/fa'; 
+import axios from 'axios'; 
 import TeamOverview from './TeamOverview';
 import { motion } from 'framer-motion';
 
@@ -18,12 +18,12 @@ const chunkArray = (array, size) => {
 };
 
 const Show = ({ team, removeUserUrl, currentUser }) => {
-    const [isJoiningProject, setIsJoiningProject] = useState(false); // État pour le pop-up de rejoindre un projet
-    const [selectedProject, setSelectedProject] = useState(null); // État pour le projet sélectionné
-    const [projects, setProjects] = useState(team.projects); // État local pour les projets
-    const [searchTerm, setSearchTerm] = useState(''); // État pour la recherche
-    const [isEditingTitle, setIsEditingTitle] = useState(false); // État pour l'édition du titre de l'équipe
-    const [teamTitle, setTeamTitle] = useState(team.name); // État pour le titre de l'équipe
+    const [isJoiningProject, setIsJoiningProject] = useState(false);
+    const [selectedProject, setSelectedProject] = useState(null); 
+    const [projects, setProjects] = useState(team.projects); 
+    const [searchTerm, setSearchTerm] = useState(''); 
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [teamTitle, setTeamTitle] = useState(team.name); 
 
     const [currentTab, setCurrentTab] = useState(0);
     const usersPerPage = 4;
@@ -80,13 +80,11 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                     draggable: true,
                     progress: undefined,
                 });
-
-                // Mettre à jour l'état local des projets
                 setProjects(prevProjects => prevProjects.map(p => {
                     if (p.project_code === project.project_code) {
                         return {
                             ...p,
-                            users: [...p.users, { ...currentUser, pivot: { role: 'Member' } }] // Assurez-vous d'ajouter le rôle
+                            users: [...p.users, { ...currentUser, pivot: { role: 'Member' } }] 
                         };
                     }
                     return p;
@@ -122,18 +120,18 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 progress: undefined,
             });
 
-            // Mettre à jour l'état local des projets
+           
             setProjects(prevProjects => prevProjects.map(project => {
                 if (project.project_code === projectCode) {
                     return {
                         ...project,
-                        users: [...project.users, { ...currentUser, pivot: { role: 'Member' } }] // Assurez-vous d'ajouter le rôle
+                        users: [...project.users, { ...currentUser, pivot: { role: 'Member' } }] 
                     };
                 }
                 return project;
             }));
 
-            setIsJoiningProject(false); // Fermer le pop-up
+            setIsJoiningProject(false); 
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 throw new Error('Le code fourni ne correspond à aucun projet privé.');
@@ -172,7 +170,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 progress: undefined,
             });
 
-            // Mettre à jour l'état local des projets
+          
             setProjects(prevProjects => prevProjects.map(project => {
                 if (project.id === projectId) {
                     return {
@@ -208,8 +206,6 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                     draggable: true,
                     progress: undefined,
                 });
-
-                // Mettre à jour l'état local des projets
                 setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
             } catch (error) {
                 toast.error('Erreur lors de la tentative de suppression du projet.', {
@@ -254,8 +250,6 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
     };
 
     const currentUserRoleInTeam = team?.users?.find(user => user.id === currentUser.id)?.pivot?.role;
-
-    // Filtrer les projets en fonction de la valeur de la recherche
     const filteredProjects = projects.filter(project =>
         project.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -292,7 +286,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 handleCopyInviteCode={handleCopyInviteCode}
                 handleRemoveUser={handleRemoveUser}
                 handleUpdateTeamTitle={handleUpdateTeamTitle}
-                handleJoinPrivateProject={handleJoinPrivateProject} // Aligné avec TeamOverview.jsx
+                handleJoinPrivateProject={handleJoinPrivateProject} 
             />
 
             {/* Affichage des projets de l'équipe */}
@@ -392,7 +386,7 @@ const Show = ({ team, removeUserUrl, currentUser }) => {
                 <JoinProjectModal
                     onClose={() => setIsJoiningProject(false)}
                     onJoinProject={handleJoinPrivateProject}
-                    projectCode={selectedProject ? selectedProject.project_code : ''} // Passer le code du projet au modal si sélectionné
+                    projectCode={selectedProject ? selectedProject.project_code : ''} 
                 />
             )}
 

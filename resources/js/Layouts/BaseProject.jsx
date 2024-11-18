@@ -1,5 +1,3 @@
-// BaseProject.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../Components/NavBar';
@@ -40,7 +38,8 @@ export default function Layout({ children, user, teamUsers, projectUsers, curren
                     tasks={tasks}
                 />
                 <div className="flex flex-col flex-1">
-                    <Navbar />
+                    <Navbar
+                        user={user} />
                     <main className="flex-1 overflow-auto w-full bg-blue-900">
                         <div className="h-full ">
                             {children}

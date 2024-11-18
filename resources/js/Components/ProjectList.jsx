@@ -1,5 +1,3 @@
-// ProjectList.jsx
-
 import React, { useRef, useEffect, useState } from 'react';
 import { FaRegEye, FaTrash } from 'react-icons/fa';
 import { IoIosAdd } from 'react-icons/io';
@@ -66,7 +64,6 @@ export default function ProjectList({
         };
     }, []);
 
-    // Fetch initial tasks for each project
     useEffect(() => {
         const fetchTasksForProjects = async () => {
             const tasksMap = {};
@@ -98,14 +95,11 @@ export default function ProjectList({
         fetchTasksForProjects();
     }, [projects]);
 
-    // Listen to real-time task updates
     useEffect(() => {
         projects.forEach((project) => {
             const taskUpdatedChannel = window.Echo.private(`project.${project.id}`);
             taskUpdatedChannel.listen('.task.updated', (event) => {
-                console.log('Événement .task.updated reçu:', event);
 
-                // Update the tasks in the specific project
                 setProjectTasks((prevTasks) => ({
                     ...prevTasks,
                     [project.id]: prevTasks[project.id]?.map((task) =>

@@ -31,14 +31,13 @@ export default function StatisticsChart({ projects, user }) {
         return months;
     };
 
-    // Préparer les données pour le LineChart
     const months = getLastThreeMonths();
 
     const lineChartData = months.map(({ label, year, month }) => {
         const count = projects.filter(project => {
             const associatedUsers = project.users || [];
-            const isAssociated = associatedUsers.some(u => u.id === user.id); // Vérifie si l'utilisateur courant est associé au projet
-            const createdDate = new Date(project.created_at); // Assurez-vous que 'created_at' est la date de création du projet
+            const isAssociated = associatedUsers.some(u => u.id === user.id); 
+            const createdDate = new Date(project.created_at); 
 
             return (
                 isAssociated &&
@@ -48,12 +47,11 @@ export default function StatisticsChart({ projects, user }) {
         }).length;
 
         return {
-            month: label.slice(0, 3), // Ex: "Jan", "Feb"
+            month: label.slice(0, 3), 
             count,
         };
     });
 
-    // Préparer les données pour le CalendarHeatmap
     const [activities, setActivities] = useState([]);
 
     useEffect(() => {

@@ -15,7 +15,7 @@ const JoinProjectPopUp = ({ onClose, onJoinProject, projectCode }) => {
         try {
             await onJoinProject(inputCode);
             setError(''); 
-            onClose(); // Fermer la pop-up après succès
+            onClose(); 
         } catch (err) {
             setError(err.message); 
         }

@@ -1,5 +1,3 @@
-// Show.jsx
-
 import React, { useState, useEffect } from 'react';
 import { IoIosAdd } from 'react-icons/io';
 import { FaRegEye, FaTrash } from 'react-icons/fa';
@@ -32,7 +30,7 @@ export default function Show({ user, teams, projects, users }) {
     const [teamsState, setTeamsState] = useState(Array.isArray(teams) ? teams : []);
     const [projectsState, setProjectsState] = useState(Array.isArray(projects) ? projects : []);
 
-    const [showStatistics, setShowStatistics] = useState(false); // État pour afficher les statistiques
+    const [showStatistics, setShowStatistics] = useState(false); 
 
     useEffect(() => {
         if (errorMessage) {

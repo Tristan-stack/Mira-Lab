@@ -1,8 +1,7 @@
-// TaskList.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskModal from './TaskModal';
-import ConfirmationModal from '../Components/ConfirmationModal'; // Importer le composant ConfirmationModal
+import ConfirmationModal from '../Components/ConfirmationModal'; 
 
 const Task = ({
     task,
@@ -19,7 +18,6 @@ const Task = ({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
 
-    // États pour la modal de confirmation
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
 
@@ -41,7 +39,7 @@ const Task = ({
         if (!taskToDelete) return;
 
         setIsVisible(false);
-        setTimeout(() => handleDeleteTask(taskToDelete), 300); // Delay pour permettre l'animation
+        setTimeout(() => handleDeleteTask(taskToDelete), 300); 
 
         setIsDeleteModalOpen(false);
         setTaskToDelete(null);
@@ -62,8 +60,8 @@ const Task = ({
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
                         className=" p-2 bg-white rounded shadow relative cursor-pointer"
-                        style={{ border: '1px solid transparent', transition: 'border-color 0.05s ease-in-out' }} // Bordure transparente par défaut
-                        whileHover={{ borderColor: '#3b82f6' }} // Changer uniquement la couleur de la bordure lors du survol
+                        style={{ border: '1px solid transparent', transition: 'border-color 0.05s ease-in-out' }}
+                        whileHover={{ borderColor: '#3b82f6' }}
                     >
                         <div className="flex items-center justify-between" onClick={openModal}>
                             <div>
@@ -95,7 +93,7 @@ const Task = ({
                     updatedTask={updatedTask}
                     handleTaskChange={handleTaskChange}
                     handleSaveTask={handleSaveTask}
-                    availableTasks={availableTasks} // Passer availableTasks ici
+                    availableTasks={availableTasks}
                     lists={lists}
                 />
             )}
