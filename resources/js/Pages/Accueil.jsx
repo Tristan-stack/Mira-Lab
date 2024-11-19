@@ -8,7 +8,7 @@ import Stat from '../../img/statistique.png';
 import DashView from '../../img/dashview1.png';
 import Board from '../../img/board.png';
 import BackgroundGradient from '../../img/Freebie-GradientTextures-01.jpg';
-import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt, FaTwitter, FaLinkedin, FaGithub, FaArrowUp } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -16,6 +16,7 @@ import 'aos/dist/aos.css';
 const Accueil = () => {
 
   const [activeIndex, setActiveIndex] = useState(null);
+  const [showScroll, setShowScroll] = useState(false);
 
   const card1Ref = useRef(null);
   const card2Ref = useRef(null);
@@ -52,8 +53,11 @@ const Accueil = () => {
     };
   }, []);
 
-  const handleButtonClick = () => {
+  const handleButtonLoginClick = () => {
     Inertia.visit('/home');
+  };
+  const handleButtonRegisterClick = () => {
+    Inertia.visit('/register');
   };
 
   const handleScrollTo = (id) => {
@@ -63,26 +67,34 @@ const Accueil = () => {
     }
   };
 
-
-
-  
   const toggleAccordion = (index) => {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index)); 
   };
 
+  // Handle scroll to show/hide the scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScroll(true);
+      } else {
+        setShowScroll(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
-      <div className='flex'>
-        <div className='w-10/12 bg-white flex justify-between items-center h-16 p-4 drop-shadow-xl'>
-          <img src={Logo} alt="" className='w-12' />
-        </div>
-        <div onClick={handleButtonClick} className="bg-white w-1/6 h-16 border-l-2 border-purple-500 cursor-pointer flex justify-center items-center font-semibold hover:bg-purple-500 text-purple-700 hover:text-white transition duration-300 drop-shadow-xl">
-          Se connecter
-        </div>
-      </div>
 
       <div
-        className='p-32'
+        className=''
         style={{
           backgroundImage: `url(${BackgroundGradient})`,
           backgroundSize: 'cover',
@@ -90,7 +102,28 @@ const Accueil = () => {
           backgroundPosition: 'center',
         }}
       >
-        <header className='flex flex-col'>
+        <div className='w-full p-2 bg-white flex justify-between items-center rounded-b-xl' data-aos="fade-down">
+
+          <img src={Logo} alt="" className='w-14 ml-4' />
+
+          
+          <ul className='flex space-x-10'>
+            <li className='hover:text-purple-700 duration-300 cursor-pointer font-semibold' onClick={() => handleScrollTo('first-ancre')}>Découvrir Mira</li>
+            <li className='hover:text-purple-700 duration-300 cursor-pointer font-semibold' onClick={() => handleScrollTo('fonctionnement')}>Fonctionnement</li>
+            <li className='hover:text-purple-700 duration-300 cursor-pointer font-semibold' onClick={() => handleScrollTo('faq')}>FAQ</li>
+            <li className='hover:text-purple-700 duration-300 cursor-pointer font-semibold' onClick={() => handleScrollTo('contact')}>Contact</li>
+          </ul>
+          
+
+          <div className='space-x-4 mr-4'>
+            <button onClick={handleButtonLoginClick} className='border-2 border-purple-600 p-2 px-4 rounded-full text-purple-800 hover:bg-purple-600 hover:text-white duration-150'>Se connecter</button>
+            <button onClick={handleButtonRegisterClick} className="p-2 px-4 rounded-full text-white bg-gradient-to-r from-purple-600  to-purple-500 hover:shadow-lg hover:shadow-purple-500/50">
+              S'inscrire
+            </button>
+          </div>
+
+        </div>
+        <header className='flex flex-col p-32'>
           <div className='w-2/3 space-y-8 mx-auto flex flex-col justify-center items-center'>
             <h1 className="text-6xl font-bold text-white text-center leading-relaxed" data-aos="fade-right">
               <span className="bg-white/20  border border-gray-300/30 hover:bg-white p-2 rounded-md shadow-xl duration-200 cursor-default">
@@ -154,7 +187,7 @@ const Accueil = () => {
 
           {/* avantage Mira Lab */}
 
-          <section className='w-full p-32 bg-purple-100/60'>
+          <section className='w-full p-32 bg-purple-100/60' id='fonctionnement' >
             <div className='w-3/4 mx-auto text-center'>
               <h2 className="text-5xl font-bold text-gray-900 mb-4">
                 Comment Mira Lab <span className="text-purple-500">fonctionne</span> ?
@@ -273,7 +306,7 @@ const Accueil = () => {
           </section>
 
           {/* FAQ */}
-          <section className="h-dvh bg-indigo-600 flex items-center justify-center text-white">
+          <section className="h-dvh bg-indigo-600 flex items-center justify-center text-white" id='faq'>
             <div className="w-2/3 bg-indigo-600 rounded-lg p-8 space-y-4">
               <h2 className="text-4xl font-bold text-center mb-8">FAQ</h2>
               {/* Onglet 1 */}
@@ -443,7 +476,7 @@ const Accueil = () => {
         </div>
       </main>
 
-      <footer className="bg-neutral-800 text-white  px-8">
+      <footer className="bg-neutral-800 text-white  px-8" id='contact'>
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 py-16">
           {/* Section 1: Logo et description */}
           <div>
@@ -527,6 +560,19 @@ const Accueil = () => {
           </p>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      {showScroll && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-4 right-4 bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition shadow-lg shadow-purple-500"
+          aria-label="Scroll to top"
+          data-aos="zoom-in"
+          data-aos-duration="100"
+        >
+          <FaArrowUp />
+        </button>
+      )}
 
     </>
   );
