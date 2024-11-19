@@ -8,10 +8,12 @@ import Stat from '../../img/statistique.png';
 import DashView from '../../img/dashview1.png';
 import Board from '../../img/board.png';
 import BackgroundGradient from '../../img/Freebie-GradientTextures-01.jpg';
+import { LinkPreview } from "@/components/ui/link-preview";
 import { FaTasks, FaUsers, FaComments, FaChartLine, FaSyncAlt, FaTwitter, FaLinkedin, FaGithub, FaArrowUp } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+
 
 const Accueil = () => {
 
@@ -556,7 +558,9 @@ const Accueil = () => {
         </div>
         <div className="border-t border-neutral-700 h-20 flex justify-center items-center  text-center text-gray-400">
           <p>
-            © {new Date().getFullYear()} Mira Lab. Tous droits réservés.
+            © {new Date().getFullYear()} Mira Lab. Tous droits réservés. Développé par <LinkPreview url="https://github.com/Tristan-stack" className="font-bold text-white">
+              Tristan Gerber
+            </LinkPreview>.
           </p>
         </div>
       </footer>
