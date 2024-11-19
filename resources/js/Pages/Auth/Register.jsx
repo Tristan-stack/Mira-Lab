@@ -5,7 +5,7 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { BackgroundLines } from "@/components/ui/background-lines";
+import { BackgroundLines } from "../Components/ui/BackgroundLines";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({

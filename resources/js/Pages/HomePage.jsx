@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Login from '@/Pages/Auth/Login'; // Assurez-vous d'importer votre composant Login
 import anime from 'animejs';
-import { BackgroundLines } from "@/components/ui/background-lines";
+import  { BackgroundLines } from "../Components/ui/BackgroundLines";
 import { motion, useAnimation } from 'framer-motion';
 
 const HomePage = () => {

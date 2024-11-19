@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../Components/NavBar';
-import SidebarProject from '../Components/SidebarProject';
+import SidebarProject from '../Components/SideBarProject';
 import TeamMembersModal from '../Components/TeamMemberModal';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
