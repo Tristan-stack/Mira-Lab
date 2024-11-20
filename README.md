@@ -1,66 +1,172 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🌟 **Miralab - Système de Gestion de Projets Moderne**
 
-## About Laravel
+**Miralab** est un outil puissant pour la gestion de projets et la collaboration d’équipe. Il permet de gérer vos projets de manière efficace grâce à des fonctionnalités telles que des tableaux Kanban interactifs, des mises à jour en temps réel, un chat d’équipe, des statistiques détaillées, et l'intégration avec Google Agenda.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+[Testez-le ici !](https://miralab.gerbert.etu.mmi-unistra.fr/)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+![Page d'Accueil Miralab](/rdmImg/img1.png)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 **Pourquoi Choisir Miralab ?**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **📂 [Gestion de Projets](#-fonctionnalités-de-base)**  
+  Organisez vos projets et suivez chaque tâche avec précision.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **📝 [Tableaux de Tâches](#-fonctionnalités-de-base)**  
+  Gérez vos tâches avec des tableaux, glisser-déposer.  
+  ![Tableaux de Tâches](/rdmImg/board.png)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **💬 [Chat d'Équipe](#-fonctionnalités-de-base)**  
+  Discutez en temps réel avec vos collaborateurs et restez à jour.  
+  ![Chat d'Équipe](/rdmImg/chat.png)
 
-## Laravel Sponsors
+- **📊 [Analyse et Statistiques](#-fonctionnalités-de-base)**  
+  Obtenez des graphiques et statistiques pour prendre des décisions éclairées.  
+  ![Analyse et Statistiques](/rdmImg/analyse-statistiques.png)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🔑 **Fonctionnalités Principales**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 🌟 **Capacités Clés**
 
-## Contributing
+- **Création et Gestion de Projets**  
+  Créez des projets, gérez les membres et suivez leur progression.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Tableaux Kanban avec Glisser-Déposer**  
+  Organisez vos tâches sur des tableaux visuels et interactifs.
 
-## Code of Conduct
+- **Mises à Jour en Temps Réel**  
+  Restez à jour avec des notifications instantanées grâce à l’intégration de Pusher.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Chat d’Équipe**  
+  Facilitez la communication au sein de votre équipe avec un chat intégré.
 
-## Security Vulnerabilities
+- **Statistiques et Graphiques**  
+  Visualisez la progression de vos projets avec des graphiques détaillés.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Intégration Google Agenda**  
+  Synchronisez les dates d'échéance avec Google Agenda pour ne jamais oublier une tâche.
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🛠️ **Technologies Utilisées**
+
+| **Technologie**      | **Détails**                                                                |
+|----------------------|----------------------------------------------------------------------------|
+| **Backend**           | [Laravel 11](https://laravel.com/)                                          |
+| **Frontend**          | [React](https://react.dev/) avec [Inertia.js](https://inertiajs.com/)      |
+| **Mises à Jour en Temps Réel** | [Pusher](https://pusher.com/) + [Laravel Echo](https://laravel.com/docs/11.x/broadcasting) |
+| **Composants UI**     | Shadcn Components, Aceternity, [Tailwind CSS](https://tailwindcss.com/)     |
+| **Drag-and-Drop**     | [React Beautiful DnD](https://github.com/atlassian/react-beautiful-dnd)    |
+| **Base de Données**   | [SQLite](https://sqlite.org/index.html)                                     |
+| **Graphiques**        | Composants Shadcn pour la création de graphiques                           |
+| **Calendrier**        | [React-Big-Calendar](https://github.com/jquense/react-big-calendar)                           |
+| **Text éditeur riche**| [Quill](https://quilljs.com/)                           |
+
+---
+
+## ⚡ **Installation**
+
+### **Prérequis**
+
+Avant de commencer l'installation, assurez-vous que votre environnement remplit les conditions suivantes :
+
+- [PHP](https://www.php.net/) >= 8.1
+- [Composer](https://getcomposer.org/)
+- [Node.js](https://nodejs.org/) et [NPM](https://www.npmjs.com/)
+- [SQLite](https://sqlite.org/index.html)
+
+### **Étapes d'Installation**
+
+1. **Cloner le Référentiel**
+
+   ```bash
+   git clone https://github.com/votre-utilisateur/Miralab.git
+   ```
+
+2. **Installer les Dépendances**
+
+   - **Backend**
+
+     ```bash
+     composer install
+     ```
+
+   - **Frontend**
+
+     ```bash
+     npm install
+     ```
+
+3. **Configurer les Variables d'Environnement**
+
+   - Copiez le fichier `.env` :
+
+     ```bash
+     cp .env.example .env
+     ```
+
+   - Configurez les clés suivantes dans `.env` :
+
+     - `PUSHER KEYS` pour activer les mises à jour en temps réel sur les tableaux (obtenez-les depuis [Pusher Dashboard](https://dashboard.pusher.com/)).
+     - `GOOGLE KEYS` (optionnel), utilisés pour l’exportation des tâches vers Google Agenda (obtenez-les depuis [Google Cloud Console](https://console.cloud.google.com/)).
+
+4. **Générer la Clé de l'Application**
+
+   ```bash
+   php artisan key:generate
+   ```
+
+5. **Exécuter les Migrations**
+
+   ```bash
+   php artisan migrate
+   ```
+
+6. **Démarrer les Serveurs de Développement**
+
+   - Backend :
+
+     ```bash
+     php artisan serve
+     ```
+
+   - Frontend :
+
+     ```bash
+     npm run dev
+     ```
+
+---
+
+## 🤝 **Contribuer**
+
+Nous vous encourageons à contribuer à **Miralab** ! Voici comment vous pouvez aider :
+
+1. Forkez le référentiel.
+2. Créez une branche pour votre fonctionnalité :
+
+   ```bash
+   git checkout -b nom-de-fonctionnalité
+   ```
+
+3. Committez vos changements et soumettez une pull request !
+
+---
+
+## 🔐 **Vulnérabilités de Sécurité**
+
+Si vous découvrez une faille de sécurité, contactez directement notre **équipe de sécurité**. Nous nous engageons à résoudre les problèmes rapidement et à protéger nos utilisateurs.
+
+---
+
+## 📜 **Licence**
+
+Miralab est un **projet éducatif** et n'est pas licencié en tant que logiciel open-source.
+
+---
+
+🎉 **[Essayez dès maintenant Miralab pour une gestion de projet optimisée !](#-pourquoi-choisir-miralab)**
