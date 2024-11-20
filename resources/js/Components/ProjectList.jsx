@@ -150,7 +150,7 @@ export default function ProjectList({
                 <div className="flex items-center space-x-2">
                     <input
                         type="text"
-                        placeholder="Rechercher un projet..."
+                        placeholder="Rechercher un tableau..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="p-2 border rounded-md outline-none text-blue-500 focus:border-blue-500 transition duration-150 hover:border-blue-500"

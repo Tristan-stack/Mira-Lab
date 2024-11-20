@@ -295,7 +295,6 @@ const ListDisplay = ({
 
                 </style>
             </div>
-            <ToastContainer />
         </DragDropContext>
     );
 

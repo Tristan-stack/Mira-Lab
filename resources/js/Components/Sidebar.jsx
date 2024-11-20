@@ -1,4 +1,3 @@
-// Sidebar.jsx
 import React, { useEffect, useState } from 'react';
 import {
   FiGrid,
@@ -8,7 +7,7 @@ import {
   FiLogOut
 } from 'react-icons/fi';
 import axios from 'axios';
-import { Inertia } from '@inertiajs/inertia'; // Importation d'Inertia
+import { Inertia } from '@inertiajs/inertia'; 
 import NotificationMenu from './NotificationMenu'; 
 
 // Fonction pour générer un gradient aléatoire
@@ -133,7 +132,7 @@ export default function Sidebar({ user }) {
                     <div
                       key={team.id}
                       className="flex items-center p-2 hover:bg-gray-200 rounded-md cursor-pointer"
-                      onClick={() => handleViewTeam(team.id)} // Remplacé par handleViewTeam
+                      onClick={() => handleViewTeam(team.id)}
                     >
                       {team.name}
                     </div>

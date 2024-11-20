@@ -174,7 +174,7 @@ class TaskController extends Controller
     {
         // Validation des données
         $validatedData = $request->validate([
-            'status' => 'required|in:Non commencer,En cours,Fini',
+            'status' => 'required|in:Non commencée,En cours,Fini',
         ]);
 
         // Trouver la tâche

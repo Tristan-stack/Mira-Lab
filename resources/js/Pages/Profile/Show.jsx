@@ -183,7 +183,6 @@ export default function Show({ user, teams, projects, users }) {
 
     return (
         <Layout user={user}>
-            <Head title="Mon Profil" />
             <ToastContainer />
             <div className=" h-full flex flex-col justify-center items-center  z-10">
                 {errorMessage && (

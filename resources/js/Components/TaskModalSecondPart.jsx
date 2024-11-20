@@ -12,10 +12,10 @@ const TaskDetails = ({
 }) => {
     const [startDate, setStartDate] = useState(task.start_date || '');
     const [endDate, setEndDate] = useState(task.end_date || '');
-    const [status, setStatus] = useState(task.status || 'Non commencer');
+    const [status, setStatus] = useState(task.status || 'Non commencée');
 
     useEffect(() => {
-        setStatus(task.status || 'Non commencer');
+        setStatus(task.status || 'Non commencée');
         setStartDate(task.start_date || '');
         setEndDate(task.end_date || '');
     }, [task]);
@@ -91,7 +91,7 @@ const TaskDetails = ({
     };
 
     const cycleStatus = () => {
-        const statuses = ['Non commencer', 'En cours', 'Fini'];
+        const statuses = ['Non commencée', 'En cours', 'Fini'];
         const currentIndex = statuses.indexOf(status);
         const nextIndex = (currentIndex + 1) % statuses.length;
         const nextStatus = statuses[nextIndex];
@@ -123,7 +123,7 @@ const TaskDetails = ({
     const todayDate = new Date().toISOString().split('T')[0];
     const getStatusButtonColor = () => {
         switch (status) {
-            case 'Non commencer':
+            case 'Non commencée':
                 return 'bg-blue-500 hover:bg-blue-600';
             case 'En cours':
                 return 'bg-red-500 hover:bg-red-600';

@@ -1,3 +1,4 @@
+// UserProfile.jsx
 import React, { useState } from 'react';
 import axios from 'axios'; 
 import { toast } from 'react-toastify';
@@ -30,7 +31,7 @@ export default function UserProfile({ user }) {
     };
 
     return (
-        <div className="p-6 bg-white shadow rounded-lg mb-6 relative space-y-6">
+        <div className="p-6 bg-white shadow rounded-lg space-y-2 max-w-md">
             <div className='w-80 h-44 rounded-lg mb-4 overflow-hidden relative'>
                 <div className="absolute inset-0 flex items-center justify-center">
                     <BackgroundGradientAnimation />
@@ -38,39 +39,41 @@ export default function UserProfile({ user }) {
             </div>
             <div className="w-full space-y-4 mb-4">
                 <h3 className='font-bold text-2xl'>Mon profil</h3>
-                <p className='text-gray-400 font-light text-xs text-right'>Membre depuis : {new Date(user.created_at).toLocaleDateString()}</p>
-                <p className='text-gray-400 font-light text-xs text-right'>Dernière modification : {new Date(user.updated_at).toLocaleDateString()}</p>
+                <p className='text-gray-400 font-light text-xs text-right'>
+                    Membre depuis : {new Date(user.created_at).toLocaleDateString()}
+                </p>
+                <p className='text-gray-400 font-light text-xs text-right'>
+                    Dernière modification : {new Date(user.updated_at).toLocaleDateString()}
+                </p>
                 <hr />
             </div>
-            <div className='space-y-1 flex flex-row justify-around items-center'>
+            <div className='space-y-4 flex flex-col items-center'>
                 <div className='w-full'>
                     {isEditing ? (
-                        <div className="relative w-full">
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="text-purple-600 w-1/2 p-2 border-white rounded-none focus:outline-none"
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="text-purple-600 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        />
                     ) : (
-                        <p className="text-gray-400 h-8">{formData.name}</p> 
+                        <p className="text-gray-400">{formData.name}</p> 
                     )}
                 </div>
-                {isEditing ? (
-                    <div className="relative w-full">
+                <div className='w-full'>
+                    {isEditing ? (
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="text-purple-600 border-white p-2 rounded-none w-full focus:outline-none"
+                            className="text-purple-600 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
                         />
-                    </div>
-                ) : (
-                    <p className="text-gray-400 h-8">{formData.email}</p>
-                )}
+                    ) : (
+                        <p className="text-gray-400">{formData.email}</p>
+                    )}
+                </div>
             </div>
             <div className='w-full flex justify-center mt-4'>
                 {isEditing ? (

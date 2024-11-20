@@ -1,8 +1,7 @@
-// Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { Inertia } from '@inertiajs/inertia'; // Importation d'Inertia
+import { Inertia } from '@inertiajs/inertia'; 
 
 export default function Navbar({ user }) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -42,7 +41,6 @@ export default function Navbar({ user }) {
         setSearchQuery(e.target.value);
     };
 
-    // Utilisation d'Inertia pour la navigation
     const handleViewProject = (projectId) => {
         Inertia.visit(`/projects/${projectId}`);
     };
