@@ -1,6 +1,6 @@
 # 🌟 **Miralab - Modern Project Management System**
 
-**Miralab** is a powerful tool for project management and team collaboration. It allows you to manage your projects efficiently with features such as interactive Kanban boards, real-time updates, team chat, detailed statistics, and integration with Google Calendar.
+**Miralab** is a powerful tool for project management and team collaboration. It allows you to manage your projects efficiently with features such as interactive Kanban boards, real-time updates, team chat, detailed statistics, and integration Pusher and QuillJs.
 
 [Test it here!](https://miralab.gerbert.etu.mmi-unistra.fr/)
 
@@ -46,24 +46,21 @@
 - **Statistics and Charts**  
   Visualize your project's progress with detailed charts.
 
-- **Google Calendar Integration**  
-  Sync deadlines with Google Calendar to never miss a task.
-
 ---
 
 ## 🛠️ **Technologies Used**
 
-| **Technology**      | **Details**                                                                |
+| **Technologie**      | **Détails**                                                                |
 |----------------------|----------------------------------------------------------------------------|
-| **Backend**          | [Laravel 11](https://laravel.com/)                                         |
-| **Frontend**         | [React](https://react.dev/) with [Inertia.js](https://inertiajs.com/)     |
-| **Real-Time Updates**| [Pusher](https://pusher.com/) + [Laravel Echo](https://laravel.com/docs/11.x/broadcasting) |
-| **UI Components**    | Shadcn Components, Aceternity, [Tailwind CSS](https://tailwindcss.com/)    |
-| **Drag-and-Drop**    | [React Beautiful DnD](https://github.com/atlassian/react-beautiful-dnd)   |
-| **Database**         | [SQLite](https://sqlite.org/index.html)                                    |
-| **Charts**           | Shadcn Components for chart creation                                      |
-| **Calendar**         | [React-Big-Calendar](https://github.com/jquense/react-big-calendar)       |
-| **Rich Text Editor** | [Quill](https://quilljs.com/)                                             |
+| **Backend**           | [Laravel 11](https://laravel.com/)                                          |
+| **Frontend**          | [React](https://react.dev/) avec [Inertia.js](https://inertiajs.com/)      |
+| **Mises à Jour en Temps Réel** | [Pusher](https://pusher.com/) + [Laravel Echo](https://laravel.com/docs/11.x/broadcasting) |
+| **Composants UI**     | Shadcn Components, Aceternity, [Tailwind CSS](https://tailwindcss.com/)     |
+| **Drag-and-Drop**     | [React Beautiful DnD](https://github.com/atlassian/react-beautiful-dnd)    |
+| **Base de Données**   | [SQLite](https://sqlite.org/index.html)                                     |
+| **Graphiques**        | Composants Shadcn pour la création de graphiques                           |
+| **Calendrier**        | [React-Big-Calendar](https://github.com/jquense/react-big-calendar)                           |
+| **Text éditeur riche**| [Quill](https://quilljs.com/)                           |
 
 ---
 
