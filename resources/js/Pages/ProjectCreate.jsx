@@ -70,7 +70,7 @@ const CreateProjectForm = ({ onCreate, onCancel }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative mx-auto bg-white rounded-lg max-w-md w-full p-8"
+            className="relative mx-auto bg-white rounded-lg max-w-md w-96 p-8"
             style={{ boxShadow: '0px 0px 41px 13px rgba(0,0,0,0.1)' }}
         >
             <button

@@ -1,6 +1,7 @@
 // TeamOverview.jsx
 import React, { useState } from 'react';
 import { FaPen, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaRegCopy } from "react-icons/fa6";
 import { motion } from 'framer-motion';
 import JoinProjectPopUp from '../../Components/JoinProjectPopUp';
 import axios from 'axios';
@@ -26,7 +27,7 @@ const TeamOverview = ({
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [teamTitle, setTeamTitle] = useState(team.name);
     const [currentTab, setCurrentTab] = useState(0);
-    const [isJoinProjectPopUpOpen, setIsJoinProjectPopUpOpen] = useState(false); 
+    const [isJoinProjectPopUpOpen, setIsJoinProjectPopUpOpen] = useState(false);
 
     const usersPerPage = 4;
     const userChunks = chunkArray(team?.users || [], usersPerPage);
@@ -130,21 +131,22 @@ const TeamOverview = ({
                     </p>
 
                     {/* Boutons d'action */}
-                    <div className="flex flex-col space-y-6 items-center">
-                        <div className="space-x-3">
+                    <div className="w-full flex items-center justify-around">
+                        
                             <button
-                                className="invite-btn bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 transition"
+                                className=" bg-blue-500 text-white flex items-center justify-between py-2 px-4 rounded-lg shadow hover:bg-blue-600 transition"
                                 onClick={handleCopyInviteCode}
                             >
-                                Copier le code d'invitation
+                                <FaRegCopy className='mr-2' />
+                                Team code
                             </button>
                             <button
-                                className="invite-btn bg-green-500 text-white py-2 px-4 rounded-lg shadow hover:bg-green-600 transition"
+                                className=" bg-green-500 text-white py-2 px-4 rounded-lg shadow hover:bg-green-600 transition"
                                 onClick={() => setIsJoinProjectPopUpOpen(true)} // Ouvrir la pop-up
                             >
                                 Rejoindre un projet privé
                             </button>
-                        </div>
+                       
                         {currentUserRoleInTeam === "admin" && (
                             <button
                                 className="delete-team-btn bg-red-500 text-white py-2 px-4 rounded-lg shadow hover:bg-red-600 transition"
