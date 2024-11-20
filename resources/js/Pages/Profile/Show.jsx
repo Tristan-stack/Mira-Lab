@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatisticsChart from '../../Components/StatisticsChart';
+import { Inertia } from '@inertiajs/inertia'; 
 
 export default function Show({ user, teams, projects, users }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -30,7 +31,7 @@ export default function Show({ user, teams, projects, users }) {
     const [teamsState, setTeamsState] = useState(Array.isArray(teams) ? teams : []);
     const [projectsState, setProjectsState] = useState(Array.isArray(projects) ? projects : []);
 
-    const [showStatistics, setShowStatistics] = useState(false); 
+    const [showStatistics, setShowStatistics] = useState(false);
 
     useEffect(() => {
         if (errorMessage) {
@@ -106,11 +107,11 @@ export default function Show({ user, teams, projects, users }) {
     };
 
     const handleViewTeam = (teamId) => {
-        window.location.href = `/teams/${teamId}`;
+        Inertia.visit(`/teams/${teamId}`); 
     };
 
     const handleViewProject = (projectId) => {
-        window.location.href = `/projects/${projectId}`;
+        Inertia.visit(`/projects/${projectId}`); 
     };
 
     const handleRemoveTeam = async (teamId) => {
@@ -173,7 +174,7 @@ export default function Show({ user, teams, projects, users }) {
             const updatedTeams = Array.isArray(response.data) ? response.data : [];
             setTeamsState(updatedTeams);
             setIsJoiningTeam(false);
-            window.location.reload();
+            Inertia.reload(); 
         } catch (error) {
             console.error('Erreur lors de la tentative de rejoindre l\'équipe:', error);
             setErrorMessage('Une erreur est survenue lors de la tentative de rejoindre l\'équipe.');
@@ -231,9 +232,8 @@ export default function Show({ user, teams, projects, users }) {
                             >
                                 <span>{showStatistics ? 'Voir les équipes et projets' : 'Voir les statistiques'}</span>
                                 <svg
-                                    className={`w-4 h-4 ml-2 transform transition-transform ${
-                                        showStatistics ? 'rotate-180' : 'rotate-0'
-                                    }`}
+                                    className={`w-4 h-4 ml-2 transform transition-transform ${showStatistics ? 'rotate-180' : 'rotate-0'
+                                        }`}
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -296,5 +296,6 @@ export default function Show({ user, teams, projects, users }) {
                 )}
             </div>
         </Layout>
+
     );
 }

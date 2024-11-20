@@ -1,11 +1,22 @@
+// SidebarProject.jsx
 import React, { useState } from 'react';
-import { FiGrid, FiUsers, FiCalendar, FiMessageCircle, FiBell, FiLogOut, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import {
+  FiGrid,
+  FiUsers,
+  FiCalendar,
+  FiMessageCircle,
+  FiBell,
+  FiLogOut,
+  FiChevronDown,
+  FiChevronRight
+} from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { createPortal } from 'react-dom';
 import { useGradient } from '../contexts/GradientContext.jsx';
 import ProjectMemberModal from './ProjectMemberModal';
-import CalendarView from './CalendarView.jsx'; 
+import CalendarView from './CalendarView.jsx';
+import { Inertia } from '@inertiajs/inertia';
 
 export default function SidebarProject({ user, projectUsers, currentUser, setProjectUsers, onOpenModal, tasks }) {
     const gradient = useGradient(); 
@@ -16,14 +27,14 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
     const handleLogout = async () => {
         try {
             await axios.post('/logout');
-            window.location.href = '/';
+            Inertia.visit('/'); 
         } catch (error) {
             console.error('Logout failed:', error);
         }
     };
 
     const handleUserClick = () => {
-        window.location.href = '/profile';
+        Inertia.visit('/profile'); 
     };
 
     const handleOpenMemberModal = () => {
@@ -50,7 +61,10 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
         <div className="bg-white h-screen p-4 shadow-md w-64 flex flex-col flex-shrink-0">
             <div className="text-2xl font-bold text-purple-600 mb-8">Board View</div>
             <nav className="space-y-4 w-full flex-grow overflow-y-auto">
-                <div className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer" onClick={handleCalendarClick}>
+                <div
+                    className="flex items-center p-2 hover:bg-gray-100 duration-300 rounded-md cursor-pointer"
+                    onClick={handleCalendarClick}
+                >
                     <FiCalendar className="mr-3 text-gray-600" />
                     <span>Calendrier</span>
                 </div>
@@ -162,5 +176,6 @@ export default function SidebarProject({ user, projectUsers, currentUser, setPro
                 document.body
             )}
         </div>
+
     );
 }
