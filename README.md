@@ -49,21 +49,19 @@ cd Mira-lab
 #### 2️⃣ **Install Dependencies**  
 
 **Backend**  
-\`\`\`bash
+```bash
 composer install
-\`\`\`
-
-**Frontend**  
-\`\`\`bash
+```
+- **Frontend**  
+```bash
 npm install
-\`\`\`
-
+```  
 #### 3️⃣ **Configure Environment Variables**  
 
-Copy the `.env.example` file:  
-\`\`\`bash
+Copy the `.env` file:  
+```bash
 cp .env.example .env
-\`\`\`
+``` 
 
 Update the following keys in your `.env` file:  
 \`\`\`env
@@ -74,26 +72,26 @@ PUSHER_APP_CLUSTER=your_pusher_app_cluster
 \`\`\`
 
 #### 4️⃣ **Generate Application Key**  
-\`\`\`bash
+```bash
 php artisan key:generate
-\`\`\`
+```
 
 #### 5️⃣ **Run Migrations**  
-\`\`\`bash
+```bash
 php artisan migrate
-\`\`\`
+```
 
 #### 6️⃣ **Start Development Servers**  
 
 **Backend**  
-\`\`\`bash
+```bash
 php artisan serve
-\`\`\`
+``` 
 
 **Frontend**  
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+``` 
 
 ---
 
@@ -131,8 +129,12 @@ npm run dev
 We ❤️ contributions! Follow these steps to get started:  
 1. Fork the repo and clone it locally.  
 2. Create a new branch:  
-   \`\`\`bash
-   git checkout -b feature/your-feature-name
-   \`\`\`  
+```bash
+git checkout -b feature/your-feature-name
+```  
 3. Make your changes and commit them:  
-   \`\`\`bash
+```bash
+git push origin feature/your-feature-name
+```
+
+**Go try it !**
