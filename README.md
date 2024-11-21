@@ -103,7 +103,7 @@ npm run dev
 ![Dashboard](/rdmImg/dash.png)  
 
 ### **Task Management**  
-![Tasks](/rdmImg/tasks.png)  
+![Tasks](/rdmImg/img1.png)  
 
 ### **Real-Time Chat**  
 ![Chat](/rdmImg/chat.png)  
