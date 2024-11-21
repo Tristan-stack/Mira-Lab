@@ -41,10 +41,10 @@ Ensure you have the following installed:
 ### **Step-by-Step Installation**  
 
 #### 1️⃣ **Clone the Repository**  
-\`\`\`bash
+```bash
 git clone https://github.com/Tristan-stack/Mira-Lab.git
 cd Mira-lab
-\`\`\`
+```
 
 #### 2️⃣ **Install Dependencies**  
 
