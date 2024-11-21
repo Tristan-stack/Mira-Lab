@@ -1,167 +1,138 @@
-# 🌟 **Miralab - Modern Project Management System**
 
-**Miralab** is a powerful tool for project management and team collaboration. It allows you to manage your projects efficiently with features such as interactive Kanban boards, real-time updates, team chat, detailed statistics, and integration Pusher and QuillJs.
+# **Mira Lab** 🧪  
 
-[Test it here!](https://miralab.gerbert.etu.mmi-unistra.fr/)
-
-![Miralab Home Page](/rdmImg/img1.png)
+Welcome to **Mira Lab**, your go-to **collaborative project management** app! Manage your projects efficiently with features like **real-time updates**, **customizable tasks**, and an integrated **chat system**. 🎯
 
 ---
 
-## 🚀 **Why Choose Miralab?**
+## ✨ **Features at a Glance**
 
-- **📂 [Project Management](#-main-features)**  
-  Organize your projects and track each task with precision.
-
-- **📝 [Task Boards](#-main-features)**  
-  Manage your tasks with drag-and-drop boards.  
-  ![Task Boards](/rdmImg/board.png)
-
-- **💬 [Team Chat](#-main-features)**  
-  Chat in real-time with your collaborators and stay updated.  
-  ![Team Chat](/rdmImg/chat.png)
-
-- **📊 [Analysis and Statistics](#-main-features)**  
-  Get charts and statistics to make informed decisions.  
-  ![Analysis and Statistics](/rdmImg/analyse-statistiques.png)
+- **Team Boards** 🧑‍🤝‍🧑: Create project teams as boards.  
+- **Lists & Tasks** 🗂️: Organize your tasks in lists.  
+- **Task Dependencies** 🔗: Link tasks to manage workflows.  
+- **Drag & Drop** ✋: Move tasks between lists seamlessly.  
+- **Real-Time Collaboration** ⚡: Instant updates for everyone.  
+- **Notifications** 🔔: Stay informed with real-time alerts.  
+- **Built-In Chat** 💬: Communicate directly within the board.  
 
 ---
 
-## 🔑 **Main Features**
+## 🚀 **Tech Stack**
 
-### 🌟 **Key Capabilities**
-
-- **Project Creation and Management**  
-  Create projects, manage members, and track their progress.
-
-- **Kanban Boards with Drag-and-Drop**  
-  Organize your tasks on visual and interactive boards.
-
-- **Real-Time Updates**  
-  Stay updated with instant notifications thanks to Pusher integration.
-
-- **Team Chat**  
-  Facilitate communication within your team with an integrated chat.
-
-- **Statistics and Charts**  
-  Visualize your project's progress with detailed charts.
+- **Backend**: [Laravel 11](https://laravel.com/)  
+- **Frontend**: [React](https://react.dev/) with [Inertia.js](https://inertiajs.com/)  
+- **Real-Time Engine**: [Pusher](https://pusher.com/) & [Laravel Echo](https://laravel.com/docs/echo)  
+- **Rich Text Editor**: [Quill.js](https://quilljs.com/)  
+- **Calendar**: [React Big Calendar](https://github.com/jquense/react-big-calendar)  
+- **UI Library**: [ShadCN](https://shadcn.dev/)  
+- **Utilities**: [Aceternity](https://aceternity.com/)  
 
 ---
 
-## 🛠️ **Technologies Used**
+## 🛠️ **Installation Guide**
 
-| **Technologie**      | **Détails**                                                                |
-|----------------------|----------------------------------------------------------------------------|
-| **Backend**           | [Laravel 11](https://laravel.com/)                                          |
-| **Frontend**          | [React](https://react.dev/) avec [Inertia.js](https://inertiajs.com/)      |
-| **Mises à Jour en Temps Réel** | [Pusher](https://pusher.com/) + [Laravel Echo](https://laravel.com/docs/11.x/broadcasting) |
-| **Composants UI**     | Shadcn Components, Aceternity, [Tailwind CSS](https://tailwindcss.com/)     |
-| **Drag-and-Drop**     | [React Beautiful DnD](https://github.com/atlassian/react-beautiful-dnd)    |
-| **Base de Données**   | [SQLite](https://sqlite.org/index.html)                                     |
-| **Graphiques**        | Composants Shadcn pour la création de graphiques                           |
-| **Calendrier**        | [React-Big-Calendar](https://github.com/jquense/react-big-calendar)                           |
-| **Text éditeur riche**| [Quill](https://quilljs.com/)                           |
+### **Prerequisites**  
+Ensure you have the following installed:  
+- PHP 8.1+  
+- Node.js 18+  
+- Composer 2+  
+- SQLite or any Laravel-supported database  
 
----
+### **Step-by-Step Installation**  
 
-## ⚡ **Installation**
+#### 1️⃣ **Clone the Repository**  
+\`\`\`bash
+git clone https://github.com/Tristan-stack/Mira-Lab.git
+cd Mira-lab
+\`\`\`
 
-### **Prerequisites**
+#### 2️⃣ **Install Dependencies**  
 
-Before starting the installation, ensure your environment meets the following requirements:
+**Backend**  
+\`\`\`bash
+composer install
+\`\`\`
 
-- [PHP](https://www.php.net/) >= 8.1
-- [Composer](https://getcomposer.org/)
-- [Node.js](https://nodejs.org/) and [NPM](https://www.npmjs.com/)
-- [SQLite](https://sqlite.org/index.html)
+**Frontend**  
+\`\`\`bash
+npm install
+\`\`\`
 
-### **Installation Steps**
+#### 3️⃣ **Configure Environment Variables**  
 
-1. **Clone the Repository**
+Copy the `.env.example` file:  
+\`\`\`bash
+cp .env.example .env
+\`\`\`
 
-   ```bash
-   git clone https://github.com/your-username/Miralab.git
-   ```
+Update the following keys in your `.env` file:  
+\`\`\`env
+PUSHER_APP_ID=your_pusher_app_id
+PUSHER_APP_KEY=your_pusher_app_key
+PUSHER_APP_SECRET=your_pusher_app_secret
+PUSHER_APP_CLUSTER=your_pusher_app_cluster
+\`\`\`
 
-2. **Install Dependencies**
+#### 4️⃣ **Generate Application Key**  
+\`\`\`bash
+php artisan key:generate
+\`\`\`
 
-   - **Backend**
+#### 5️⃣ **Run Migrations**  
+\`\`\`bash
+php artisan migrate
+\`\`\`
 
-     ```bash
-     composer install
-     ```
+#### 6️⃣ **Start Development Servers**  
 
-   - **Frontend**
+**Backend**  
+\`\`\`bash
+php artisan serve
+\`\`\`
 
-     ```bash
-     npm install
-     ```
-
-3. **Configure Environment Variables**
-
-   - Copy the `.env` file :
-
-     ```bash
-     cp .env.example .env
-     ```
-
-   - Configure the following keys in `.env` :
-
-     - `PUSHER KEYS` o enable real-time updates on the boards (get them from [Pusher Dashboard](https://dashboard.pusher.com/)).
-
-4. **Generate the Application Key**
-
-   ```bash
-   php artisan key:generate
-   ```
-
-5. **Run Migrations**
-
-   ```bash
-   php artisan migrate
-   ```
-
-6. **Start Development Servers**
-
-   - Backend :
-
-     ```bash
-     php artisan serve
-     ```
-
-   - Frontend :
-
-     ```bash
-     npm run dev
-     ```
+**Frontend**  
+\`\`\`bash
+npm run dev
+\`\`\`
 
 ---
 
-## 🤝 **Contribute**
+## 🎨 **Screenshots**  
 
-We encourage you to contribute to **Miralab** ! Here's how you can help:
+### **Dashboard**  
+![Dashboard](/rdmImg/dash.png)  
 
-1. Fork the repository.
-2. Create a branch for your feature:
+### **Task Management**  
+![Tasks](/rdmImg/tasks.png)  
 
-   ```bash
-   git checkout -b nom-de-fonctionnalité
-   ```
-
-3. Commit your changes and submit a pull request!
+### **Real-Time Chat**  
+![Chat](/rdmImg/chat.png)  
 
 ---
 
-## 🔐 ** Security Vulnerabilities**
+## 📚 **Usage**
 
-If you discover a security vulnerability, please contact **me**. 
+1. **Sign Up and Log In** ✍️  
+   Create an account or log in to access the dashboard.  
+
+2. **Create Boards** 🛠️  
+   Set up project boards for your team.  
+
+3. **Add Lists & Tasks** 🗂️  
+   Organize tasks within lists and link them with dependencies.  
+
+4. **Collaborate in Real-Time** ⚡  
+   Work together, communicate in the chat, and stay updated with notifications.  
 
 ---
 
-## 📜 **License**
+## 🤝 **Contributing**  
 
-Miralab is an **educational project** and is not licensed as open-source software..
-
----
-
-🎉 **[Try Miralab now for optimized project management!](#-pourquoi-choisir-miralab)**
+We ❤️ contributions! Follow these steps to get started:  
+1. Fork the repo and clone it locally.  
+2. Create a new branch:  
+   \`\`\`bash
+   git checkout -b feature/your-feature-name
+   \`\`\`  
+3. Make your changes and commit them:  
+   \`\`\`bash
